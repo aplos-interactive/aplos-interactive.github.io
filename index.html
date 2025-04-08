@@ -1,122 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Nova Scotia Bill Threatens Academic Freedom</title>
-
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap" rel="stylesheet" />
-
-  <style>
-    body {
-      background-color: #cefaff;
-      font-family: 'Lato', sans-serif;
-      margin: 0;
-      padding: 0;
-    }
-
-    marquee {
-      font-size: 200%;
-    }
-
-    .button {
-      border: 2px solid #cefaff;
-      background-color: white;
-      color: black;
-      padding: 16px 32px;
-      font-size: 16px;
-      margin: 10px;
-      cursor: pointer;
-      transition: 0.4s;
-    }
-
-    .button:hover {
-      background-color: #000000;
-      color: #cefaff;
-    }
-
-    h1 {
-      background-color: powderblue;
-      text-align: center;
-      padding: 10px;
-      margin-top: 0;
-    }
-
-    p {
-      font-family: Verdana, sans-serif;
-      margin: 20px;
-      line-height: 1.6;
-    }
-
-    .buttons-container {
-      text-align: center;
-      margin: 20px 0;
-    }
-
-    .sources {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    hr {
-      border: 1px solid #aaa;
-      margin: 30px 0;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Nova Scotia Bill Controversy</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-  <marquee direction="right">Professors, students say Nova Scotia university bill threatens academic freedoms</marquee>
-
-
-  <hr />
-  <marquee behavior="scroll" direction="right" scrollamount="10">
-    <img src="littleboi.gif" alt="Animated character" width="256" height="256" />
+  <marquee class="headline" direction="right">
+    Professors, students say Nova Scotia university bill threatens academic freedoms
   </marquee>
-  <hr/>
 
-
-  <h1>Nova Scotia bill allegedly threatens academic freedoms</h1>
-
-  <!-- Buttons -->
-<div class="buttons-container">
-  <button class="button" onclick="scrollToSection('interest')">Why did this event interest me?</button>
-  <button class="button" onclick="scrollToSection('event')">What happened in this event?</button>
-  <button class="button" onclick="scrollToSection('learned')">What did I learn from this article?</button>
-  <button class="button" onclick="scrollToSection('opinion')">What are my opinions on this event?</button>
-</div>
-
-
-<section id="event">
-  <p>On March 18th, the Conservative government in Nova Scotia proposed a bill...</p>
-</section>
-
-<hr />
-
-<section id="interest">
-  <p>This event interested me as a reader because a threat to academic freedom...</p>
-</section>
-
-<hr />
-
-<section id="learned">
-  <p>What I learned from this article was that this was even happening...</p>
-</section>
-
-<hr />
-
-<section id="opinion">
-  <p>My opinion is that university senates, which deal with academic issues...</p>
-</section>
-
-  <h1>Sources</h1>
-  <div class="sources">
-    <p>
-      <a href="https://www.thecanadianpressnews.ca/atlantic/professors-students-say-nova-scotia-university-bill-threatens-academic-freedoms/article_8458bfc4-6be8-51fe-bd46-e59c5108a040.html" target="_blank">The Canadian Press</a><br />
-      <a href="https://www.thestar.com/news/canada/nova-scotia/professors-students-say-nova-scotia-university-bill-threatens-academic-freedoms/article_970ef34d-1661-5bbf-8df7-96ecbed87cd4.html" target="_blank">The Toronto Star</a>
-    </p>
+  <div class="buttons-container">
+    <button onclick="scrollToSection('interest')">Why did this event interest me?</button>
+    <button onclick="scrollToSection('event')">What happened in this event?</button>
+    <button onclick="scrollToSection('learned')">What did I learn from this article?</button>
+    <button onclick="scrollToSection('opinion')">What are my opinions on this event?</button>
   </div>
+
+  <hr>
+  <marquee behavior="scroll" direction="right" scrollamount="10">
+    <img src="littleboi.gif" alt="scrolling image" width="256" height="256">
+  </marquee>
+  <hr>
+
+  <h1 class="title">Nova Scotia bill allegedly threatens academic freedoms</h1>
+
+  <section id="event">
+    <p>On March 18th, the Conservative government in Nova Scotia proposed a bill that would give the government more control over the province’s 10 universities...</p>
+  </section>
+
+  <hr>
+
+  <section id="interest">
+    <p>This event interested me as a reader because a threat to academic freedom is a threat to freedom of speech and freedom in general...</p>
+  </section>
+
+  <hr>
+
+  <section id="learned">
+    <p>What I learned from this article was that this was even happening in the first place...</p>
+  </section>
+
+  <hr>
+
+  <section id="opinion">
+    <p>My opinion on the bill is that university senates shouldn’t be removed in favour of government-appointed boards...</p>
+  </section>
+
+  <h2>Sources</h2>
+  <a href="https://www.thecanadianpressnews.ca/atlantic/professors-students-say-nova-scotia-university-bill-threatens-academic-freedoms/article_8458bfc4-6be8-51fe-bd46-e59c5108a040.html">The Canadian Press</a><br>
+  <a href="https://www.thestar.com/news/canada/nova-scotia/professors-students-say-nova-scotia-university-bill-threatens-academic-freedoms/article_970ef34d-1661-5bbf-8df7-96ecbed87cd4.html">The Toronto Star</a>
+
+  <script src="script.js"></script>
 </body>
 </html>
