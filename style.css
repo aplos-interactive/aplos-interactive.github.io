@@ -46,7 +46,10 @@ button:hover {
 }
 
 section {
-  margin-top: 50px;
-  padding: 20px;
+  padding: 25px;
+  text-align: center;
+  background: #1abc9c;
+  color: white;
+  font-size: 50px;
   font-family: Verdana, sans-serif;
 }
