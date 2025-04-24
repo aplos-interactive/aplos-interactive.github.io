@@ -1,57 +1,103 @@
-.body {
-    font-family: sans-serif;
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern, clean font */
     margin: 0;
     padding: 0;
-    background-color: #f4f4f4; /* Light grey background */
-    color: #333; /* Dark grey text */
+    background-color: #f8f8f8; /* Softer light grey background */
+    color: #444; /* Darker grey text for better readability */
+    line-height: 1.6;
 }
 
-.header {
-    background-color: #dc3545; /* Red header */
+header {
+    background-color: #e74c3c; /* Brighter, more inviting red */
     color: white;
-    padding: 2rem 0;
+    padding: 3rem 2rem;
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
-.header h1 {
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
+header h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    letter-spacing: 1px;
 }
 
-.header p {
-    font-size: 1.2rem;
+header p {
+    font-size: 1.3rem;
+    font-weight: 300;
 }
 
-.section {
-    padding: 2rem;
-    margin-bottom: 2rem;
+header nav {
+    margin-top: 1.5rem;
+}
+
+header nav button {
+    background: none;
+    border: 2px solid white;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    margin: 0 0.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+header nav button:hover {
+    background-color: white;
+    color: #e74c3c;
+}
+
+section {
+    padding: 3rem 2rem;
+    margin-bottom: 3rem;
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-.section h2 {
-    color: #dc3545; /* Red section titles */
-    margin-bottom: 1.5rem;
+section h2 {
+    color: #e74c3c; /* Consistent red for section titles */
+    margin-bottom: 2rem;
     text-align: center;
+    font-size: 2rem;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 0.8rem;
 }
 
-.#landmarks .landmark-grid {
+#landmarks .landmark-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Wider for better visuals */
+    gap: 2rem;
 }
 
 .landmark {
-    padding: 1.5rem;
-    border: 1px solid #ddd;
-    border-radius: 6px;
+    padding: 2rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease-in-out; /* Subtle hover effect */
+}
+
+.landmark:hover {
+    transform: translateY(-5px);
 }
 
 .landmark h3 {
     color: #333;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
+    font-size: 1.5rem;
+}
+
+#map {
+    text-align: center; /* Center the map image */
+}
+
+#map img {
+    border-radius: 8px; /* Match the section style */
+    max-width: 100%; /* Ensure responsiveness */
+    height: auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for the map */
 }
 
 #fun-facts .facts-list {
@@ -60,24 +106,28 @@
 }
 
 #fun-facts .facts-list li {
-    margin-bottom: 1rem;
-    padding-left: 1.5rem;
+    margin-bottom: 1.2rem;
+    padding-left: 2rem;
     position: relative;
+    font-size: 1.1rem;
 }
 
 #fun-facts .facts-list li::before {
     content: "\2022"; /* Bullet point */
-    color: #dc3545; /* Red bullet point */
+    color: #e74c3c; /* Brighter red bullet point */
     position: absolute;
     left: 0;
+    font-size: 1.5rem;
+    line-height: 1;
 }
 
-.footer {
+footer {
     text-align: center;
-    padding: 1rem 0;
+    padding: 1.5rem 0;
     background-color: #333; /* Dark grey footer */
     color: white;
     position: sticky;
     bottom: 0;
     width: 100%;
+    font-size: 0.9rem;
 }
