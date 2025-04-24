@@ -1,14 +1,14 @@
-.body {
+body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f8f9fa;
+    background-color: #f8f9fa; 
     color: #495057; 
     line-height: 1.6;
     overflow-x: hidden; 
 }
 
-.header {
+header {
     background: linear-gradient(135deg, #007bff, #6610f2); 
     color: white;
     padding: 30px 20px;
@@ -16,7 +16,7 @@
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.header h1 {
+header h1 {
     margin-bottom: 15px;
     font-size: 2.5em;
     font-weight: 500;
@@ -60,7 +60,7 @@
 
 .destinations {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Slightly wider cards */
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
     gap: 30px;
     padding: 30px;
     background-color: #f8f9fa;
@@ -80,14 +80,70 @@
 
 .destination-card img {
     width: 100%;
-    height: 250px; /* Slightly taller images */
+    height: 250px; 
     object-fit: cover;
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
 }
 
-.destination-card .info { /* Added a container for text content */
+.destination-card .info { 
     padding: 20px;
 }
 
-.destination-card h
+.destination-card h2 {
+    margin-top: 0;
+    font-size: 1.8em;
+    color: #343a40; 
+    margin-bottom: 10px;
+}
+
+.destination-card p {
+    color: #6c757d; 
+    font-size: 1em;
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+
+.destination-card a.destination-button {
+    display: block; 
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin: 15px;
+    cursor: pointer;
+    font-size: 1em;
+    text-align: center;
+    text-decoration: none; 
+    transition: background-color 0.3s ease;
+}
+
+.destination-card a.destination-button:hover {
+    background-color: #0056b3;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #343a40; 
+    color: white;
+    font-size: 0.9em;
+}
+
+
+@media (max-width: 768px) {
+    .search-bar {
+        width: 95%;
+    }
+
+    .destinations {
+        grid-template-columns: 1fr;
+        padding: 20px;
+    }
+
+    .destination-card {
+        margin-bottom: 20px;
+    }
+}
