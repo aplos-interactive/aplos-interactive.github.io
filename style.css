@@ -1,60 +1,83 @@
 .body {
-  background-color: #cefaff;
-  font-family: 'Lato', sans-serif;
-  margin: 0;
-  padding: 20px;
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4; /* Light grey background */
+    color: #333; /* Dark grey text */
 }
 
-.headline {
-  font-size: 200%;
-}
-.line {
-  display: block;
-  margin-top: 1em;
-  margin-bottom: 1em;
-  margin-left: 1px;
-  margin-right: 1px;
-  border-style: inset;
-  border-width: 10px;
-}
-.title {
-  background-color: powderblue;
-  text-align: center;
-  padding: 10px;
+.header {
+    background-color: #dc3545; /* Red header */
+    color: white;
+    padding: 2rem 0;
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
-.buttons-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 20px 0;
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
 }
 
-.button {
-  background-color: white;
-  color: black;
-  text-align: center;
-  border: 2px solid #cefaff;
-  padding: 12px 24px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.4s;
-}
-
-.button:hover {
-  background-color: #000000;
-  color: #cefaff;
-
-}
-.title {
-  padding: 25px;
-  text-align: center;
-  background: #1abc9c;
-  color: white;
-  font-size: 50px;
+.header p {
+    font-size: 1.2rem;
 }
 
 .section {
-  padding: 25px;
-  font-family: Verdana, sans-serif;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.section h2 {
+    color: #dc3545; /* Red section titles */
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.#landmarks .landmark-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.landmark {
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+}
+
+.landmark h3 {
+    color: #333;
+    margin-bottom: 0.5rem;
+}
+
+#fun-facts .facts-list {
+    list-style: none;
+    padding: 0;
+}
+
+#fun-facts .facts-list li {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+#fun-facts .facts-list li::before {
+    content: "\2022"; /* Bullet point */
+    color: #dc3545; /* Red bullet point */
+    position: absolute;
+    left: 0;
+}
+
+.footer {
+    text-align: center;
+    padding: 1rem 0;
+    background-color: #333; /* Dark grey footer */
+    color: white;
+    position: sticky;
+    bottom: 0;
+    width: 100%;
 }
