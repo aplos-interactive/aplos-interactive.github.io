@@ -12,8 +12,3 @@ function searchDestinations() {
     });
 }
 
-function goToDestination(destinationName) {
-    alert(`Navigating to the section for: ${destinationName}`);
-    // In a real website, you would implement actual navigation here,
-    // likely using links to different pages or scrolling to specific sections.
-}
