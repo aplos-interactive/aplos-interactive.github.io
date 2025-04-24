@@ -3,49 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Discover the Beauty of Canada</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Explore Canada</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header id= "header">
-        <h1>Explore Amazing Canada</h1>
-        <p>Your Next Great Adventure Awaits!</p>
+    <header>
+        <h1>Discover the Beauty of Canada</h1>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search destinations...">
+            <button onclick="searchDestinations()">Search</button>
+        </div>
     </header>
 
-    <section id="landmarks">
-        <h2>Iconic Canadian Landmarks</h2>
-        <div class="landmark-grid">
-            <div class="landmark">
-                <h3>Niagara Falls</h3>
-                <p>A breathtaking natural wonder on the border of Ontario and New York.</p>
-                </div>
-            <div class="landmark">
-                <h3>Banff National Park</h3>
-                <p>Canada's first national park, known for its stunning Rocky Mountain scenery.</p>
-                </div>
-            <div class="landmark">
-                <h3>CN Tower</h3>
-                <p>An iconic landmark in Toronto, offering incredible city views.</p>
-                </div>
-            </div>
-    </section>
-
-    <section id="map">
-        <h2>Discover Canada's Geography</h2>
-        <img src="canada_map.jpg" alt="Map of Canada with Major Cities" style="width: 100%; max-width: 800px; display: block; margin: 0 auto; border-radius: 8px;">
+    <main class="destinations">
+        <section class="destination-card" data-name="Banff National Park">
+            <img src="images/banff.jpg" alt="Banff National Park">
+            <h2>Banff National Park</h2>
+            <p>Majestic mountains, turquoise lakes, and abundant wildlife await in Canada's first national park.</p>
+            <button onclick="goToDestination('Banff National Park')">Explore Banff</button>
         </section>
 
-    <section id="fun-facts">
-        <h2>Fun Facts About Canadian History</h2>
-        <ul class="facts-list">
-            <li>Canada is the second-largest country in the world by total area.</li>
-            <li>The name "Canada" comes from the Huron-Iroquois word "kanata," meaning "village" or "settlement."</li>
-            <li>Ice hockey and lacrosse are considered Canada's national sports.</li>
-            </ul>
-    </section>
+        <section class="destination-card" data-name="Niagara Falls">
+            <img src="images/niagara_falls.jpg" alt="Niagara Falls">
+            <h2>Niagara Falls</h2>
+            <p>Experience the awe-inspiring power and beauty of one of the world's most famous waterfalls.</p>
+            <button onclick="goToDestination('Niagara Falls')">Visit Niagara Falls</button>
+        </section>
+
+        <section class="destination-card" data-name="Old Quebec City">
+            <img src="images/quebec_city.jpg" alt="Old Quebec City">
+            <h2>Old Quebec City</h2>
+            <p>Step back in time and explore the charming cobblestone streets and historic architecture of Old Quebec.</p>
+            <button onclick="goToDestination('Old Quebec City')">Discover Quebec City</button>
+        </section>
+
+        <section class="destination-card" data-name="Vancouver">
+            <img src="images/vancouver.jpg" alt="Vancouver">
+            <h2>Vancouver</h2>
+            <p>A vibrant coastal city surrounded by mountains and ocean, offering a perfect blend of nature and urban life.</p>
+            <button onclick="goToDestination('Vancouver')">Explore Vancouver</button>
+        </section>
+
+        <section class="destination-card" data-name="Canadian Rockies">
+            <img src="images/rockies.jpg" alt="Canadian Rockies">
+            <h2>Canadian Rockies</h2>
+            <p>Towering peaks, glaciers, and stunning landscapes stretch across Alberta and British Columbia.</p>
+            <button onclick="goToDestination('Canadian Rockies')">See the Rockies</button>
+        </section>
+
+        <section class="destination-card" data-name="Prince Edward Island">
+            <img src="images/pei.jpg" alt="Prince Edward Island">
+            <h2>Prince Edward Island</h2>
+            <p>Discover red sand beaches, rolling green hills, and the charming world of Anne of Green Gables.</p>
+            <button onclick="goToDestination('Prince Edward Island')">Visit PEI</button>
+        </section>
+    </main>
 
     <footer>
-        <p>&copy; 2025 Discover Canada</p>
+        <p>&copy; 2025 Explore Canada</p>
     </footer>
 
     <script src="script.js"></script>
