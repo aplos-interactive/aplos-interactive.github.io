@@ -1,4 +1,4 @@
-body {
+.body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern, clean font */
     margin: 0;
     padding: 0;
@@ -7,7 +7,7 @@ body {
     line-height: 1.6;
 }
 
-header {
+.header {
     background-color: #e74c3c; /* Brighter, more inviting red */
     color: white;
     padding: 3rem 2rem;
@@ -16,22 +16,22 @@ header {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
-header h1 {
+.header h1 {
     font-size: 3rem;
     margin-bottom: 1rem;
     letter-spacing: 1px;
 }
 
-header p {
+.header p {
     font-size: 1.3rem;
     font-weight: 300;
 }
 
-header nav {
+.header nav {
     margin-top: 1.5rem;
 }
 
-header nav button {
+.header nav button {
     background: none;
     border: 2px solid white;
     color: white;
@@ -43,12 +43,12 @@ header nav button {
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-header nav button:hover {
+.header nav button:hover {
     background-color: white;
     color: #e74c3c;
 }
 
-section {
+.section {
     padding: 3rem 2rem;
     margin-bottom: 3rem;
     background-color: white;
@@ -56,7 +56,7 @@ section {
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
-section h2 {
+.section h2 {
     color: #e74c3c; /* Consistent red for section titles */
     margin-bottom: 2rem;
     text-align: center;
@@ -121,7 +121,7 @@ section h2 {
     line-height: 1;
 }
 
-footer {
+.footer {
     text-align: center;
     padding: 1.5rem 0;
     background-color: #333; /* Dark grey footer */
