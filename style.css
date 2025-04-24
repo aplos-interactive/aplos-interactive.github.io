@@ -8,7 +8,15 @@ body {
 .headline {
   font-size: 200%;
 }
-
+hr {
+  display: block;
+  margin-top: 1em;
+  margin-bottom: 1em;
+  margin-left: 1px;
+  margin-right: 1px;
+  border-style: inset;
+  border-width: 10px;
+}
 .title {
   background-color: powderblue;
   text-align: center;
