@@ -1,34 +1,76 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Nunito', sans-serif; /* A modern, rounded font */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
-    background-color: #f4f6f8; /* Even softer background */
-    color: #333;
+    background-color: #f0f4f8; /* An even lighter, softer background */
+    color: #37474f; /* A dark grayish-blue for text */
 }
 
 header {
-    background: linear-gradient(135deg, #007bff, #6610f2); /* Gradient background */
+    background: linear-gradient(90deg, #00bcd4, #009688); /* A vibrant teal gradient */
     color: white;
     padding: 30px 40px;
     text-align: center;
     margin-bottom: 40px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* More prominent shadow */
-    border-radius: 0 0 10px 10px; /* Slightly rounded bottom corners */
+    box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3); /* Subtle color-tinted shadow */
+    border-radius: 0 0 15px 15px; /* More pronounced rounded bottom corners */
+    position: relative; /* For potential absolute positioning of elements within */
+    overflow: hidden; /* To contain pseudo-elements */
+}
+
+header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1); /* Subtle overlay for a glassy effect */
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+header:hover::before {
+    opacity: 1;
 }
 
 header h1 {
     margin-bottom: 10px;
-    font-size: 3em;
-    letter-spacing: 1px;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Text shadow for depth */
+    font-size: 3.5em; /* Slightly larger title */
+    letter-spacing: 1.5px;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
+    animation: fadeInUp 1s ease-out; /* Subtle fade-in animation */
 }
 
 header p {
-    font-size: 1.2em;
-    color: #eee;
+    font-size: 1.3em;
+    color: #e0f7fa; /* A lighter teal for the subtitle */
     font-style: italic;
+    animation: fadeInDown 1s ease-out 0.2s; /* Slight delay for subtitle animation */
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 main {
@@ -40,67 +82,71 @@ main {
 }
 
 #drawingCanvas {
-    border: 3px solid #555;
+    border: 3px solid #546e7a; /* A darker grayish-blue border */
     background-color: #fff;
-    box-shadow: 5px 5px 15px rgba(0,0,0,0.15);
-    margin-bottom: 30px;
+    box-shadow: 5px 5px 18px rgba(0, 0, 0, 0.18); /* Slightly stronger shadow */
+    margin-bottom: 40px;
     cursor: crosshair;
-    transition: border-color 0.3s ease;
-    border-radius: 8px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 10px; /* More rounded corners for canvas */
 }
 
 #drawingCanvas:hover {
-    border-color: #007bff;
+    border-color: #26a69a; /* A brighter teal on hover */
+    box-shadow: 5px 5px 20px rgba(0, 150, 136, 0.3); /* Hover shadow with color tint */
 }
 
 .controls {
     display: flex;
-    gap: 25px;
-    margin-bottom: 40px;
-    padding: 25px;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+    gap: 30px;
+    margin-bottom: 50px;
+    padding: 30px;
+    background-color: #eceff1; /* A very light gray for controls */
+    border-radius: 15px;
+    box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.12);
     align-items: center;
 }
 
 .controls label {
-    font-size: 1.15em;
-    color: #444;
+    font-size: 1.2em;
+    color: #455a64;
     font-weight: bold;
 }
 
 button {
-    padding: 14px 30px;
+    padding: 16px 35px;
     border: none;
-    background-color: #007bff;
+    background-color: #009688; /* A nice teal button */
     color: white;
     cursor: pointer;
     border-radius: 10px;
-    font-size: 1.1em;
+    font-size: 1.15em;
     transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
 }
 
 button:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px); /* Slight lift on hover */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    background-color: #00796b; /* Darker teal on hover */
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
 
 input[type="color"] {
     -webkit-appearance: none;
-    padding: 5px;
-    width: 50px;
-    height: 50px;
-    border: 1px solid #ccc;
+    padding: 6px;
+    width: 55px;
+    height: 55px;
+    border: none; /* Removing default border */
     cursor: pointer;
-    border-radius: 8px;
+    border-radius: 10px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 input[type="color"]::-webkit-color-swatch-wrapper {
-    padding: 2px;
+    padding: 5px;
+    border-radius: 8px;
+    background-color: #f0f0f0; /* Background for the swatch wrapper */
 }
 
 input[type="color"]::-webkit-color-swatch {
@@ -109,27 +155,27 @@ input[type="color"]::-webkit-color-swatch {
 }
 
 input[type="color"]:hover {
-    transform: scale(1.08);
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 input[type="range"] {
     cursor: pointer;
-    height: 40px;
+    height: 45px;
 }
 
 footer {
-    background: #343a40; /* Dark background for footer */
-    color: #f8f9fa; /* Light text */
+    background-color: #263238; /* A dark blue-gray for the footer */
+    color: #cfd8dc; /* A light gray-blue for footer text */
     text-align: center;
-    padding: 20px 40px;
-    margin-top: 40px;
-    box-shadow: 0 -4px 10px rgba(0,0,0,0.2); /* More prominent shadow */
-    border-radius: 10px 10px 0 0; /* Slightly rounded top corners */
+    padding: 25px 40px;
+    margin-top: 50px;
+    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.25);
+    border-radius: 15px 15px 0 0;
 }
 
 footer p {
     margin: 0;
-    font-size: 1em;
+    font-size: 1.05em;
     font-weight: bold;
 }
