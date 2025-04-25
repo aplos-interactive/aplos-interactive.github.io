@@ -1,17 +1,4 @@
-.header {
-    background: linear-gradient(135deg, #007bff, #6610f2); 
-    color: white;
-    padding: 30px 20px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
 
-.header h1 {
-    margin-bottom: 15px;
-    font-size: 2.5em;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-}
 .body {
     font-family: 'Arial', sans-serif; 
     display: flex;
