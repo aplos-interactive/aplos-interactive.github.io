@@ -52,12 +52,37 @@ clearButton.addEventListener('click', () => {
 });
 
 function generateTargetImage() {
-    // For now, let's generate a simple circle
+    const shapes = ['circle', 'square', 'cat'];
+    const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+    const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    const centerX = targetCanvas.width / 2;
+    const centerY = targetCanvas.height / 2;
+    const size = 20;
+
     targetCtx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
-    targetCtx.beginPath();
-    targetCtx.arc(targetCanvas.width / 2, targetCanvas.height / 2, 20, 0, 2 * Math.PI);
-    targetCtx.fillStyle = 'blue';
-    targetCtx.fill();
+    targetCtx.fillStyle = randomColor;
+    targetCtx.strokeStyle = randomColor;
+    targetCtx.lineWidth = 3;
+
+    switch (randomShape) {
+        case 'circle':
+            targetCtx.beginPath();
+            targetCtx.arc(centerX, centerY, size, 0, 2 * Math.PI);
+            targetCtx.fill();
+            break;
+        case 'square':
+            targetCtx.fillRect(centerX - size, centerY - size, size * 2, size * 2);
+            break;
+        case 'cat':
+            // Very basic cat outline
+            targetCtx.beginPath();
+            targetCtx.arc(centerX - size / 2, centerY - size / 2, size / 2, 0, 2 * Math.PI); // Ear 1
+            targetCtx.arc(centerX + size / 2, centerY - size / 2, size / 2, 0, 2 * Math.PI); // Ear 2
+            targetCtx.arc(centerX, centerY + size / 4, size, 0, Math.PI); // Face
+            targetCtx.stroke();
+            break;
+    }
+
     currentTargetImageData = targetCtx.getImageData(0, 0, targetCanvas.width, targetCanvas.height);
 }
 
