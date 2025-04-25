@@ -121,7 +121,6 @@ function compareImages(imgData1, imgData2) {
     const finalScore = similarityScore / totalCells;
     return finalScore;
 }
-
 function createPixelDensityGrid(imageData, width, height, gridSize) {
     const grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(0));
     const cellWidth = width / gridSize;
@@ -140,6 +139,7 @@ function createPixelDensityGrid(imageData, width, height, gridSize) {
             }
         }
     }
+    return grid; // Add this return statement
 }
 
 newChallengeButton.addEventListener('click', generateTargetImage);
