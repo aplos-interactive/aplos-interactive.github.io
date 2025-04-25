@@ -1,36 +1,27 @@
 body {
     font-family: 'Arial', sans-serif;
     display: flex;
-    flex-direction: column; /* Arrange header, container, and footer vertically */
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #6dd5ed, #2193b0);
+    background: linear-gradient(135deg, #6dd5ed, #2193b0); 
     margin: 0;
-    color: #333;
-}
-
-header {
-    background: linear-gradient(135deg, #007bff, #6610f2); /* The specified header gradient */
-    color: white;
-    padding: 20px 0;
-    text-align: center;
-    width: 100%; /* Make the header span the full width */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
-}
-
-header h1 {
-    margin: 0; /* Remove default heading margin */
-    font-size: 2em;
+    color: #333; /* Darker text for better contrast */
 }
 
 .container {
-    background-color: rgba(255, 255, 255, 0.9);
+    background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white for a modern look */
     padding: 40px;
-    border-radius: 12px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-radius: 12px; /* More rounded corners */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* A more pronounced shadow */
     text-align: center;
-    margin: 20px 0; /* Add some margin above and below the container */
+}
+
+h1 {
+    color: #2c3e50; /* A dark, professional heading color */
+    margin-bottom: 20px;
+    font-size: 2.5em; /* Slightly larger heading */
+    text-shadow: 1px 1px #ddd; /* Subtle text shadow for depth */
 }
 
 p {
@@ -40,46 +31,32 @@ p {
 }
 
 button {
-    padding: 15px 30px;
+    padding: 15px 30px; /* Larger padding for a bigger button */
     font-size: 18px;
     cursor: pointer;
-    background-color: #27ae60;
+    background-color: #27ae60; /* A more vibrant button color */
     color: white;
     border: none;
-    border-radius: 8px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px; /* More rounded button corners */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions for hover and click */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Button shadow */
 }
 
 button:hover {
-    background-color: #219653;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+    background-color: #219653; /* Darker shade on hover */
+    transform: translateY(-2px); /* Slight upward movement on hover */
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
 }
 
 button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transform: translateY(0); /* Reset transform when button is active (clicked) */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Smaller shadow when active */
 }
 
 #score {
     font-size: 2.2em;
     font-weight: bold;
     margin-top: 30px;
-    color: #e67e22;
-    text-shadow: 1px 1px #f9d3ac;
-}
-
-footer {
-    background-color: lightgrey; /* The specified grey background */
-    color: #333;
-    padding: 10px 0;
-    text-align: center;
-    width: 100%; /* Make the footer span the full width */
-    font-size: 0.9em;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle top shadow */
-}
-
-footer p {
-    margin: 0; /* Remove default paragraph margin in the footer */
+    color: #e67e22; /* A distinct color for the score */
+    text-shadow: 1px 1px #f9d3ac; /* Subtle text shadow for the score */
 }
