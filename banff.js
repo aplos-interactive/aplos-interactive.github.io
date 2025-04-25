@@ -140,7 +140,6 @@ function createPixelDensityGrid(imageData, width, height, gridSize) {
             }
         }
     }
-    return grid;
 }
 
 newChallengeButton.addEventListener('click', generateTargetImage);
