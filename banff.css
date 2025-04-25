@@ -49,6 +49,6 @@
 }
 
 @keyframes moveObstacle {
-    0% { transform: translateX(100vw); } /* Start off-screen to the right */
+    0% { transform: translateX(-100vw); } /* Start off-screen to the right */
     100% { transform: translateX(-50px); } /* Move to a position near the player */
 }
