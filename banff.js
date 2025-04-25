@@ -52,12 +52,11 @@ clearButton.addEventListener('click', () => {
 });
 
 function generateTargetImage() {
-    // For now, let's generate a simple circle with a random color
-    const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    // For now, let's generate a simple circle
     targetCtx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
     targetCtx.beginPath();
     targetCtx.arc(targetCanvas.width / 2, targetCanvas.height / 2, 20, 0, 2 * Math.PI);
-    targetCtx.fillStyle = randomColor;
+    targetCtx.fillStyle = 'blue';
     targetCtx.fill();
     currentTargetImageData = targetCtx.getImageData(0, 0, targetCanvas.width, targetCanvas.height);
 }
