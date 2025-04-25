@@ -28,7 +28,8 @@
 .obstacle {
     position: absolute;
     bottom: 0px;
-    left: 400px;
+    left: auto; /* Remove the fixed left position */
+    right: -20px; /* Start just off-screen to the right (adjust as needed) */
     width: 20px;
     height: 30px;
     background-color: red;
@@ -48,6 +49,6 @@
 }
 
 @keyframes moveObstacle {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
+    0% { transform: translateX(100vw); } /* Start off-screen to the right */
+    100% { transform: translateX(-50px); } /* Move to a position near the player */
 }
