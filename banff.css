@@ -1,54 +1,8 @@
-.game-container {
-    position: relative;
-    width: 500px;
-    height: 200px;
-    border-bottom: 2px solid black;
-    overflow: hidden;
+#drawingCanvas {
+    border: 1px solid black;
+    cursor: crosshair;
 }
 
-.player {
-    position: absolute;
-    bottom: 0px;
-    left: 50px;
-    width: 30px;
-    height: 50px;
-    background-color: blue;
-}
-
-.ground {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background-color: black;
-    animation: moveGround 5s linear infinite;
-}
-
-.obstacle {
-    position: absolute;
-    bottom: 0px;
-    left: auto; /* Remove the fixed left position */
-    right: -20px; /* Start just off-screen to the right (adjust as needed) */
-    width: 20px;
-    height: 30px;
-    background-color: red;
-    animation: moveObstacle 3s linear infinite;
-}
-
-#score {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    font-size: 20px;
-}
-
-@keyframes moveGround {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
-}
-
-@keyframes moveObstacle {
-    0% { transform: translateX(100vw); } /* Start off-screen to the right */
-    100% { transform: translateX(100px); } /* Move to a position near the player */
+#clearButton {
+    margin-top: 10px;
 }
