@@ -52,13 +52,46 @@ clearButton.addEventListener('click', () => {
 });
 
 function generateTargetImage() {
-    // For now, let's generate a simple circle
-    targetCtx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
-    targetCtx.beginPath();
-    targetCtx.arc(targetCanvas.width / 2, targetCanvas.height / 2, 20, 0, 2 * Math.PI);
-    targetCtx.fillStyle = 'blue';
-    targetCtx.fill();
-    currentTargetImageData = targetCtx.getImageData(0, 0, targetCanvas.width, targetCanvas.height);
+    const width = targetCanvas.width;
+    const height = targetCanvas.height;
+    targetCtx.clearRect(0, 0, width, height);
+
+    const shapeType = Math.random();
+    const color = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
+
+    targetCtx.fillStyle = color;
+    targetCtx.strokeStyle = color;
+    targetCtx.lineWidth = 5;
+    targetCtx.lineCap = 'round';
+
+    if (shapeType < 0.33) {
+        // Draw a circle
+        const radius = Math.random() * 20 + 10;
+        const x = Math.random() * (width - 2 * radius) + radius;
+        const y = Math.random() * (height - 2 * radius) + radius;
+        targetCtx.beginPath();
+        targetCtx.arc(x, y, radius, 0, 2 * Math.PI);
+        targetCtx.fill();
+    } else if (shapeType < 0.66) {
+        // Draw a rectangle
+        const rectWidth = Math.random() * 40 + 20;
+        const rectHeight = Math.random() * 30 + 15;
+        const x = Math.random() * (width - rectWidth);
+        const y = Math.random() * (height - rectHeight);
+        targetCtx.fillRect(x, y, rectWidth, rectHeight);
+    } else {
+        // Draw a line
+        const x1 = Math.random() * width;
+        const y1 = Math.random() * height;
+        const x2 = Math.random() * width;
+        const y2 = Math.random() * height;
+        targetCtx.beginPath();
+        targetCtx.moveTo(x1, y1);
+        targetCtx.lineTo(x2, y2);
+        targetCtx.stroke();
+    }
+    currentTargetImageData = targetCtx.getImageData(0, 0, width, height);
+}
 }
 
 function scoreDrawing() {
