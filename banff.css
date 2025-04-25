@@ -180,3 +180,15 @@ footer p {
     font-size: 1.05em;
     font-weight: bold;
 }
+
+#targetImageContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#targetImageContainer h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
