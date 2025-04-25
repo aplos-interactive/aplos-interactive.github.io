@@ -1,4 +1,4 @@
-header {
+.header {
     background: linear-gradient(135deg, #007bff, #6610f2); 
     color: white;
     padding: 30px 20px;
@@ -6,7 +6,7 @@ header {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-header h1 {
+.header h1 {
     margin-bottom: 15px;
     font-size: 2.5em;
     font-weight: 500;
@@ -31,20 +31,20 @@ header h1 {
     text-align: center;
 }
 
-h1 {
+.h1 {
     color: #2c3e50; 
     margin-bottom: 20px;
     font-size: 2.5em; 
     text-shadow: 1px 1px #ddd; 
 }
 
-p {
+.p {
     font-size: 1.1em;
     margin-bottom: 25px;
     color: #555;
 }
 
-button {
+.button {
     padding: 15px 30px; 
     font-size: 18px;
     cursor: pointer;
@@ -56,13 +56,13 @@ button {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 }
 
-button:hover {
+.button:hover {
     background-color: #219653; 
     transform: translateY(-2px); 
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); 
 }
 
-button:active {
+.button:active {
     transform: translateY(0); 
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
 }
