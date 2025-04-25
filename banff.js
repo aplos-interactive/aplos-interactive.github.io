@@ -22,13 +22,14 @@ function jump() {
             let downTime = setInterval(() => {
                 playerBottom = parseInt(window.getComputedStyle(player).bottom);
                 player.style.bottom = playerBottom - 5 + 'px';
-                if (playerBottom <= 50) {
+                if (playerBottom <= 0) { // Changed from 50 to 0 to land properly
                     clearInterval(downTime);
                     isJumping = false;
                 }
             }, 20);
+        } else {
+            player.style.bottom = playerBottom + 10 + 'px';
         }
-        player.style.bottom = playerBottom + 10 + 'px';
     }, 20);
 }
 
@@ -49,6 +50,10 @@ function checkCollision() {
         obstacle.style.animationPlayState = 'paused';
         ground.style.animationPlayState = 'paused';
         // You would typically reset the game here
+        setTimeout(() => { // Small delay before resetting animations
+            obstacle.style.animationPlayState = 'running';
+            ground.style.animationPlayState = 'running';
+        }, 1000);
     }
 }
 
