@@ -1,39 +1,45 @@
-body {
-    font-family: 'Press Start 2P', cursive; /* A fun, pixel-style font */
-    margin: 0;
-    overflow: hidden;
-    background: linear-gradient(to bottom, #87CEEB, #E0FFFF); /* Sky gradient */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-}
-
-@font-face {
-    font-family: 'Press Start 2P';
-    src: url('PressStart2P-Regular.ttf') format('truetype');
-    /* You'll need to download this font and include it in the same directory */
-}
-
 .game-container {
     position: relative;
-    width: 800px; /* Wider game area */
-    height: 300px; /* Taller game area */
-    border: 2px solid #333;
+    width: 500px;
+    height: 200px;
+    border-bottom: 2px solid black;
     overflow: hidden;
-    background: linear-gradient(to bottom, #6B8E23, #8FBC8F); /* Ground gradient */
+}
+
+.player {
+    position: absolute;
+    bottom: 0px;
+    left: 50px;
+    width: 30px;
+    height: 50px;
+    background-color: blue;
 }
 
 .ground {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 200%;
-    height: 60px; /* Taller ground */
-    background: url('grass.png') repeat-x; /* Replace with a better grass texture */
-    background-size: auto 60px;
-    animation: moveGround 6s linear infinite; /* Slightly slower ground */
+    width: 100%;
+    height: 2px;
+    background-color: black;
+    animation: moveGround 5s linear infinite;
+}
+
+.obstacle {
+    position: absolute;
+    bottom: 0px;
+    left: 400px;
+    width: 20px;
+    height: 30px;
+    background-color: red;
+    animation: moveObstacle 3s linear infinite;
+}
+
+#score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
 }
 
 @keyframes moveGround {
@@ -41,34 +47,7 @@ body {
     100% { transform: translateX(-100%); }
 }
 
-.player {
-    position: absolute;
-    bottom: 60px; /* Sit on the ground */
-    left: 80px; /* More space from the left */
-    width: 40px;
-    height: 60px;
-    background: url('player.png') no-repeat center/contain; /* Replace with a player sprite */
-}
-
-.obstacle {
-    position: absolute;
-    bottom: 60px; /* Sit on the ground */
-    right: -60px; /* Start off-screen */
-    width: 30px;
-    height: 45px;
-    background-color: #8B4513; /* Darker brown for obstacle */
-    border-radius: 5px; /* Slightly rounded obstacle */
-    animation: moveObstacle 4s linear infinite; /* Adjust obstacle speed */
-}
-
 @keyframes moveObstacle {
     0% { transform: translateX(0); }
-    100% { transform: translateX(-860px); } /* Move across the wider container */
-}
-
-.score-container {
-    margin-top: 30px;
-    font-size: 2em;
-    color: #555;
-    text-shadow: 1px 1px #ddd;
+    100% { transform: translateX(-100%); }
 }
