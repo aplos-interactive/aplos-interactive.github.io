@@ -52,100 +52,26 @@ clearButton.addEventListener('click', () => {
 });
 
 function generateTargetImage() {
-    const width = targetCanvas.width;
-    const height = targetCanvas.height;
-    targetCtx.clearRect(0, 0, width, height);
-
-    const shapeType = Math.random();
-    const color = `rgb(${Math.random() * 255}, ${Math.random() * 255}, ${Math.random() * 255})`;
-
-    targetCtx.fillStyle = color;
-    targetCtx.strokeStyle = color;
-    targetCtx.lineWidth = 5;
-    targetCtx.lineCap = 'round';
-
-    if (shapeType < 0.33) {
-        // Draw a circle
-        const radius = Math.random() * 20 + 10;
-        const x = Math.random() * (width - 2 * radius) + radius;
-        const y = Math.random() * (height - 2 * radius) + radius;
-        targetCtx.beginPath();
-        targetCtx.arc(x, y, radius, 0, 2 * Math.PI);
-        targetCtx.fill();
-    } else if (shapeType < 0.66) {
-        // Draw a rectangle
-        const rectWidth = Math.random() * 40 + 20;
-        const rectHeight = Math.random() * 30 + 15;
-        const x = Math.random() * (width - rectWidth);
-        const y = Math.random() * (height - rectHeight);
-        targetCtx.fillRect(x, y, rectWidth, rectHeight);
-    } else {
-        // Draw a line
-        const x1 = Math.random() * width;
-        const y1 = Math.random() * height;
-        const x2 = Math.random() * width;
-        const y2 = Math.random() * height;
-        targetCtx.beginPath();
-        targetCtx.moveTo(x1, y1);
-        targetCtx.lineTo(x2, y2);
-        targetCtx.stroke();
-    }
-    currentTargetImageData = targetCtx.getImageData(0, 0, width, height);
-}
+    // For now, let's generate a simple circle with a random color
+    const randomColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
+    targetCtx.clearRect(0, 0, targetCanvas.width, targetCanvas.height);
+    targetCtx.beginPath();
+    targetCtx.arc(targetCanvas.width / 2, targetCanvas.height / 2, 20, 0, 2 * Math.PI);
+    targetCtx.fillStyle = randomColor;
+    targetCtx.fill();
+    currentTargetImageData = targetCtx.getImageData(0, 0, targetCanvas.width, targetCanvas.height);
 }
 
 function scoreDrawing() {
     const drawnImageData = ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height);
     let similarityScore = compareImages(currentTargetImageData, drawnImageData);
     scoreDisplay.textContent = `Score: ${Math.round(similarityScore * 10)}`;
+}
+
 function compareImages(imgData1, imgData2) {
     if (!imgData1 || !imgData2) {
         return 0;
     }
-
-    const width1 = imgData1.width;
-    const height1 = imgData1.height;
-    const width2 = drawingCanvas.width;
-    const height2 = drawingCanvas.height;
-
-    // Create a temporary canvas to scale the drawing to the target size
-    const tempCanvas = document.createElement('canvas');
-    const tempCtx = tempCanvas.getContext('2d');
-    tempCanvas.width = width1;
-    tempCanvas.height = height1;
-    tempCtx.drawImage(drawingCanvas, 0, 0, width2, height2, 0, 0, width1, height1);
-    const resizedDrawnImageData = tempCtx.getImageData(0, 0, width1, height1);
-
-    let targetPixels = 0;
-    let drawnPixelsInTargetArea = 0;
-
-    // Iterate through the pixels of the target image
-    for (let i = 0; i < imgData1.data.length; i += 4) {
-        const r1 = imgData1.data[i];
-        const g1 = imgData1.data[i + 1];
-        const b1 = imgData1.data[i + 2];
-        const a1 = imgData1.data[i + 3];
-
-        // If the target pixel is not transparent, count it
-        if (a1 > 0) {
-            targetPixels++;
-
-            const r2 = resizedDrawnImageData.data[i];
-            const g2 = resizedDrawnImageData.data[i + 1];
-            const b2 = resizedDrawnImageData.data[i + 2];
-            const a2 = resizedDrawnImageData.data[i + 3];
-
-            // If the corresponding drawn pixel is not transparent, count it as a match in the target area
-            if (a2 > 0) {
-                drawnPixelsInTargetArea++;
-            }
-        }
-    }
-
-    // Calculate a similarity score based on the ratio of drawn pixels within the target area
-    const similarity = targetPixels > 0 ? drawnPixelsInTargetArea / targetPixels : 0;
-    return similarity;
-}
 
     let equalPixels = 0;
     const totalPixels = imgData1.data.length / 4; // RGBA
