@@ -98,12 +98,54 @@ function scoreDrawing() {
     const drawnImageData = ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height);
     let similarityScore = compareImages(currentTargetImageData, drawnImageData);
     scoreDisplay.textContent = `Score: ${Math.round(similarityScore * 10)}`;
-}
-
 function compareImages(imgData1, imgData2) {
     if (!imgData1 || !imgData2) {
         return 0;
     }
+
+    const width1 = imgData1.width;
+    const height1 = imgData1.height;
+    const width2 = drawingCanvas.width;
+    const height2 = drawingCanvas.height;
+
+    // Create a temporary canvas to scale the drawing to the target size
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCanvas.width = width1;
+    tempCanvas.height = height1;
+    tempCtx.drawImage(drawingCanvas, 0, 0, width2, height2, 0, 0, width1, height1);
+    const resizedDrawnImageData = tempCtx.getImageData(0, 0, width1, height1);
+
+    let targetPixels = 0;
+    let drawnPixelsInTargetArea = 0;
+
+    // Iterate through the pixels of the target image
+    for (let i = 0; i < imgData1.data.length; i += 4) {
+        const r1 = imgData1.data[i];
+        const g1 = imgData1.data[i + 1];
+        const b1 = imgData1.data[i + 2];
+        const a1 = imgData1.data[i + 3];
+
+        // If the target pixel is not transparent, count it
+        if (a1 > 0) {
+            targetPixels++;
+
+            const r2 = resizedDrawnImageData.data[i];
+            const g2 = resizedDrawnImageData.data[i + 1];
+            const b2 = resizedDrawnImageData.data[i + 2];
+            const a2 = resizedDrawnImageData.data[i + 3];
+
+            // If the corresponding drawn pixel is not transparent, count it as a match in the target area
+            if (a2 > 0) {
+                drawnPixelsInTargetArea++;
+            }
+        }
+    }
+
+    // Calculate a similarity score based on the ratio of drawn pixels within the target area
+    const similarity = targetPixels > 0 ? drawnPixelsInTargetArea / targetPixels : 0;
+    return similarity;
+}
 
     let equalPixels = 0;
     const totalPixels = imgData1.data.length / 4; // RGBA
