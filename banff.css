@@ -1,24 +1,23 @@
 body {
-    font-family: 'Nunito', sans-serif; /* A modern, rounded font */
+    font-family: 'Nunito', sans-serif;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
-    background-color: #f0f4f8; /* An even lighter, softer background */
-    color: #37474f; /* A dark grayish-blue for text */
+    background-color: #f0f4f8;
+    color: #37474f;
 }
 
-
 header {
-    background: linear-gradient(90deg, #00bcd4, #009688); /* A vibrant teal gradient */
+    background: linear-gradient(90deg, #00bcd4, #009688);
     color: white;
     padding: 30px 40px;
     text-align: center;
     margin-bottom: 40px;
-    box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3); /* Subtle color-tinted shadow */
-    border-radius: 0 0 15px 15px; /* More pronounced rounded bottom corners */
-    position: relative; /* For potential absolute positioning of elements within */
-    overflow: hidden; /* To contain pseudo-elements */
+    box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+    border-radius: 0 0 15px 15px;
+    position: relative;
+    overflow: hidden;
 }
 
 header::before {
@@ -28,7 +27,7 @@ header::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.1); /* Subtle overlay for a glassy effect */
+    background: rgba(255, 255, 255, 0.1);
     opacity: 0;
     transition: opacity 0.3s ease-in-out;
 }
@@ -39,17 +38,17 @@ header:hover::before {
 
 header h1 {
     margin-bottom: 10px;
-    font-size: 3.5em; /* Slightly larger title */
+    font-size: 3.5em;
     letter-spacing: 1.5px;
     text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.2);
-    animation: fadeInUp 1s ease-out; /* Subtle fade-in animation */
+    animation: fadeInUp 1s ease-out;
 }
 
 header p {
     font-size: 1.3em;
-    color: #e0f7fa; /* A lighter teal for the subtitle */
+    color: #e0f7fa;
     font-style: italic;
-    animation: fadeInDown 1s ease-out 0.2s; /* Slight delay for subtitle animation */
+    animation: fadeInDown 1s ease-out 0.2s;
 }
 
 @keyframes fadeInUp {
@@ -82,19 +81,31 @@ main {
     flex-grow: 1;
 }
 
+#targetImageContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+#targetImageContainer h2 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
 #drawingCanvas {
-    border: 3px solid #546e7a; /* A darker grayish-blue border */
+    border: 3px solid #546e7a;
     background-color: #fff;
-    box-shadow: 5px 5px 18px rgba(0, 0, 0, 0.18); /* Slightly stronger shadow */
+    box-shadow: 5px 5px 18px rgba(0, 0, 0, 0.18);
     margin-bottom: 40px;
     cursor: crosshair;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 10px; /* More rounded corners for canvas */
+    border-radius: 10px;
 }
 
 #drawingCanvas:hover {
-    border-color: #26a69a; /* A brighter teal on hover */
-    box-shadow: 5px 5px 20px rgba(0, 150, 136, 0.3); /* Hover shadow with color tint */
+    border-color: #26a69a;
+    box-shadow: 5px 5px 20px rgba(0, 150, 136, 0.3);
 }
 
 .controls {
@@ -102,7 +113,7 @@ main {
     gap: 30px;
     margin-bottom: 50px;
     padding: 30px;
-    background-color: #eceff1; /* A very light gray for controls */
+    background-color: #eceff1;
     border-radius: 15px;
     box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.12);
     align-items: center;
@@ -117,7 +128,7 @@ main {
 button {
     padding: 16px 35px;
     border: none;
-    background-color: #009688; /* A nice teal button */
+    background-color: #009688;
     color: white;
     cursor: pointer;
     border-radius: 10px;
@@ -127,7 +138,7 @@ button {
 }
 
 button:hover {
-    background-color: #00796b; /* Darker teal on hover */
+    background-color: #00796b;
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
 }
@@ -137,7 +148,7 @@ input[type="color"] {
     padding: 6px;
     width: 55px;
     height: 55px;
-    border: none; /* Removing default border */
+    border: none;
     cursor: pointer;
     border-radius: 10px;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -147,7 +158,7 @@ input[type="color"] {
 input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 5px;
     border-radius: 8px;
-    background-color: #f0f0f0; /* Background for the swatch wrapper */
+    background-color: #f0f0f0;
 }
 
 input[type="color"]::-webkit-color-swatch {
@@ -166,8 +177,8 @@ input[type="range"] {
 }
 
 footer {
-    background-color: #263238; /* A dark blue-gray for the footer */
-    color: #cfd8dc; /* A light gray-blue for footer text */
+    background-color: #263238;
+    color: #cfd8dc;
     text-align: center;
     padding: 25px 40px;
     margin-top: 50px;
@@ -179,16 +190,4 @@ footer p {
     margin: 0;
     font-size: 1.05em;
     font-weight: bold;
-}
-
-#targetImageContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-#targetImageContainer h2 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
 }
