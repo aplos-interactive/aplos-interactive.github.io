@@ -3,21 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bad Clicker Game</title>
+    <title>Endless Runner</title>
     <link rel="stylesheet" href="banff.css">
 </head>
 <body>
-    <header>
-        <h1>Bad Clicker Game</h1>
-    </header>
-    <div class="container">
-        <p>Click the button to increase your score!</p>
-        <button id="clickButton">Click Me!</button>
-        <p>Score: <span id="score">0</span></p>
+    <div class="game-container">
+        <div class="ground"></div>
+        <div class="player"></div>
+        <div class="obstacle"></div>
     </div>
-    <footer>
-        <p>&copy; copyright Posiiii</p>
-    </footer>
-    <script src="script.js"></script>
+    <div class="score-container">Score: <span id="score">0</span></div>
+    <script src="banff.js"></script>
 </body>
 </html>
