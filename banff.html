@@ -1,17 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Drawing Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drawing App</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <canvas id="drawingCanvas" width="500" height="300"></canvas>
-    <br>
-    <button id="clearButton">Clear</button>
-    <input type="color" id="colorPicker" value="#000000">
-    <input type="range" id="brushSize" min="1" max="10" value="5">
-    <label for="brushSize">Brush Size</label>
+
+    <canvas id="drawingCanvas" width="600" height="400"></canvas>
+
+    <div class="controls">
+        <input type="color" id="colorPicker" value="#000000">
+        <input type="range" id="brushSize" min="1" max="20" value="5">
+        <button id="clearButton">Clear</button>
+    </div>
 
     <script src="script.js"></script>
+
 </body>
 </html>
