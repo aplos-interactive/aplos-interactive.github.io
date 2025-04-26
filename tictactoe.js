@@ -90,47 +90,50 @@ function makeAIMove() {
         return;
     }
 
+    // AI tries to win
     const winningMove = findWinningMove('O');
-    let bestMove;
-
     if (winningMove !== null) {
-        bestMove = winningMove;
-    } else {
-        const blockingMove = findWinningMove('X');
-        if (blockingMove !== null) {
-            bestMove = blockingMove;
-        } else {
-            const emptyCells = gameBoard.reduce((acc, val, index) => {
-                if (val === '') {
-                    acc.push(index);
-                }
-                return acc;
-            }, []);
+        makeMove(winningMove, 'O');
+        return;
+    }
 
-            if (emptyCells.length > 0) {
-                const randomIndex = Math.floor(Math.random() * emptyCells.length);
-                bestMove = emptyCells[randomIndex];
-            } else {
-                return; // Should not happen if gameActive is true and no winner
-            }
+    // AI tries to block the player's winning move
+    const blockingMove = findWinningMove('X');
+    if (blockingMove !== null) {
+        makeMove(blockingMove, 'O');
+        return;
+    }
+
+    // AI makes a random move
+    const emptyCells = gameBoard.reduce((acc, val, index) => {
+        if (val === '') {
+            acc.push(index);
         }
-    function findWinningMove(player) {
+        return acc;
+    }, []);
+
+    if (emptyCells.length > 0) {
+        const randomIndex = Math.floor(Math.random() * emptyCells.length);
+        const randomMove = emptyCells[randomIndex];
+        makeMove(randomMove, 'O');
+    }
+}
+
+function findWinningMove(player) {
     for (let i = 0; i < winningCombinations.length; i++) {
         const [a, b, c] = winningCombinations[i];
         const boardValues = [gameBoard[a], gameBoard[b], gameBoard[c]];
-        const playerCounts = boardValues.filter(val => val === player).length;
+        const playerCount = boardValues.filter(val => val === player).length;
         const emptyIndex = boardValues.indexOf('');
 
-        if (playerCounts === 2 && emptyIndex !== -1) {
-            const winningIndex = winCondition[emptyIndex];
-            if (gameBoard[winningIndex] === '') {
-                return winningIndex;
-            }
+        if (playerCount === 2 && emptyIndex !== -1) {
+            const winningIndex = winningCombinations[i][emptyIndex];
+            console.log(`findWinningMove(${player}) - Potential winning move at index ${winningIndex} in combination [${a}, ${b}, ${c}], board: [${boardValues}]`);
+            return winningIndex;
         }
     }
     return null;
 }
-
     makeMove(bestMove, 'O');
     board.classList.remove('disabled'); // Re-enable the board after AI's move
 }
