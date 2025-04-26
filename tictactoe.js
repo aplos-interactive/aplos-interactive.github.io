@@ -105,33 +105,34 @@ function makeAIMove() {
         return;
     }
 
-    // AI tries to win
     const winningMove = findWinningMove('O');
+    let bestMove;
+
     if (winningMove !== null) {
-        makeMove(winningMove, 'O');
-        return;
-    }
+        bestMove = winningMove;
+    } else {
+        const blockingMove = findWinningMove('X');
+        if (blockingMove !== null) {
+            bestMove = blockingMove;
+        } else {
+            const emptyCells = gameBoard.reduce((acc, val, index) => {
+                if (val === '') {
+                    acc.push(index);
+                }
+                return acc;
+            }, []);
 
-    // AI tries to block the player
-    const blockingMove = findWinningMove('X');
-    if (blockingMove !== null) {
-        makeMove(blockingMove, 'O');
-        return;
-    }
-
-    // AI makes a random move
-    const emptyCells = gameBoard.reduce((acc, val, index) => {
-        if (val === '') {
-            acc.push(index);
+            if (emptyCells.length > 0) {
+                const randomIndex = Math.floor(Math.random() * emptyCells.length);
+                bestMove = emptyCells[randomIndex];
+            } else {
+                return; // Should not happen if gameActive is true and no winner
+            }
         }
-        return acc;
-    }, []);
-
-    if (emptyCells.length > 0) {
-        const randomIndex = Math.floor(Math.random() * emptyCells.length);
-        const randomMove = emptyCells[randomIndex];
-        makeMove(randomMove, 'O');
     }
+
+    makeMove(bestMove, 'O');
+    board.classList.remove('disabled'); // Re-enable the board after AI's move
 }
 function handleCellClick(clickedCellEvent) {
     const clickedCell = clickedCellEvent.target;
