@@ -84,22 +84,7 @@ function resetGame() {
     cell.classList.remove("playerO")
   })
 }
-function findWinningMove(player) {
-    for (let i = 0; i < winningCombinations.length; i++) {
-        const [a, b, c] = winningCombinations[i];
-        const boardValues = [gameBoard[a], gameBoard[b], gameBoard[c]];
-        const playerCounts = boardValues.filter(val => val === player).length;
-        const emptyIndex = boardValues.indexOf('');
 
-        if (playerCounts === 2 && emptyIndex !== -1) {
-            const winningIndex = winCondition[emptyIndex];
-            if (gameBoard[winningIndex] === '') {
-                return winningIndex;
-            }
-        }
-    }
-    return null;
-}
 function makeAIMove() {
     if (!gameActive) {
         return;
@@ -129,7 +114,22 @@ function makeAIMove() {
                 return; // Should not happen if gameActive is true and no winner
             }
         }
+    function findWinningMove(player) {
+    for (let i = 0; i < winningCombinations.length; i++) {
+        const [a, b, c] = winningCombinations[i];
+        const boardValues = [gameBoard[a], gameBoard[b], gameBoard[c]];
+        const playerCounts = boardValues.filter(val => val === player).length;
+        const emptyIndex = boardValues.indexOf('');
+
+        if (playerCounts === 2 && emptyIndex !== -1) {
+            const winningIndex = winCondition[emptyIndex];
+            if (gameBoard[winningIndex] === '') {
+                return winningIndex;
+            }
+        }
     }
+    return null;
+}
 
     makeMove(bestMove, 'O');
     board.classList.remove('disabled'); // Re-enable the board after AI's move
