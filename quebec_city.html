@@ -3,54 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Old Quebec City - Explore Canada</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .article {
-            padding: 20px;
-            max-width: 960px;
-            margin: 20px auto;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .article h1 {
-            font-size: 2.5em;
-            color: #343a40;
-            margin-bottom: 15px;
-        }
-
-        .article img {
-            width: 100%;
-            max-height: 500px;
-            object-fit: cover;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-
-        .article p {
-            color: #6c757d;
-            font-size: 1.1em;
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
-    </style>
+    <title>Simple Platformer</title>
+    <link rel="stylesheet" href="platformer.css">
 </head>
 <body>
-    <header style="background: linear-gradient(135deg, #007bff, #6610f2);">
-        <h1 style="margin-bottom: 0;">Old Quebec City</h1>
-        <p><a href="index.html" style="color: white; text-decoration: none;">Back to Home</a></p>
-    </header>
-    <main class="article">
-        <img src="quebec_city.jpg" alt="Old Quebec City">
-        <p>Discover the charm and history of Old Quebec City, a UNESCO World Heritage site!</p>
-        <p>Wander through cobblestone streets, admire 17th and 18th-century architecture, and soak in the European ambiance. </p>
-        <p>From the iconic Château Frontenac to the historic Plains of Abraham, every corner tells a story.</p>
-        <p>Explore a piece of Europe right here in North America!</p>
-    </main>
-    <footer>
-        <p>&copy; 2025 Explore Canada</p>
-    </footer>
+
+    <canvas id="gameCanvas" width="640" height="480"></canvas>
+
+    <script src="platformer.js"></script>
 </body>
 </html>
