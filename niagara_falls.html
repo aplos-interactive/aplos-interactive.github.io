@@ -3,59 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Niagara Falls - Explore Canada</title>
-    <link rel="stylesheet" href="style.css">
-    <style>
-        .article {
-            padding: 20px;
-            max-width: 960px;
-            margin: 20px auto;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-
-        .article h1 {
-            font-size: 2.5em;
-            color: #343a40;
-            margin-bottom: 15px;
-        }
-
-        .article img {
-            width: 100%;
-            max-height: 500px;
-            object-fit: cover;
-            margin-bottom: 20px;
-            border-radius: 8px;
-        }
-
-        .article p {
-            color: #6c757d;
-            font-size: 1.1em;
-            line-height: 1.8;
-            margin-bottom: 15px;
-        }
-    </style>
+    <title>Modern Tic-Tac-Toe</title>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="tictactoe.css">
 </head>
 <body>
-    <header style="background: linear-gradient(135deg, #007bff, #6610f2);">
-        <h1 style="margin-bottom: 0;">Niagara Falls</h1>
-        <p><a href="index.html" style="color: white; text-decoration: none;">Back to Home</a></p>
+
+    <header>
+        <h1>Tic-Tac-Toe</h1>
+        <p>A classic game of strategy!</p>
     </header>
-    <main class="article">
-        <img src="niagara_falls.jpg" alt="Niagara Falls">
-        <p>Witness the breathtaking power and beauty of Niagara Falls! Straddling the border between Canada and the USA, these majestic waterfalls are a must-see.</p>
 
-        <p>Feel the mist on your face, hear the thunderous roar, and marvel at the sheer volume of water cascading down.</p>
+    <main>
+        <div class="board">
+            <div class="cell" data-index="0"></div>
+            <div class="cell" data-index="1"></div>
+            <div class="cell" data-index="2"></div>
+            <div class="cell" data-index="3"></div>
+            <div class="cell" data-index="4"></div>
+            <div class="cell" data-index="5"></div>
+            <div class="cell" data-index="6"></div>
+            <div class="cell" data-index="7"></div>
+            <div class="cell" data-index="8"></div>
+        </div>
 
-        <p>Explore the surrounding parks, take a boat tour for an up-close experience, or enjoy the dazzling nighttime illuminations.</p>
-
-        <p>Create unforgettable memories at one of the world's most famous natural wonders.</p>
-
-
+        <div class="message-container"></div>
+        <button id="resetButton">Reset Game</button>
     </main>
+
     <footer>
-        <p>&copy; 2025 Explore Canada</p>
+        <p>&copy; 2025 My Awesome Games</p>
     </footer>
+
+    <script src="tictactoe.js"></script>
 </body>
 </html>
