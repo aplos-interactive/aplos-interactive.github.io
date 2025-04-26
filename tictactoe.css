@@ -100,6 +100,8 @@ header {
     margin-bottom: 40px;
     border-radius: 0 0 15px 15px;
     box-shadow: 0 4px 8px rgba(0, 188, 212, 0.2);
+    width: 100%; /* Make the header take up the full width */
+    box-sizing: border-box; /* Include padding and border in the width */
 }
 
 header h1 {
@@ -128,6 +130,7 @@ footer {
     padding: 20px 40px;
     margin-top: 40px;
     border-radius: 15px 15px 0 0;
+    width: 100%; 
     box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.2);
 }
 
