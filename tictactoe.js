@@ -138,7 +138,7 @@ function handleCellClick(clickedCellEvent) {
     const clickedCell = clickedCellEvent.target;
     const clickedCellIndex = parseInt(clickedCell.dataset.index);
 
-    if (gameBoard[clickedCellIndex] !== '' || !gameActive) {
+    if (gameBoard[clickedCellIndex] !== '' || !gameActive || (currentPlayer === 'O' && enableAI.checked)) {
         return;
     }
 
@@ -149,12 +149,24 @@ function handleCellClick(clickedCellEvent) {
     checkWin();
 
     if (gameActive) {
+        const previousPlayer = currentPlayer; // Store the current player before switching
         switchPlayer();
-        if (currentPlayer === 'O' && enableAI.checked && gameActive) { // Re-check gameActive
+        if (previousPlayer === 'X' && currentPlayer === 'O' && enableAI.checked && gameActive) {
             board.classList.add('disabled');
             setTimeout(makeAIMove, 500);
         }
     }
+}
+
+function makeMove(cellIndex, player) {
+    gameBoard[cellIndex] = player;
+    cells[cellIndex].textContent = player;
+    cells[cellIndex].classList.add(player === 'X' ? 'playerX' : 'playerO');
+    checkWin();
+    if (gameActive) {
+        switchPlayer(); // Switch back to the human player after AI's move
+    }
+    board.classList.remove('disabled');
 }
 function makeMove(cellIndex, player) {
     gameBoard[cellIndex] = player;
