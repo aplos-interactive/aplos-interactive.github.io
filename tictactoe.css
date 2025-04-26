@@ -144,3 +144,18 @@ footer p {
     pointer-events: none;
     cursor: not-allowed;
 }
+.ai-toggle {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1em;
+    color: #455a64;
+}
+
+.ai-toggle input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
