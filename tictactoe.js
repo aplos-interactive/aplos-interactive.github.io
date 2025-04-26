@@ -84,3 +84,84 @@ function resetGame() {
     cell.classList.remove("playerO")
   })
 }
+function findWinningMove(player) {
+    for (let i = 0; i < winningCombinations.length; i++) {
+        const [a, b, c] = winningCombinations[i];
+        const boardValues = [gameBoard[a], gameBoard[b], gameBoard[c]];
+        const playerCounts = boardValues.filter(val => val === player).length;
+        const emptyIndex = boardValues.indexOf('');
+
+        if (playerCounts === 2 && emptyIndex !== -1) {
+            const winningIndex = winCondition[emptyIndex];
+            if (gameBoard[winningIndex] === '') {
+                return winningIndex;
+            }
+        }
+    }
+    return null;
+}
+function makeAIMove() {
+    if (!gameActive) {
+        return;
+    }
+
+    // AI tries to win
+    const winningMove = findWinningMove('O');
+    if (winningMove !== null) {
+        makeMove(winningMove, 'O');
+        return;
+    }
+
+    // AI tries to block the player
+    const blockingMove = findWinningMove('X');
+    if (blockingMove !== null) {
+        makeMove(blockingMove, 'O');
+        return;
+    }
+
+    // AI makes a random move
+    const emptyCells = gameBoard.reduce((acc, val, index) => {
+        if (val === '') {
+            acc.push(index);
+        }
+        return acc;
+    }, []);
+
+    if (emptyCells.length > 0) {
+        const randomIndex = Math.floor(Math.random() * emptyCells.length);
+        const randomMove = emptyCells[randomIndex];
+        makeMove(randomMove, 'O');
+    }
+}
+
+function makeMove(cellIndex, player) {
+    gameBoard[cellIndex] = player;
+    cells[cellIndex].textContent = player;
+    cells[cellIndex].classList.add(player === 'X' ? 'playerX' : 'playerO');
+    checkWin();
+    if (gameActive) {
+        switchPlayer(); // Switch to the human player after AI's move
+    }
+}
+function handleCellClick(clickedCellEvent) {
+    const clickedCell = clickedCellEvent.target;
+    const clickedCellIndex = parseInt(clickedCell.dataset.index);
+
+    if (gameBoard[clickedCellIndex] !== '' || !gameActive || currentPlayer === 'O') {
+        return;
+    }
+
+    gameBoard[clickedCellIndex] = currentPlayer;
+    clickedCell.textContent = currentPlayer;
+    clickedCell.classList.add(currentPlayer === 'X' ? 'playerX' : 'playerO');
+
+    checkWin();
+    if (gameActive) {
+        switchPlayer();
+        if (currentPlayer === 'O') {
+            // Disable further clicks while AI is making a move (optional but good UX)
+            board.classList.add('disabled');
+            setTimeout(makeAIMove, 500); // Add a small delay for AI move
+        }
+    }
+}
