@@ -40,7 +40,7 @@ const update = () => {
     player.y += player.velocityY;
 
     // Jumping logic (spacebar remains the same)
-    if (keys[' '] && !player.isJumping) {
+    if (keys['w'] && !player.isJumping) {
         player.velocityY = -15;
         player.isJumping = true;
     }
