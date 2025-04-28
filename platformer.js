@@ -11,14 +11,15 @@ window.addEventListener('keyup', (event) => {
     keys[event.key] = false;
 });
 
-const gameLoop = () => {
-    
-    update();
-
-    
-    draw();
-
-    requestAnimationFrame(gameLoop);
+const player = {
+    x: 100,             // Initial x-position
+    y: canvas.height - 50, // Initial y-position (near the bottom)
+    width: 30,          // Width of the player
+    height: 50,         // Height of the player
+    color: 'red',       // Player's color
+    velocityX: 0,       // Horizontal velocity
+    velocityY: 0,       // Vertical velocity
+    isJumping: false    // Flag to check if the player is currently jumping
 };
 
 const update = () => {
@@ -43,24 +44,19 @@ const update = () => {
 };
 
 const draw = () => {
-   
+    // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-   
+    // Draw the player
     ctx.fillStyle = player.color;
     ctx.fillRect(player.x, player.y, player.width, player.height);
 };
 
+const gameLoop = () => {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
 };
-const player = {
-    x: 100,            
-    y: canvas.height - 50, 
-    width: 30,          
-    height: 50,         
-    color: 'red',      
-    velocityX: 0,       
-    velocityY: 0,       
-    isJumping: false    
-    
 
+// Start the game loop
 requestAnimationFrame(gameLoop);
