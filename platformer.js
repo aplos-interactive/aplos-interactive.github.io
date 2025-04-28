@@ -7,6 +7,7 @@ const keys = {};
 
 window.addEventListener('keydown', (event) => {
     keys[event.key] = true;
+    console.log("Key pressed:", event.key); // Debugging line
 });
 
 window.addEventListener('keyup', (event) => {
