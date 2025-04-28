@@ -40,13 +40,32 @@ const update = () => {
     player.y += player.velocityY;
 
     // Jumping logic with 'W' key
-    console.log("W key pressed:", keys['w'] || keys['W'], "isJumping:", player.isJumping); // DEBUG
+    console.log("Inside update - keys['w']:", keys['w'], "keys['W']:", keys['W'], "isJumping:", player.isJumping); // DEBUG
     if ((keys['w'] || keys['W']) && !player.isJumping) {
         player.velocityY = -15;
         player.isJumping = true;
         console.log("Initiate Jump - velocityY:", player.velocityY, "isJumping:", player.isJumping); // DEBUG
     }
 
+    // Collision with the bottom of the canvas (ground)
+    console.log("player.y:", player.y, "ground level:", canvas.height - player.height); // DEBUG
+    if (player.y > canvas.height - player.height) {
+        player.y = canvas.height - player.height;
+        player.velocityY = 0;
+        player.isJumping = false;
+        console.log("Ground collision - velocityY:", player.velocityY, "isJumping:", player.isJumping); // DEBUG
+    }
+
+    // Update player's x position
+    player.x += player.velocityX;
+
+    // Keep player within horizontal bounds
+    if (player.x < 0) {
+        player.x = 0;
+    } else if (player.x > canvas.width - player.width) {
+        player.x = canvas.width - player.width;
+    }
+};
     // Collision with the bottom of the canvas (ground)
     console.log("player.y:", player.y, "ground level:", canvas.height - player.height); // DEBUG
     if (player.y > canvas.height - player.height) {
