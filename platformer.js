@@ -39,8 +39,8 @@ const update = () => {
     player.velocityY += gravity;
     player.y += player.velocityY;
 
-    // Jumping logic (spacebar remains the same)
-    if (keys['w'] && !player.isJumping) {
+    // Jumping logic with 'W' key
+    if ((keys['w'] || keys['W']) && !player.isJumping) {
         player.velocityY = -15;
         player.isJumping = true;
     }
@@ -62,7 +62,6 @@ const update = () => {
         player.x = canvas.width - player.width;
     }
 };
-
 const draw = () => {
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
