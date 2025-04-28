@@ -47,9 +47,9 @@ const update = () => {
         console.log("Initiate Jump - velocityY:", player.velocityY, "isJumping:", player.isJumping); // DEBUG
     }
 
-    // Collision with the bottom of the canvas (ground)
-    console.log("player.y:", player.y, "ground level:", canvas.height - player.height); // DEBUG
-    if (player.y > canvas.height - player.height) {
+    // Collision with the bottom of the canvas (ground) - CORRECTED CONDITION
+    console.log("player.y + player.height:", player.y + player.height, "canvas.height:", canvas.height); // DEBUG
+    if (player.y + player.height > canvas.height) {
         player.y = canvas.height - player.height;
         player.velocityY = 0;
         player.isJumping = false;
@@ -66,25 +66,7 @@ const update = () => {
         player.x = canvas.width - player.width;
     }
 };
-    // Collision with the bottom of the canvas (ground)
-    console.log("player.y:", player.y, "ground level:", canvas.height - player.height); // DEBUG
-    if (player.y > canvas.height - player.height) {
-        player.y = canvas.height - player.height;
-        player.velocityY = 0;
-        player.isJumping = false;
-        console.log("Ground collision - velocityY:", player.velocityY, "isJumping:", player.isJumping); // DEBUG
-    }
 
-    // Update player's x position
-    player.x += player.velocityX;
-
-    // Keep player within horizontal bounds
-    if (player.x < 0) {
-        player.x = 0;
-    } else if (player.x > canvas.width - player.width) {
-        player.x = canvas.width - player.width;
-    }
-};
 const draw = () => {
     // Clear the canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
