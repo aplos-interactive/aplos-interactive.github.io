@@ -1,6 +1,8 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+const gravity = 0.5; // Adjust for stronger/weaker gravity
+
 const keys = {};
 
 window.addEventListener('keydown', (event) => {
@@ -23,19 +25,36 @@ const player = {
 };
 
 const update = () => {
-    // Handle horizontal movement
-    if (keys['ArrowLeft']) {
-        player.velocityX = -5; // Move left at a speed of 5 pixels per frame
-    } else if (keys['ArrowRight']) {
-        player.velocityX = 5;  // Move right at a speed of 5 pixels per frame
+    // Handle horizontal movement with 'A' and 'D'
+    if (keys['a'] || keys['A']) {
+        player.velocityX = -5; // Move left
+    } else if (keys['d'] || keys['D']) {
+        player.velocityX = 5;  // Move right
     } else {
-        player.velocityX = 0;  // Stop horizontal movement if no arrow key is pressed
+        player.velocityX = 0;  // Stop horizontal movement
     }
 
-    // Update player's x position based on velocity
+    // Apply gravity
+    player.velocityY += gravity;
+    player.y += player.velocityY;
+
+    // Jumping logic (spacebar remains the same)
+    if (keys[' '] && !player.isJumping) {
+        player.velocityY = -15;
+        player.isJumping = true;
+    }
+
+    // Collision with the bottom of the canvas (ground)
+    if (player.y > canvas.height - player.height) {
+        player.y = canvas.height - player.height;
+        player.velocityY = 0;
+        player.isJumping = false;
+    }
+
+    // Update player's x position
     player.x += player.velocityX;
 
-    // Keep player within the bounds of the canvas (horizontally)
+    // Keep player within horizontal bounds
     if (player.x < 0) {
         player.x = 0;
     } else if (player.x > canvas.width - player.width) {
