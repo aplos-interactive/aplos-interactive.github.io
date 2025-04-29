@@ -37,6 +37,7 @@ const player = {
     velocityY: 0,       // Vertical velocity
     isJumping: false    // Flag to check if the player is currently jumping
 };
+console.log("Initial player.isJumping:", player.isJumping); // NEW DEBUG LINE
 
 const update = () => {
     console.log("velocityY:", player.velocityY, "isJumping:", player.isJumping); // DEBUG
