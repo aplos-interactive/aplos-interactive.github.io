@@ -7,11 +7,24 @@ const keys = {};
 
 window.addEventListener('keydown', (event) => {
     keys[event.key] = true;
-    console.log("Key pressed:", event.key); // Debugging line
+    console.log("Key pressed:", event.key); // General key press
+
+    if (event.key === 'w') {
+        console.log("Lowercase W key DOWN - keys['w']:", keys['w']);
+    } else if (event.key === 'W') {
+        console.log("Uppercase W key DOWN - keys['W']:", keys['W']);
+    }
 });
 
 window.addEventListener('keyup', (event) => {
     keys[event.key] = false;
+    console.log("Key released:", event.key); // General key release
+
+    if (event.key === 'w') {
+        console.log("Lowercase W key UP - keys['w']:", keys['w']);
+    } else if (event.key === 'W') {
+        console.log("Uppercase W key UP - keys['W']:", keys['W']);
+    }
 });
 
 const player = {
@@ -58,29 +71,3 @@ const update = () => {
 
     // Update player's x position
     player.x += player.velocityX;
-
-    // Keep player within horizontal bounds
-    if (player.x < 0) {
-        player.x = 0;
-    } else if (player.x > canvas.width - player.width) {
-        player.x = canvas.width - player.width;
-    }
-};
-
-const draw = () => {
-    // Clear the canvas
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // Draw the player
-    ctx.fillStyle = player.color;
-    ctx.fillRect(player.x, player.y, player.width, player.height);
-};
-
-const gameLoop = () => {
-    update();
-    draw();
-    requestAnimationFrame(gameLoop);
-};
-
-// Start the game loop
-requestAnimationFrame(gameLoop);
