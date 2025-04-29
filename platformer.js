@@ -71,3 +71,29 @@ const update = () => {
 
     // Update player's x position
     player.x += player.velocityX;
+
+     // Keep player within horizontal bounds
+     if (player.x < 0) {
+         player.x = 0;
+     } else if (player.x > canvas.width - player.width) {
+         player.x = canvas.width - player.width;
+     }
+ };
+ 
+ const draw = () => {
+     // Clear the canvas
+     ctx.clearRect(0, 0, canvas.width, canvas.height);
+ 
+     // Draw the player
+     ctx.fillStyle = player.color;
+     ctx.fillRect(player.x, player.y, player.width, player.height);
+ };
+ 
+ const gameLoop = () => {
+     update();
+     draw();
+     requestAnimationFrame(gameLoop);
+ };
+ 
+ // Start the game loop
+ requestAnimationFrame(gameLoop);
