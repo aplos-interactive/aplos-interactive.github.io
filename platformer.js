@@ -62,9 +62,9 @@ const update = () => {
         console.log("Initiate Jump - velocityY:", player.velocityY, "isJumping:", player.isJumping); // DEBUG
     }
 
-    // Collision with the bottom of the canvas (ground) - CORRECTED CONDITION
-    console.log("player.y + player.height:", player.y + player.height, "canvas.height:", canvas.height); // DEBUG
-    if (player.y + player.height > canvas.height) {
+    // Collision with the bottom of the canvas (ground) - ADJUSTED CONDITION
+    console.log("player.y:", player.y, "canvas.height - player.height:", canvas.height - player.height); // DEBUG
+    if (player.y >= canvas.height - player.height) {
         player.y = canvas.height - player.height;
         player.velocityY = 0;
         player.isJumping = false;
