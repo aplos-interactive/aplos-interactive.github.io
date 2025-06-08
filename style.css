@@ -16,6 +16,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative; /* For map overlay positioning */
 }
 
 .desk {
@@ -38,6 +39,19 @@ body {
     align-items: flex-start; /* Align elements to top */
     padding: 30px; /* Internal padding for desk items */
     box-sizing: border-box;
+
+    /* Subtle desk lamp effect */
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        background: radial-gradient(circle at 50% 50%, rgba(255, 255, 200, 0.15) 0%, transparent 70%);
+        pointer-events: none; /* Allow clicks through */
+    }
 }
 
 /* --- Panel Styling --- */
@@ -47,6 +61,7 @@ body {
     gap: 30px;
     align-items: flex-start;
     padding: 10px;
+    z-index: 2; /* Ensure panels are above desk lamp effect */
 }
 
 .right-panel {
@@ -59,20 +74,42 @@ body {
     padding: 18px;
     border-radius: 10px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
-    border: 2px solid #b8a78e; /* Lighter, subtle border */
+    border: 2px solid #b8a78e;
     font-size: 1.1em;
     min-width: 180px;
     text-align: left;
+    position: relative; /* For inner shadows */
+    overflow: hidden; /* To contain inner shadows */
+
+    &::before { /* Inner shadow top */
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        box-shadow: inset 0 5px 5px -5px rgba(0, 0, 0, 0.2);
+    }
+    &::after { /* Inner shadow bottom */
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        box-shadow: inset 0 -5px 5px -5px rgba(0, 0, 0, 0.2);
+    }
 }
 
 .metrics-panel h2 {
     margin-top: 0;
-    font-family: 'Cormorant Garamond', serif; /* Title font */
+    font-family: 'Cormorant Garamond', serif;
     color: #8B0000;
     font-size: 1.5em;
     border-bottom: 2px solid #8B0000;
     padding-bottom: 8px;
     margin-bottom: 12px;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
 }
 
 .metrics-panel p {
@@ -81,16 +118,17 @@ body {
 
 .metrics-panel span {
     font-weight: bold;
-    color: #006400; /* Default green for values */
-    transition: color 0.1s ease-in-out; /* Smooth color change */
+    color: #006400;
+    transition: color 0.1s ease-in-out;
 }
 
-/* Metric change feedback colors */
 .metric-change-positive {
-    color: #008000 !important; /* Brighter green */
+    color: #00AA00 !important; /* Brighter green */
+    text-shadow: 0 0 5px #00AA00;
 }
 .metric-change-negative {
-    color: #FF0000 !important; /* Bright red */
+    color: #DD0000 !important; /* Bright red */
+    text-shadow: 0 0 5px #DD0000;
 }
 
 /* --- Game Day Counter --- */
@@ -104,7 +142,9 @@ body {
     font-size: 1.4em;
     color: #4a301f;
     text-align: center;
-    margin-bottom: 20px; /* Space from map button */
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
 }
 
 /* --- Map Button --- */
@@ -112,13 +152,14 @@ body {
     background-color: #a08c69;
     color: white;
     padding: 12px 25px;
-    border: 2px solid #8B0000; /* More defined border */
+    border: 2px solid #8B0000;
     border-radius: 8px;
     font-family: 'Cormorant Garamond', serif;
     font-size: 1.3em;
     cursor: pointer;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
     transition: background-color 0.2s ease, transform 0.1s ease;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
 .map-button:hover {
@@ -133,23 +174,23 @@ body {
 
 /* --- Document Area --- */
 .document-area {
-    width: 60%; /* Adjusted width to make space for trays */
-    height: 90%; /* Take up more vertical space */
+    width: 60%;
+    height: 90%;
     background-color: #fffaf0; /* Slightly creamier parchment */
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><text x="50%" y="50%" font-size="200" fill="%23e0e0e0" opacity="0.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(-15 500 350)">SEAL</text></svg>'); /* Subtle watermark */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><text x="50%" y="50%" font-size="200" fill="%23e0e0e0" opacity="0.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(-15 500 350)">PAPAL</text></svg>'); /* Subtle watermark */
     background-repeat: no-repeat;
     background-position: center center;
-    border: 3px solid #8B0000; /* Red border for official feel */
+    border: 3px solid #8B0000;
     border-radius: 5px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(0, 0, 0, 0.1); /* Inner shadow for depth */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(0, 0, 0, 0.1);
     padding: 30px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    opacity: 0; /* Start hidden for animation */
-    transform: scale(0.8) translateY(-20px); /* Start smaller and higher */
-    transition: opacity 0.4s ease-out, transform 0.4s ease-out; /* Smooth transition */
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out, border-color 0.2s ease;
 }
 
 .document-area.show {
@@ -163,9 +204,10 @@ body {
     margin-top: 0;
     font-size: 2.2em;
     color: #8B0000;
-    border-bottom: 1px solid #8B0000;
+    border-bottom: 2px solid #8B0000; /* Thicker border */
     padding-bottom: 10px;
     margin-bottom: 20px;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
 }
 
 .document-content {
@@ -173,8 +215,7 @@ body {
     font-size: 1.15em;
     line-height: 1.7;
     overflow-y: auto;
-    padding-right: 15px; /* More space for scrollbar */
-    /* Custom scrollbar for a nicer look */
+    padding-right: 15px;
     scrollbar-width: thin;
     scrollbar-color: #a08c69 #f5f5dc;
 }
@@ -197,7 +238,7 @@ body {
     margin-top: 20px;
     font-size: 1em;
     color: #666;
-    border-top: 1px dashed #ccc; /* Subtle separation */
+    border-top: 1px dashed #ccc;
     padding-top: 10px;
 }
 
@@ -209,8 +250,8 @@ body {
 }
 
 .option-button {
-    background-color: #4a301f; /* Darker, richer brown */
-    color: #fffaf0; /* Parchment-like text */
+    background-color: #4a301f;
+    color: #fffaf0;
     padding: 15px 25px;
     border: 1px solid #3d2817;
     border-radius: 8px;
@@ -218,12 +259,13 @@ body {
     font-size: 1.2em;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-    text-align: center; /* Center text in button */
+    text-align: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
 .option-button:hover {
-    background-color: #5a3c22; /* Slightly lighter on hover */
+    background-color: #5a3c22;
     transform: translateY(-4px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
@@ -238,13 +280,13 @@ body {
 .tray {
     width: 150px;
     height: 120px;
-    background-color: #8b6b4b; /* Lighter wood */
+    background-color: #8b6b4b;
     border: 3px solid #5a3c22;
     border-radius: 5px;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3), 0 5px 10px rgba(0,0,0,0.4);
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* Push content to bottom */
+    justify-content: flex-end;
     align-items: center;
     position: relative;
     overflow: hidden;
@@ -262,17 +304,149 @@ body {
 
 .paper-stack {
     width: 80%;
-    height: 60px; /* Placeholder stack */
+    height: 60px;
     background-color: #fffaf0;
     border: 1px solid #ccc;
     border-bottom: 3px solid #bbb;
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
     margin-bottom: 10px;
     position: relative;
-    top: 20px; /* Position it slightly in the tray */
+    top: 20px;
 }
 
 .in-tray .paper-stack {
-    background-color: #e0e0e0; /* Unread documents look slightly different */
+    background-color: #e0e0e0;
     border-color: #999;
+}
+
+/* --- Decorative Elements --- */
+.quill-inkwell {
+    position: absolute;
+    bottom: 5%;
+    left: 10%;
+    width: 80px;
+    height: 80px;
+    /* Using CSS for a simple quill/inkwell visual */
+    background: radial-gradient(circle at 70% 30%, #5a3c22 30%, transparent 30%), /* Inkwell top */
+                linear-gradient(to bottom, #3d2817 50%, #2a1c12 50%); /* Inkwell body */
+    background-size: 40px 40px;
+    background-repeat: no-repeat;
+    background-position: center top, center bottom;
+    border-radius: 50% 50% 10px 10px; /* Rounded top, flat bottom */
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5), 0 5px 10px rgba(0,0,0,0.3);
+
+    &::before { /* Quill feather */
+        content: '';
+        position: absolute;
+        top: -40px;
+        left: 50%;
+        transform: translateX(-50%) rotate(-20deg);
+        width: 10px;
+        height: 80px;
+        background-color: #f0f0f0; /* Feather color */
+        border-radius: 5px 5px 0 0;
+        box-shadow: -2px -2px 5px rgba(0,0,0,0.2);
+        border: 1px solid #ccc;
+    }
+    &::after { /* Quill tip */
+        content: '';
+        position: absolute;
+        bottom: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 5px;
+        height: 20px;
+        background-color: black;
+        border-radius: 0 0 2px 2px;
+    }
+}
+
+
+/* --- Map Overlay --- */
+.map-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* Dark, semi-transparent overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100; /* On top of everything */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.map-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.map-content {
+    background-color: #fffaf0; /* Parchment-like background for map */
+    border: 5px solid #8B0000; /* Strong medieval border */
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6);
+    max-width: 80%;
+    max-height: 90%;
+    overflow: auto; /* In case map content is too big */
+    text-align: center;
+    position: relative; /* For close button */
+}
+
+.map-content h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5em;
+    color: #8B0000;
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
+}
+
+.map-content p {
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+
+.pixel-map {
+    width: 100%;
+    height: auto;
+    max-height: 400px; /* Limit map height */
+    border: 2px solid #333;
+    background-color: #c9c5b2; /* Base map color */
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+}
+
+.close-map-button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: #8B0000;
+    color: white;
+    border: 2px solid #5a0000;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5em;
+    cursor: pointer;
+    line-height: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+}
+
+.close-map-button:hover {
+    background-color: #b00000;
+    transform: rotate(90deg) scale(1.1);
+}
+
+.close-map-button:active {
+    transform: rotate(90deg) scale(1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
