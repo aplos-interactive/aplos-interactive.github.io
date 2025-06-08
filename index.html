@@ -3,65 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Posiiii's Playground</title>
+    <title>Habeus Papam Demo</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <h1>Have A Blast At Posiiii's Playground!</h1>
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="Search the playground...">
-            <button onclick="searchDestinations()">Search</button>
+    <div class="game-container">
+        <div class="desk">
+            <div class="metrics-panel">
+                <h2>Papal Metrics</h2>
+                <p>Piety: <span id="metric-piety">50</span></p>
+                <p>Authority: <span id="metric-authority">50</span></p>
+                <p>Gold: <span id="metric-gold">100</span></p>
+                <p>Public Opinion: <span id="metric-publicOpinion">50</span></p>
+                <p>Cardinal Favor: <span id="metric-cardinalFavor">50</span></p>
+            </div>
+
+            <button id="map-button" class="map-button">MAP</button>
+
+            <div class="document-area">
+                <h3 id="document-title"></h3>
+                <div class="document-content" id="document-content"></div>
+                <div class="document-source" id="document-source"></div>
+                <div class="options-container" id="options-container">
+                    </div>
+            </div>
         </div>
-    </header>
-
-    <main class="destinations">
-        <section class="destination-card" data-name="Banff National Park">
-            <img src="banff.png" alt="Banff National Park">
-            <h2>Draw This!</h2>
-            <p>Draw the image provided to the best of your ability. Draw multiple images such as a cat and try to get 10/10 similarity. It's a fun and creative activity everyone can enjoy, so get drawing! </p>
-            <a href="banff.html" class="destination-button">Click To Start Drawing</a>
-        </section>
-
-        <section class="destination-card" data-name="Niagara Falls">
-            <img src="niagara.png" alt="Niagara Falls">
-            <h2>Tic Tac Toe!</h2>
-            <p>Experience a classic game reimagined with a 2 player mode and the option to play against an AI. It's a classic game, fun for all ages, and surprisingly strategic for its simplicity. </p>
-            <a href="niagara_falls.html" class="destination-button">Start Playing!</a>
-        </section>
-
-        <section class="destination-card" data-name="Old Quebec City">
-            <img src="quebec_city.jpg" alt="Old Quebec City">
-            <h2>Old Quebec City</h2>
-            <p>Step back in time and explore the charming cobblestone streets and historic architecture of Old Quebec.</p>
-            <a href="quebec_city.html" class="destination-button">Discover Quebec City</a>
-        </section>
-
-        <section class="destination-card" data-name="Vancouver">
-            <img src="vancouver.jpg" alt="Vancouver">
-            <h2>Vancouver</h2>
-            <p>A vibrant coastal city surrounded by mountains and ocean, offering a perfect blend of nature and urban life.</p>
-            <a href="vancouver.html" class="destination-button">Explore Vancouver</a>
-        </section>
-
-        <section class="destination-card" data-name="Canadian Rockies">
-            <img src="rockies.jpg" alt="Canadian Rockies">
-            <h2>Canadian Rockies</h2>
-            <p>Towering peaks, glaciers, and stunning landscapes stretch across Alberta and British Columbia.</p>
-            <a href="rockies.html" class="destination-button">See the Rockies</a>
-        </section>
-
-        <section class="destination-card" data-name="Prince Edward Island">
-            <img src="pei.jpg" alt="Prince Edward Island">
-            <h2>Prince Edward Island</h2>
-            <p>Discover red sand beaches, rolling green hills, and the charming world of Anne of Green Gables.</p>
-            <a href="pei.html" class="destination-button">Visit PEI</a>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; Posiiii's Games</p>
-    </footer>
+    </div>
 
     <script src="script.js"></script>
 </body>
