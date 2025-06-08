@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Habeus Papam Demo</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=EB+Garamond:wght@400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=EB+Garamond:400,700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -26,7 +26,7 @@
             </div>
 
             <div class="document-area" id="document-area">
-                <h3 id="document-title"></h3>
+                <div class="document-seal"></div> <h3 id="document-title"></h3>
                 <div class="document-content" id="document-content"></div>
                 <div class="document-source" id="document-source"></div>
                 <div class="options-container" id="options-container">
@@ -45,18 +45,18 @@
             </div>
 
             <div class="quill-inkwell"></div>
-        </div>
+            <div class="decorative-scroll"></div> </div>
 
         <div id="map-overlay" class="map-overlay">
             <div class="map-content">
                 <h2>Map of Medieval Europe</h2>
-                <p>This map shows key regions and political landscapes. (Interactive features coming soon!)</p>
-                <svg viewBox="0 0 800 600" class="pixel-map">
-                    <rect x="0" y="0" width="800" height="600" fill="#a8a38d" stroke="#605c4c" stroke-width="5" />
-                    <polygon points="100,500 200,400 300,550 150,580" fill="#69925e" stroke="#4a6543" stroke-width="3" /> <polygon points="350,100 450,200 550,150 400,50" fill="#9e6659" stroke="#7a4e44" stroke-width="3" /> <polygon points="600,400 750,450 700,550 620,480" fill="#7d7b93" stroke="#5d5b70" stroke-width="3" /> <circle cx="200" cy="450" r="15" fill="#8B0000" stroke="#5a0000" stroke-width="2" /> <text x="210" y="455" font-family="EB Garamond" font-size="20" fill="#333">Rome</text>
-                    <line x1="200" y1="450" x2="350" y2="150" stroke="#333" stroke-width="2" stroke-dasharray="5,5" /> <text x="50%" y="30" text-anchor="middle" font-family="Cormorant Garamond" font-size="30" fill="#333">Papal Dominions</text>
+                <p>Strategic overview of the realm.</p>
+                <svg viewBox="0 0 100 70" class="pixel-map">
+                    <rect x="0" y="0" width="100" height="70" fill="#a09d84" stroke="#706d5c" stroke-width="0.5" />
+                    <rect x="5" y="5" width="20" height="15" fill="#6a9b5f" stroke="#4c7043" stroke-width="0.3" /> <rect x="28" y="10" width="18" height="12" fill="#ab7668" stroke="#8a5c4e" stroke-width="0.3" /> <rect x="50" y="25" width="15" height="10" fill="#7d7b93" stroke="#5d5b70" stroke-width="0.3" /> <rect x="70" y="5" width="25" height="20" fill="#8b6b4b" stroke="#6a4c30" stroke-width="0.3" /> <rect x="15" y="40" width="10" height="10" fill="#8B0000" stroke="#5a0000" stroke-width="0.3" /> <line x1="20" y1="45" x2="40" y2="20" stroke="#333" stroke-width="0.5" />
+                    <line x1="55" y1="30" x2="75" y2="15" stroke="#333" stroke-width="0.5" />
                 </svg>
-                <button id="close-map-button" class="close-map-button">Close Map</button>
+                <button id="close-map-button" class="close-map-button">X</button>
             </div>
         </div>
     </div>
