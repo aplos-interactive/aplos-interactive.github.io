@@ -4,28 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Habeus Papam Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=EB+Garamond:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="game-container">
         <div class="desk">
-            <div class="metrics-panel">
-                <h2>Papal Metrics</h2>
-                <p>Piety: <span id="metric-piety">50</span></p>
-                <p>Authority: <span id="metric-authority">50</span></p>
-                <p>Gold: <span id="metric-gold">100</span></p>
-                <p>Public Opinion: <span id="metric-publicOpinion">50</span></p>
-                <p>Cardinal Favor: <span id="metric-cardinalFavor">50</span></p>
+            <div class="left-panel">
+                <div class="metrics-panel">
+                    <h2>Papal Metrics</h2>
+                    <p>Piety: <span id="metric-piety">50</span></p>
+                    <p>Authority: <span id="metric-authority">50</span></p>
+                    <p>Gold: <span id="metric-gold">100</span></p>
+                    <p>Public Opinion: <span id="metric-publicOpinion">50</span></p>
+                    <p>Cardinal Favor: <span id="metric-cardinalFavor">50</span></p>
+                </div>
+                <div class="tray in-tray">
+                    <p>Incoming</p>
+                    <div class="paper-stack"></div>
+                </div>
             </div>
 
-            <button id="map-button" class="map-button">MAP</button>
-
-            <div class="document-area">
+            <div class="document-area" id="document-area">
                 <h3 id="document-title"></h3>
                 <div class="document-content" id="document-content"></div>
                 <div class="document-source" id="document-source"></div>
                 <div class="options-container" id="options-container">
                     </div>
+            </div>
+
+            <div class="right-panel">
+                <div class="game-day">
+                    Day <span id="game-day-counter">1</span>
+                </div>
+                <button id="map-button" class="map-button">MAP</button>
+                <div class="tray out-tray">
+                    <p>Processed</p>
+                    <div class="paper-stack"></div>
+                </div>
             </div>
         </div>
     </div>
