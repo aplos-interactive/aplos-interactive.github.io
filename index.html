@@ -43,6 +43,21 @@
                     <div class="paper-stack"></div>
                 </div>
             </div>
+
+            <div class="quill-inkwell"></div>
+        </div>
+
+        <div id="map-overlay" class="map-overlay">
+            <div class="map-content">
+                <h2>Map of Medieval Europe</h2>
+                <p>This map shows key regions and political landscapes. (Interactive features coming soon!)</p>
+                <svg viewBox="0 0 800 600" class="pixel-map">
+                    <rect x="0" y="0" width="800" height="600" fill="#a8a38d" stroke="#605c4c" stroke-width="5" />
+                    <polygon points="100,500 200,400 300,550 150,580" fill="#69925e" stroke="#4a6543" stroke-width="3" /> <polygon points="350,100 450,200 550,150 400,50" fill="#9e6659" stroke="#7a4e44" stroke-width="3" /> <polygon points="600,400 750,450 700,550 620,480" fill="#7d7b93" stroke="#5d5b70" stroke-width="3" /> <circle cx="200" cy="450" r="15" fill="#8B0000" stroke="#5a0000" stroke-width="2" /> <text x="210" y="455" font-family="EB Garamond" font-size="20" fill="#333">Rome</text>
+                    <line x1="200" y1="450" x2="350" y2="150" stroke="#333" stroke-width="2" stroke-dasharray="5,5" /> <text x="50%" y="30" text-anchor="middle" font-family="Cormorant Garamond" font-size="30" fill="#333">Papal Dominions</text>
+                </svg>
+                <button id="close-map-button" class="close-map-button">Close Map</button>
+            </div>
         </div>
     </div>
 
