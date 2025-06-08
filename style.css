@@ -1,1 +1,693 @@
+:root {
+    /* Color Palette */
+    --color-dark-wood: #2e241c;
+    --color-medium-wood: #4f3624;
+    --color-light-wood: #6a4933;
+    --color-parchment-light: #f0e6d2;
+    --color-parchment-dark: #b0a890;
+    --color-paper-white: #fffaf0;
+    --color-red-seal: #8b0000;
+    --color-dark-red: #6a0000;
+    --color-gold-accent: #a08c69;
+    --color-silver-accent: #c0c0c0;
+    --color-text-dark: #2e2e2e;
+    --color-text-light: #f0e6d2;
+    --color-metric-positive: #008000; /* Green */
+    --color-metric-negative: #ff0000; /* Red */
 
+    /* Fonts */
+    --font-heading: 'IM Fell English SC', serif;
+    --font-body: 'Cormorant Garamond', serif;
+    --font-ui: 'Libre Baskerville', serif;
+
+    /* Shadows & Borders */
+    --shadow-deep: 0 15px 25px rgba(0, 0, 0, 0.6), 0 5px 15px rgba(0, 0, 0, 0.4);
+    --shadow-raised: 0 4px 8px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    --border-thick: 5px solid var(--color-dark-wood);
+    --border-medium: 3px solid var(--color-medium-wood);
+    --border-thin: 1px solid var(--color-dark-wood);
+}
+
+body {
+    margin: 0;
+    overflow: hidden;
+    font-family: var(--font-body);
+    color: var(--color-text-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1c140c 0%, #3a2b1f 100%); /* Dark, rich background */
+    perspective: 1000px; /* Establishes 3D context for the body */
+    touch-action: manipulation; /* Improves mobile responsiveness */
+}
+
+/* --- Game Container: Sets the overall 3D scene --- */
+.game-container {
+    width: 90vw;
+    height: 90vh;
+    max-width: 1300px; /* Slightly larger for more detail */
+    max-height: 900px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    /* The desk is within this container, so perspective is on body/container */
+    transform-style: preserve-3d;
+}
+
+/* --- Desk: The central 3D element --- */
+.desk {
+    width: 100%;
+    height: 100%;
+    background-color: var(--color-light-wood);
+    border: var(--border-thick);
+    border-bottom: 8px solid var(--color-dark-wood); /* Thicker bottom edge for depth */
+    box-shadow: var(--shadow-deep); /* Main shadow under the desk */
+    position: relative;
+    display: grid;
+    grid-template-columns: 220px 1fr 220px; /* Panel widths */
+    grid-template-rows: 1fr;
+    padding: 25px;
+    box-sizing: border-box;
+    transform: rotateX(15deg) translateY(20px) translateZ(-50px); /* Tilt, lift, and push back for depth */
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease-out; /* Smooth transition for any future changes */
+}
+
+.desk:active {
+    transform: rotateX(15deg) translateY(22px) translateZ(-52px); /* Slight press effect */
+}
+
+/* Desk Surface: A recessed inner surface */
+.desk-surface {
+    position: absolute;
+    top: 15px; /* Inset from border */
+    left: 15px;
+    right: 15px;
+    bottom: 15px;
+    background: repeating-linear-gradient(
+        45deg,
+        var(--color-medium-wood),
+        var(--color-medium-wood) 10px,
+        var(--color-light-wood) 10px,
+        var(--color-light-wood) 20px
+    ), linear-gradient(
+        to bottom,
+        rgba(0,0,0,0.1),
+        rgba(0,0,0,0) 50%,
+        rgba(255,255,255,0.05) 100%
+    ); /* Wood grain effect + subtle gradient */
+    border: 3px solid var(--color-dark-wood);
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.7); /* Inner shadow for recess */
+    pointer-events: none; /* Don't block clicks on elements on top */
+}
+
+/* --- Panels: Styled to look like carved wood or attached boards --- */
+.panel {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: stretch;
+    padding: 10px;
+    background: var(--color-light-wood);
+    border: var(--border-medium);
+    box-shadow: var(--shadow-raised), inset 0 0 5px rgba(0, 0, 0, 0.4);
+    position: relative;
+    z-index: 2;
+    transform: translateZ(10px); /* Lift slightly off the desk surface */
+    border-radius: 5px; /* Slightly rounded corners */
+}
+
+.left-panel {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.right-panel {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+/* --- Metrics Panel: Looks like an old ledger page --- */
+.metrics-panel {
+    background: var(--color-parchment-light);
+    padding: 15px;
+    border: 2px solid var(--color-dark-red);
+    box-shadow: var(--shadow-raised);
+    font-size: 0.9em;
+    text-align: left;
+    position: relative;
+    overflow: hidden;
+    border-radius: 3px;
+}
+
+.metrics-panel h2 {
+    margin-top: 0;
+    font-family: var(--font-heading);
+    color: var(--color-dark-red);
+    font-size: 1.1em;
+    border-bottom: 2px solid var(--color-dark-red);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
+}
+
+.metrics-panel p {
+    margin: 6px 0;
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--font-ui);
+    color: var(--color-text-dark);
+}
+
+.metrics-panel span {
+    font-weight: bold;
+    color: var(--color-metric-positive);
+    transition: color 0.3s ease-out, transform 0.1s ease-out; /* Smooth color change */
+}
+
+.metric-change-positive {
+    color: limegreen !important; /* Brighter flash */
+    transform: scale(1.1); /* Pop effect */
+}
+.metric-change-negative {
+    color: crimson !important; /* Brighter flash */
+    transform: scale(1.1); /* Pop effect */
+}
+
+/* --- Game Day Card: A special plaque --- */
+.game-day-card {
+    background: var(--color-parchment-dark);
+    padding: 10px 15px;
+    border: 2px solid var(--color-dark-red);
+    box-shadow: var(--shadow-raised);
+    font-family: var(--font-heading);
+    font-size: 1em;
+    color: var(--color-dark-red);
+    text-align: center;
+    border-radius: 3px;
+    transform: translateZ(5px); /* Lift slightly */
+}
+
+.game-day-card h3 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+/* --- Action Buttons (Map, Options) --- */
+.action-button {
+    background: linear-gradient(to bottom, var(--color-gold-accent), #705c3c); /* Metal/wood button */
+    color: var(--color-text-light);
+    padding: 12px 20px;
+    border: 2px solid #5a0000; /* Strong red border */
+    border-radius: 4px;
+    box-shadow: var(--shadow-raised);
+    font-family: var(--font-ui);
+    font-size: 1em;
+    cursor: pointer;
+    transition: all 0.15s ease-out; /* Smooth transitions for interaction */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    transform: translateZ(5px); /* Lift slightly */
+}
+
+.action-button:hover {
+    background: linear-gradient(to bottom, #b09e7c, #806c4c); /* Lighter on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    transform: translate(-1px, -1px) translateZ(8px); /* Lift more */
+}
+
+.action-button:active {
+    background: linear-gradient(to top, var(--color-gold-accent), #705c3c); /* Pressed effect */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+    transform: translate(1px, 1px) translateZ(2px); /* Push down */
+}
+
+/* --- Document Area: The central focus, styled as a parchment --- */
+.document-area {
+    width: 95%;
+    max-width: 550px;
+    height: 95%;
+    max-height: 600px;
+    background: linear-gradient(135deg, var(--color-paper-white) 0%, #fefaf0 100%);
+    border: 4px solid var(--color-dark-red);
+    box-shadow: var(--shadow-deep); /* Strong shadow for lifted effect */
+    padding: 25px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    z-index: 4; /* Ensures it's above other desk elements */
+    opacity: 0;
+    transform-origin: top center; /* For flip animation */
+    transform: scale(0.9) translateY(-20px) rotateX(90deg); /* Initial state: scaled, shifted, flipped */
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out; /* Smooth reveal */
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    justify-self: center;
+    border-radius: 2px;
+}
+
+.document-area.show {
+    opacity: 1;
+    transform: scale(1) translateY(0) rotateX(0deg); /* Final state: full size, no flip */
+}
+
+/* Document Seal: A rich wax seal */
+.document-seal {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 40px;
+    height: 40px;
+    background: radial-gradient(circle at 15px 15px, var(--color-red-seal) 0%, #6a0000 100%);
+    border-radius: 50%; /* Circular seal */
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.6), 0 2px 4px rgba(0,0,0,0.5); /* Inner and outer shadow */
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Imperial cross effect using pseudo-elements */
+    &::before, &::after {
+        content: '';
+        position: absolute;
+        background-color: var(--color-parchment-light);
+        box-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+        border-radius: 1px;
+    }
+    &::before { /* Vertical bar */
+        width: 8px;
+        height: 25px;
+    }
+    &::after { /* Horizontal bar */
+        width: 25px;
+        height: 8px;
+    }
+}
+
+.document-area h3 {
+    font-family: var(--font-heading);
+    text-align: center;
+    margin-top: 0;
+    font-size: 1.5em;
+    color: var(--color-dark-red);
+    border-bottom: 2px solid var(--color-dark-red);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+}
+
+.document-content-wrapper {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 15px; /* Space for scrollbar */
+}
+
+.document-content {
+    font-size: 1em;
+    line-height: 1.7;
+    text-align: justify;
+}
+
+/* Custom Scrollbar Styling (Webkit - Chrome, Safari) */
+.document-content-wrapper::-webkit-scrollbar {
+    width: 12px;
+}
+.document-content-wrapper::-webkit-scrollbar-track {
+    background: var(--color-parchment-light);
+    border-left: 1px solid rgba(0,0,0,0.1);
+}
+.document-content-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--color-medium-wood);
+    border-radius: 6px;
+    border: 2px solid var(--color-dark-wood);
+}
+.document-content-wrapper::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-gold-accent);
+}
+
+.document-source {
+    font-family: var(--font-ui);
+    font-style: italic;
+    text-align: right;
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: #444;
+    border-top: 1px dashed #aaa;
+    padding-top: 10px;
+    align-self: flex-end;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.option-button {
+    background: linear-gradient(to bottom, var(--color-medium-wood), var(--color-dark-wood));
+    color: var(--color-text-light);
+    padding: 12px 18px;
+    border: 2px solid #201a15;
+    border-radius: 4px;
+    box-shadow: var(--shadow-raised);
+    font-family: var(--font-ui);
+    font-size: 0.95em;
+    cursor: pointer;
+    transition: all 0.15s ease-out;
+    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    transform: translateZ(5px);
+}
+
+.option-button:hover {
+    background: linear-gradient(to bottom, var(--color-gold-accent), var(--color-medium-wood));
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    transform: translate(-1px, -1px) translateZ(8px);
+}
+
+.option-button:active {
+    background: linear-gradient(to top, var(--color-medium-wood), var(--color-dark-wood));
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+    transform: translate(1px, 1px) translateZ(2px);
+}
+
+/* --- Trays: Designed to look like wooden document trays --- */
+.tray {
+    width: 100%; /* Fill panel width */
+    height: 120px; /* Consistent height */
+    background: linear-gradient(to bottom, #7a6e5b, #5a4b3f); /* Tray base color */
+    border: 2px solid var(--color-dark-wood);
+    border-bottom: 4px solid var(--color-dark-wood);
+    box-shadow: var(--shadow-inset), var(--shadow-raised);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    z-index: 3;
+    border-radius: 3px;
+    transform: translateZ(8px); /* Lift trays off the panel */
+}
+
+.tray p {
+    font-family: var(--font-ui);
+    font-size: 0.9em;
+    color: var(--color-text-light);
+    margin-bottom: 8px;
+    position: absolute;
+    top: 5px;
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.6);
+}
+
+.paper-stack {
+    width: 85%;
+    height: 60px; /* Visible stack height */
+    background-color: var(--color-paper-white); /* Top paper color */
+    border: 1px solid #bbb;
+    border-bottom: 3px solid #999; /* Stronger bottom edge */
+    box-shadow: 0 5px 8px rgba(0, 0, 0, 0.3), inset 0 0 5px rgba(0, 0, 0, 0.1); /* Soft shadow for stack depth */
+    margin-bottom: 5px;
+    position: relative;
+    transform: translateZ(2px); /* Give paper stack depth */
+    border-radius: 2px;
+}
+
+.in-tray .paper-stack {
+    background-color: var(--color-parchment-dark); /* Incoming documents are older */
+    border-color: #888;
+}
+
+/* --- Decorative Desk Items --- */
+.desk-item {
+    position: absolute;
+    z-index: 3; /* Ensure they are above the desk surface */
+    transform-style: preserve-3d;
+    transform: translateZ(15px); /* Lift all items slightly off the desk */
+    pointer-events: none; /* By default, don't interfere with clicks */
+}
+
+/* Quill & Inkwell */
+.quill-inkwell {
+    bottom: 8%;
+    left: 8%;
+    width: 70px;
+    height: 70px;
+    background: radial-gradient(circle at 50% 70%, #3a2b1f 0%, #2e241c 100%); /* Inkwell body */
+    border: 2px solid #1a1a1a;
+    border-radius: 50%;
+    box-shadow: var(--shadow-raised), inset 0 0 10px rgba(0,0,0,0.8);
+    transform: translateZ(15px) rotateX(5deg); /* Lift and slight tilt */
+    pointer-events: auto; /* Allow interaction for decorative hover */
+    cursor: help;
+    transition: transform 0.2s ease-out;
+
+    /* Quill Feather */
+    &::before {
+        content: '';
+        position: absolute;
+        top: -60px;
+        left: 50%;
+        transform: translateX(-50%) rotate(-15deg);
+        width: 10px;
+        height: 100px;
+        background: linear-gradient(to top, #c0c0c0, #f0f0f0); /* Silver/white feather */
+        border-top-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        box-shadow: -3px -3px 8px rgba(0,0,0,0.4);
+        border: 1px solid #a0a0a0;
+        z-index: -1; /* Behind inkwell circle */
+    }
+    /* Quill Nib */
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: 15px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 6px;
+        height: 25px;
+        background-color: black;
+        border-radius: 1px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    }
+}
+.quill-inkwell:hover {
+    transform: translateZ(20px) rotateX(0deg) translateY(-5px); /* Lift more on hover */
+}
+
+/* Decorative Scroll */
+.decorative-scroll {
+    bottom: 10%;
+    right: 10%;
+    width: 150px;
+    height: 25px;
+    background: var(--color-parchment-dark);
+    border: 2px solid #7e593f; /* Darker brown for scroll ends */
+    box-shadow: var(--shadow-raised);
+    transform: translateZ(10px) rotateX(10deg); /* Lift and slight tilt */
+    border-radius: 3px;
+    pointer-events: auto;
+    cursor: help;
+    transition: transform 0.2s ease-out;
+
+    /* Rolled ends of the scroll */
+    &::before, &::after {
+        content: '';
+        position: absolute;
+        width: 15px;
+        height: 100%;
+        background: linear-gradient(to bottom, #a08c69, #705c3c); /* Gold/brass ends */
+        border: 1px solid #5a4b3f;
+        top: 0;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.5);
+        border-radius: 2px;
+    }
+    &::before {
+        left: -15px;
+        border-right: none;
+        transform-origin: right center;
+        transform: rotateY(-10deg) translateZ(-2px); /* Slight 3D rotation */
+    }
+    &::after {
+        right: -15px;
+        border-left: none;
+        transform-origin: left center;
+        transform: rotateY(10deg) translateZ(-2px); /* Slight 3D rotation */
+    }
+}
+.decorative-scroll:hover {
+    transform: translateZ(18px) rotateX(0deg) translateY(-5px); /* Lift more on hover */
+}
+
+/* Coin Pouch */
+.coin-pouch {
+    bottom: 5%;
+    left: 45%; /* Centerish */
+    width: 60px;
+    height: 70px;
+    background: linear-gradient(to bottom, #9b5a20, #7b3e10); /* Leather color */
+    border-radius: 50% / 30% 30% 50% 50%; /* Pouch shape */
+    border: 2px solid #5a3c2a;
+    box-shadow: var(--shadow-raised), inset 0 0 10px rgba(0,0,0,0.5);
+    transform: translateZ(15px) rotateZ(-5deg);
+    pointer-events: auto;
+    cursor: help;
+    transition: transform 0.2s ease-out;
+
+    &::before { /* Drawstring top */
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 10px;
+        background: #8b4e18;
+        border-radius: 5px;
+        border: 1px solid #6a3c18;
+        box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+    }
+    &::after { /* Drawstring knot */
+        content: '';
+        position: absolute;
+        top: 0px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 8px;
+        height: 8px;
+        background: #5a3c1a;
+        border-radius: 50%;
+        border: 1px solid #3a2b1f;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+    }
+}
+.coin-pouch:hover {
+    transform: translateZ(20px) rotateZ(0deg) translateY(-5px);
+}
+
+
+/* --- Map Overlay: Full screen with backdrop blur --- */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* Darker, more immersive overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+    backdrop-filter: blur(5px); /* Modern blur effect */
+}
+
+.overlay.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.map-content {
+    background: linear-gradient(135deg, var(--color-parchment-light) 0%, #e0dcc6 100%);
+    border: 5px solid var(--color-dark-red);
+    padding: 30px;
+    box-shadow: var(--shadow-deep);
+    max-width: 80%;
+    max-height: 90%;
+    overflow: auto;
+    text-align: center;
+    position: relative;
+    transform: scale(0.8) translateY(50px); /* Initial state for pop-up */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    border-radius: 5px;
+}
+
+.overlay.show .map-content {
+    transform: scale(1) translateY(0); /* Final state for pop-up */
+}
+
+.map-content h2 {
+    font-family: var(--font-heading);
+    font-size: 2em;
+    color: var(--color-dark-red);
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+}
+
+.map-content p {
+    font-family: var(--font-ui);
+    font-size: 1.1em;
+    margin-bottom: 25px;
+    color: var(--color-text-dark);
+}
+
+.detailed-map {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    border: 3px solid var(--color-dark-wood);
+    background-color: #b0aa90; /* Base map paper color */
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5); /* Inner shadow for map depth */
+    border-radius: 3px;
+}
+
+.detailed-map path {
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    transition: fill 0.2s ease-out, transform 0.1s ease-out; /* Smooth hover */
+    transform-origin: center center;
+}
+
+.detailed-map path:hover {
+    fill: rgba(255, 255, 0, 0.3) !important; /* Highlight on hover */
+    transform: scale(1.01); /* Subtle grow */
+    cursor: pointer;
+}
+
+/* Close Button */
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: linear-gradient(to bottom, #d03030, #8b0000); /* Red metallic button */
+    color: white;
+    border: 2px solid #5a0000;
+    width: 40px;
+    height: 40px;
+    font-family: var(--font-ui);
+    font-size: 1.5em;
+    cursor: pointer;
+    line-height: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%; /* Circular button */
+    box-shadow: var(--shadow-raised);
+    transition: all 0.15s ease-out;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.close-button:hover {
+    background: linear-gradient(to bottom, #ff4040, #a00000);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.5);
+    transform: scale(1.05); /* Slight grow */
+}
+
+.close-button:active {
+    background: linear-gradient(to top, #d03030, #8b0000);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+    transform: scale(0.95); /* Slight press */
+}
