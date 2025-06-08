@@ -1,61 +1,68 @@
 body {
     margin: 0;
     overflow: hidden;
-    font-family: 'Press Start 2P', cursive; /* Ideal pixel font */
+    font-family: 'Press Start 2P', cursive; /* Essential pixel font */
     color: #f0e6d2; /* Light parchment/paper color for text */
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: #2e241c; /* Dark, desaturated wood or background */
-    image-rendering: crisp-edges; /* For scaling pixel art crisply */
-    image-rendering: pixelated; /* Ensures pixelation on scaled elements */
+    background-color: #1c140c; /* Dark, gritty background */
+    image-rendering: pixelated; /* CRITICAL: Ensures pixelation on scaled elements */
+    -ms-interpolation-mode: nearest-neighbor; /* For older IE */
+    image-rendering: -webkit-optimize-contrast; /* For Webkit browsers */
+    image-rendering: -moz-crisp-edges; /* For Firefox */
+    image-rendering: -o-crisp-edges; /* For Opera */
 }
 
-/* --- Game Container: Sets the overall perspective --- */
+/* --- Game Container: Overall scene and pixel rendering --- */
 .game-container {
     width: 90vw;
     height: 90vh;
-    max-width: 1200px; /* Limit max size */
+    max-width: 1200px;
     max-height: 800px;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     perspective: 1000px; /* For the desk's 3D tilt */
+    /* Ensure everything inside respects pixel rendering */
+    image-rendering: pixelated;
+    -webkit-font-smoothing: none; /* Prevent anti-aliasing on fonts */
 }
 
-/* --- Desk: Rotated and styled as pixel art wood --- */
+/* --- Desk: Pixel art wood texture and perspective --- */
 .desk {
     width: 95%;
     height: 95%;
+    /* Pixelated wood texture using repeating gradients */
     background-image:
         linear-gradient(to right, #4f3624 1px, transparent 1px),
-        linear-gradient(to bottom, #4f3624 1px, transparent 1px);
-    background-size: 8px 8px; /* Small pixel grid for texture */
+        linear-gradient(to bottom, #4f3624 1px, transparent 1px),
+        repeating-linear-gradient(135deg, #6a4933 0px, #6a4933 1px, #5a3c2a 1px, #5a3c2a 2px);
+    background-size: 8px 8px, 8px 8px, 4px 4px; /* Grid lines and subtle grain */
     background-color: #6a4933; /* Base wood color */
-    border: 5px solid #2e241c; /* Thick, dark pixel border */
-    border-bottom: 8px solid #2e241c; /* Heavier bottom border for depth */
-    box-shadow: 0 10px 0px 0px rgba(0, 0, 0, 0.7), /* Hard shadow for thickness */
-                0 12px 0px 0px #1a1a1a; /* Second layer for more depth */
+    border: 4px solid #2e241c; /* Thick, dark pixel border */
+    border-bottom: 7px solid #2e241c; /* Heavier bottom border for depth */
+    box-shadow: 0 8px 0px 0px #3a2b1f, /* First hard shadow for thickness */
+                0 12px 0px 0px #1a1a1a; /* Second layer for more pronounced depth */
     position: relative;
     display: grid;
-    grid-template-columns: 200px 1fr 200px; /* Defined pixel widths for side panels */
+    grid-template-columns: 200px 1fr 200px;
     grid-template-rows: 1fr;
-    padding: 20px;
+    padding: 15px; /* Adjust padding for pixel look */
     box-sizing: border-box;
-    transform: rotateX(15deg) translateY(20px); /* Simulates looking down */
+    transform: rotateX(15deg) translateY(20px);
     transform-style: preserve-3d;
-    image-rendering: pixelated;
 }
 
 /* --- Panel Styling --- */
 .left-panel, .right-panel {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Pixel-perfect spacing */
+    gap: 15px; /* Tighter pixel spacing */
     align-items: stretch;
-    padding: 5px;
+    padding: 3px;
     z-index: 2;
     grid-column: 1;
     grid-row: 1;
@@ -68,10 +75,10 @@ body {
 /* --- Metrics Panel --- */
 .metrics-panel {
     background-color: #a09d84; /* Old paper background */
-    padding: 10px;
+    padding: 8px;
     border: 2px solid #5a4b3f; /* Darker pixel border */
-    box-shadow: 3px 3px 0px #3a2b1f; /* Hard pixel shadow */
-    font-size: 0.9em;
+    box-shadow: 2px 2px 0px #3a2b1f; /* Hard pixel shadow */
+    font-size: 0.8em; /* Smaller for pixel font */
     min-width: 150px;
     text-align: left;
     position: relative;
@@ -83,18 +90,18 @@ body {
     margin-top: 0;
     font-family: 'Press Start 2P', cursive;
     color: #6a0000; /* Deep red for titles */
-    font-size: 1em;
+    font-size: 0.9em;
     border-bottom: 2px solid #6a0000;
-    padding-bottom: 5px;
-    margin-bottom: 8px;
+    padding-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .metrics-panel p {
-    margin: 4px 0;
+    margin: 3px 0;
 }
 
 .metrics-panel span {
-    font-weight: normal; /* Pixel fonts are usually monoweight */
+    font-weight: normal;
     color: #008000; /* Green for positive metrics */
     transition: none; /* No smooth transition for pixel art */
 }
@@ -109,14 +116,14 @@ body {
 /* --- Game Day Counter --- */
 .game-day {
     background-color: #a09d84;
-    padding: 8px 10px;
+    padding: 6px 8px;
     border: 2px solid #5a4b3f;
-    box-shadow: 3px 3px 0px #3a2b1f;
+    box-shadow: 2px 2px 0px #3a2b1f;
     font-family: 'Press Start 2P', cursive;
-    font-size: 1em;
+    font-size: 0.9em;
     color: #4f3624;
     text-align: center;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     position: relative;
     overflow: hidden;
     z-index: 3;
@@ -126,11 +133,11 @@ body {
 .map-button {
     background-color: #8b6b4b; /* Brown button */
     color: #f0e6d2;
-    padding: 10px 15px;
-    border: 3px solid #5a0000; /* Dark red, pixelated border */
+    padding: 8px 12px;
+    border: 2px solid #5a0000; /* Dark red, pixelated border */
     box-shadow: 3px 3px 0px #3a2b1f;
     font-family: 'Press Start 2P', cursive;
-    font-size: 1em;
+    font-size: 0.9em;
     cursor: pointer;
     transition: none; /* No smooth transitions */
     z-index: 3;
@@ -148,28 +155,29 @@ body {
     background-color: #705c3c;
 }
 
-/* --- Document Area: The central focus --- */
+/* --- Document Area: The central focus with pixel paper --- */
 .document-area {
     width: 95%;
-    max-width: 500px; /* A bit narrower for pixel aesthetic */
+    max-width: 500px;
     height: 95%;
     max-height: 550px;
     background-color: #fffaf0; /* White paper */
+    /* Faint pixel grid for paper texture */
     background-image:
-        linear-gradient(to right, rgba(0,0,0,0.08) 1px, transparent 1px), /* Faint vertical lines */
-        linear-gradient(to bottom, rgba(0,0,0,0.08) 1px, transparent 1px); /* Faint horizontal lines */
-    background-size: 15px 15px; /* Pixel grid for paper texture */
+        linear-gradient(to right, rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0,0,0,0.05) 1px, transparent 1px);
+    background-size: 10px 10px;
     border: 3px solid #8b0000; /* Strong, pixelated red border */
-    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.8), /* Hard, thick pixel shadow */
+    box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.8), /* Hard, thick pixel shadow */
                 8px 8px 0px rgba(0, 0, 0, 0.4); /* Second layer for more depth */
-    padding: 20px;
+    padding: 15px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     opacity: 0;
-    transform: scale(0.9) translateY(-10px); /* Stronger pixelated animation */
-    transition: opacity 0.2s linear, transform 0.2s linear; /* Pixel-like transitions */
+    transform: scale(0.9) translateY(-10px);
+    transition: opacity 0.1s linear, transform 0.1s linear; /* Fast, pixel-like transitions */
     grid-column: 2;
     grid-row: 1;
     align-self: center;
@@ -182,18 +190,18 @@ body {
     transform: scale(1) translateY(0);
 }
 
-/* Document Seal */
+/* Document Seal: More distinct pixel cross */
 .document-seal {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    width: 25px;
-    height: 25px;
+    top: 8px;
+    left: 8px;
+    width: 20px; /* Smaller, more pixelated seal */
+    height: 20px;
     background-color: #8b0000; /* Red wax */
-    border: 2px solid #5a0000; /* Darker red border */
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.6); /* Hard shadow for wax thickness */
+    border: 1px solid #5a0000; /* Darker red border */
+    box-shadow: 1px 1px 0px rgba(0,0,0,0.6); /* Hard pixel shadow */
     z-index: 1;
-    /* Simulate a cross or imperial symbol with simple pixel blocks */
+    /* Simulate a pixel cross */
     &::before, &::after {
         content: '';
         position: absolute;
@@ -201,15 +209,15 @@ body {
         box-shadow: 1px 1px 0px rgba(0,0,0,0.3);
     }
     &::before { /* Vertical bar */
-        width: 6px;
-        height: 18px;
+        width: 4px;
+        height: 14px;
         top: 3px;
         left: 50%;
         transform: translateX(-50%);
     }
     &::after { /* Horizontal bar */
-        width: 18px;
-        height: 6px;
+        width: 14px;
+        height: 4px;
         top: 50%;
         left: 3px;
         transform: translateY(-50%);
@@ -220,41 +228,41 @@ body {
     font-family: 'Press Start 2P', cursive;
     text-align: center;
     margin-top: 0;
-    font-size: 1.2em;
+    font-size: 1.1em;
     color: #6a0000;
     border-bottom: 2px solid #6a0000;
-    padding-bottom: 8px;
-    margin-bottom: 15px;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
 }
 
 .document-content {
     flex-grow: 1;
-    font-size: 0.9em;
-    line-height: 1.6;
+    font-size: 0.8em;
+    line-height: 1.5;
     overflow-y: auto;
-    padding-right: 10px;
+    padding-right: 8px;
     scrollbar-width: thin;
     scrollbar-color: #8b6b4b #f5f5dc;
 }
 .document-content::-webkit-scrollbar {
-    width: 8px; /* Pixelated scrollbar width */
+    width: 6px; /* Very thin, pixelated scrollbar */
 }
 .document-content::-webkit-scrollbar-track {
-    background: #f0e6d2; /* Light track */
+    background: #f0e6d2;
 }
 .document-content::-webkit-scrollbar-thumb {
-    background-color: #8b6b4b; /* Brown thumb */
-    border: 1px solid #7a6e5b; /* Defined pixel border */
+    background-color: #8b6b4b;
+    border: 1px solid #7a6e5b;
 }
 
 .document-source {
-    font-style: normal; /* Pixel fonts rarely use italics */
+    font-style: normal;
     text-align: right;
-    margin-top: 15px;
-    font-size: 0.8em;
+    margin-top: 10px;
+    font-size: 0.7em;
     color: #444;
-    border-top: 1px dashed #aaa; /* Thinner dashed line */
-    padding-top: 8px;
+    border-top: 1px dashed #aaa;
+    padding-top: 6px;
     align-self: flex-end;
     width: 100%;
     box-sizing: border-box;
@@ -263,18 +271,18 @@ body {
 .options-container {
     display: flex;
     flex-direction: column;
-    gap: 8px; /* Tighter pixel spacing */
-    margin-top: 15px;
+    gap: 6px; /* Tighter pixel spacing */
+    margin-top: 10px;
 }
 
 .option-button {
     background-color: #3a2b1f; /* Dark wood button */
     color: #f0e6d2;
-    padding: 10px 15px;
+    padding: 8px 12px;
     border: 2px solid #2e241c;
     box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.7); /* Hard pixel shadow */
     font-family: 'Press Start 2P', cursive;
-    font-size: 0.9em;
+    font-size: 0.8em;
     cursor: pointer;
     transition: none; /* No smooth transitions */
     text-align: center;
@@ -292,14 +300,14 @@ body {
     background-color: #2e241c;
 }
 
-/* --- Trays: Designed as blocky pixel trays --- */
+/* --- Trays: More defined pixel blocks --- */
 .tray {
-    width: 150px;
-    height: 100px;
+    width: 140px; /* Slightly narrower */
+    height: 90px; /* Shorter */
     background-color: #7a6e5b; /* Tray base color */
-    border: 3px solid #4f3624; /* Thick pixel border */
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.6), /* Inner shadow for tray depth */
-                4px 4px 0px rgba(0,0,0,0.6); /* Hard outer shadow */
+    border: 2px solid #4f3624; /* Pixel border */
+    box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.6), /* Inner shadow for tray depth */
+                3px 3px 0px rgba(0,0,0,0.6); /* Hard outer shadow */
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -311,22 +319,22 @@ body {
 
 .tray p {
     font-family: 'Press Start 2P', cursive;
-    font-size: 0.9em;
+    font-size: 0.8em;
     color: #2e241c;
-    margin-bottom: 5px;
+    margin-bottom: 3px;
     position: absolute;
     top: 5px;
     font-weight: normal;
 }
 
 .paper-stack {
-    width: 80%;
-    height: 50px; /* Pixelated paper stack height */
+    width: 75%; /* Pixelated paper stack width */
+    height: 45px; /* Pixelated paper stack height */
     background-color: #fffaf0; /* White paper color */
-    border: 2px solid #bbb; /* Paper outline */
-    border-bottom: 3px solid #999; /* Stronger bottom edge */
-    box-shadow: 0 3px 0px rgba(0, 0, 0, 0.4); /* Hard pixel shadow for stack depth */
-    margin-bottom: 5px;
+    border: 1px solid #bbb; /* Fine paper outline */
+    border-bottom: 2px solid #999; /* Stronger bottom edge */
+    box-shadow: 0 2px 0px rgba(0, 0, 0, 0.4); /* Hard pixel shadow for stack depth */
+    margin-bottom: 4px;
     position: relative;
     top: 0;
 }
@@ -336,81 +344,81 @@ body {
     border-color: #888;
 }
 
-/* --- Decorative Elements: Pixelated Quill & Inkwell --- */
+/* --- Decorative Elements: Highly Pixelated Quill & Inkwell --- */
 .quill-inkwell {
     position: absolute;
     bottom: 5%;
     left: 8%;
-    width: 60px; /* Pixel-perfect size */
-    height: 60px;
+    width: 50px; /* More pixelated size */
+    height: 50px;
     background: #3a2b1f; /* Inkwell body */
     border: 2px solid #2e241c; /* Sharp outline */
-    box-shadow: 3px 3px 0px rgba(0,0,0,0.7); /* Blocky shadow */
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.7); /* Blocky shadow */
     z-index: 1;
-    image-rendering: pixelated; /* Ensure internal elements are also pixelated */
+    image-rendering: pixelated;
 
-    /* Quill Feather */
+    /* Quill Feather - constructed from pixel blocks */
     &::before {
         content: '';
         position: absolute;
-        top: -45px; /* Position above inkwell */
+        top: -40px; /* Position above inkwell */
         left: 50%;
         transform: translateX(-50%) rotate(-10deg);
-        width: 8px; /* Pixelated feather stem width */
-        height: 80px; /* Pixelated feather stem height */
+        width: 6px; /* Pixelated feather stem width */
+        height: 70px; /* Pixelated feather stem height */
         background-color: #e0e0e0; /* Light feather color */
         border: 1px solid #ccc; /* Fine feather outline */
-        box-shadow: -2px -2px 0px rgba(0,0,0,0.3); /* Pixel feather shadow */
-        /* Feather texture - multiple small pixel blocks/lines */
+        box-shadow: -1px -1px 0px rgba(0,0,0,0.3); /* Pixel feather shadow */
+        /* Feather "barbs" - more pronounced pixel lines */
         background-image:
             linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px),
             linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px);
-        background-size: 3px 3px;
+        background-size: 2px 2px; /* Very small pixel details */
     }
-    /* Quill Nib */
+    /* Quill Nib - very thin pixel block */
     &::after {
         content: '';
         position: absolute;
-        bottom: 15px; /* Where nib enters ink */
+        bottom: 12px; /* Where nib enters ink */
         left: 50%;
         transform: translateX(-50%);
-        width: 4px; /* Thin nib */
-        height: 20px; /* Long nib */
+        width: 2px; /* Super thin nib */
+        height: 15px; /* Long nib */
         background-color: black;
         box-shadow: 1px 1px 0px rgba(0,0,0,0.5); /* Nib shadow */
     }
 }
 
-/* --- Decorative Scroll: Pixelated look --- */
+/* --- Decorative Scroll: Simplified pixel form --- */
 .decorative-scroll {
     position: absolute;
     bottom: 8%;
     right: 8%;
-    width: 120px; /* Pixelated scroll width */
-    height: 20px; /* Pixelated scroll height */
+    width: 100px; /* More pixelated scroll width */
+    height: 18px; /* More pixelated scroll height */
     background-color: #d0c8b0; /* Parchment color */
     border: 2px solid #7a6e5b; /* Defined pixel border */
-    box-shadow: 3px 3px 0px rgba(0,0,0,0.6); /* Hard pixel shadow */
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.6); /* Hard pixel shadow */
     z-index: 1;
     image-rendering: pixelated;
 
-    /* Rolled ends of the scroll */
+    /* Rolled ends of the scroll - very blocky */
     &::before, &::after {
         content: '';
         position: absolute;
-        width: 10px; /* Thickness of rolled part */
+        width: 8px; /* Thickness of rolled part */
         height: 100%;
         background-color: #b0a890; /* Darker shade for rolled edges */
-        border: 2px solid #7a6e5b;
+        border: 1px solid #7a6e5b;
         top: 0;
-        box-shadow: inset 0 0 3px rgba(0,0,0,0.4); /* Inner shadow for rolled look */
+        box-shadow: inset 0 0 2px rgba(0,0,0,0.4); /* Inner shadow for rolled look */
     }
     &::before {
-        left: -10px;
+        left: -8px;
         border-right: none;
     }
     &::after {
-        right: -10px;
+        right: -8px;
         border-left: none;
     }
 }
@@ -422,7 +430,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.9); /* Dark overlay */
+    background-color: rgba(0, 0, 0, 0.95); /* Darker, more opaque overlay */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -430,7 +438,7 @@ body {
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: opacity 0.2s linear, visibility 0.2s linear; /* Pixel-like transition */
+    transition: opacity 0.1s linear, visibility 0.1s linear; /* Fast pixel-like transition */
 }
 
 .map-overlay.show {
@@ -441,37 +449,36 @@ body {
 
 .map-content {
     background-color: #f0e6d2; /* Map paper color */
-    border: 4px solid #6a0000; /* Strong red pixel border */
-    padding: 20px;
-    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.8); /* Hard, thick pixel shadow */
-    max-width: 70%;
-    max-height: 85%;
+    border: 3px solid #6a0000; /* Strong red pixel border */
+    padding: 15px;
+    box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.8); /* Hard, thick pixel shadow */
+    max-width: 65%;
+    max-height: 80%;
     overflow: auto;
     text-align: center;
     position: relative;
-    image-rendering: pixelated; /* Ensure map content is pixelated */
 }
 
 .map-content h2 {
     font-family: 'Press Start 2P', cursive;
-    font-size: 1.5em;
+    font-size: 1.2em;
     color: #6a0000;
     margin-top: 0;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .map-content p {
-    font-size: 0.9em;
-    margin-bottom: 15px;
+    font-size: 0.8em;
+    margin-bottom: 10px;
 }
 
 .pixel-map {
     width: 100%;
     height: auto;
-    max-height: 350px;
+    max-height: 300px;
     border: 2px solid #333;
     background-color: #b0aa90; /* Base map color */
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.5); /* Inner shadow for map depth */
+    box-shadow: inset 0 0 4px rgba(0,0,0,0.5); /* Inner shadow for map depth */
 }
 
 .pixel-map rect, .pixel-map polygon, .pixel-map line {
@@ -481,15 +488,15 @@ body {
 
 .close-map-button {
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: 4px;
+    right: 4px;
     background-color: #6a0000;
     color: white;
     border: 2px solid #4a0000;
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
     font-family: 'Press Start 2P', cursive;
-    font-size: 1.2em;
+    font-size: 1em;
     cursor: pointer;
     line-height: 1;
     display: flex;
@@ -511,5 +518,5 @@ body {
     background-color: #5a0000;
 }
 
-/* Import a pixel font */
+/* Import pixel font (already included in previous versions but good to keep explicit) */
 @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
