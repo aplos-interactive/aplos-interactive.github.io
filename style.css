@@ -411,72 +411,68 @@ body {
     }
 }
 
+/* --- Document Area: The central focus, styled as a thick, aged parchment --- */
+.document-area {
+    width: 90%; /* A bit smaller to show more desk */
+    max-width: 600px;
+    height: 100%; /* <-- IMPORTANT CHANGE: Make it fill its grid cell vertically */
+    min-height: 550px; /* Ensure a sensible minimum height */
+    max-height: 680px; /* Slightly increased max-height */
+    background: var(--color-parchment-light); /* Base parchment color */
+    border: 5px solid var(--color-dark-red); /* Thick, regal border */
+    box-shadow: var(--shadow-raised-heavy); /* Strong shadow for lifted effect */
+    padding: 30px; /* Increased padding */
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Distributes space between elements */
+    position: relative;
+    z-index: 4; /* Ensures it's above other desk elements */
+    opacity: 0;
+    transform-origin: center bottom; /* For more dramatic flip from the bottom */
+    /* NEW INITIAL STATE FOR ANIMATION - simpler, less prone to visual glitches */
+    transform: scale(0.7) translateY(50px); /* Start smaller and lower */
+    transition: opacity var(--transition-slow), transform var(--transition-slow); /* Slower, more dramatic reveal */
+    grid-column: 2;
+    grid-row: 1;
+    /* REMOVE THIS LINE: align-self: center; <-- IMPORTANT CHANGE: Let it stretch vertically by default */
+    justify-self: center; /* Keep this to center it horizontally within its grid cell */
+    border-radius: 3px;
+    background:
+        url('https://www.transparenttextures.com/patterns/old-map.png'), /* Aged map-like texture */
+        linear-gradient(to top left, rgba(255,255,255,0.2), rgba(0,0,0,0.1)), /* Lighting overlay */
+        var(--color-parchment-light);
+    background-blend-mode: overlay, overlay, normal;
+
+    /* Subtle paper curl effect with multiple box-shadows */
+    box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.5), /* Main shadow */
+        0 2px 4px rgba(0, 0, 0, 0.3), /* Closer shadow */
+        -5px 5px 15px rgba(0,0,0,0.2) inset, /* Inner top-left corner shadow for curl */
+        5px -5px 15px rgba(0,0,0,0.2) inset; /* Inner bottom-right corner shadow for curl */
+}
+
+/* Ensure title, content wrapper, and source/options have correct flex behavior */
 .document-area h3 {
-    font-family: var(--font-heading);
-    text-align: center;
-    margin-top: 10px; /* Adjust for seal */
-    font-size: 1.8em; /* Larger title */
-    color: var(--color-dark-red);
-    border-bottom: 3px double var(--color-dark-red); /* Double border for elegance */
-    padding-bottom: 12px;
-    margin-bottom: 25px;
-    text-shadow: 1px 1px 3px rgba(255,255,255,0.7);
+    /* ... existing styles ... */
+    flex-shrink: 0;
 }
 
 .document-content-wrapper {
-    flex-grow: 1;
+    flex-grow: 1; /* This remains crucial for content to fill space */
     overflow-y: auto;
-    padding-right: 20px; /* Space for scrollbar */
-    margin-right: -10px; /* Pull into padding for cleaner look */
-}
-
-.document-content {
-    font-size: 1.1em; /* Slightly larger text */
-    line-height: 1.8; /* More comfortable reading */
-    text-align: justify;
-    padding-top: 5px; /* Small top padding */
-    hyphens: auto; /* Enable hyphenation for better text flow */
-}
-
-/* Custom Scrollbar Styling - Themed to match parchment */
-.document-content-wrapper::-webkit-scrollbar {
-    width: 15px; /* Thicker scrollbar */
-}
-.document-content-wrapper::-webkit-scrollbar-track {
-    background: var(--color-parchment-medium);
-    border-left: 2px solid rgba(0,0,0,0.1);
-    border-radius: 8px; /* Rounded track */
-}
-.document-content-wrapper::-webkit-scrollbar-thumb {
-    background-color: var(--color-medium-wood);
-    border-radius: 8px;
-    border: 3px solid var(--color-dark-wood);
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.4);
-}
-.document-content-wrapper::-webkit-scrollbar-thumb:hover {
-    background-color: var(--color-gold-accent);
-    filter: brightness(1.2); /* Brighter on hover */
+    /* ... existing styles ... */
+    min-height: 120px;
 }
 
 .document-source {
-    font-family: var(--font-ui);
-    font-style: italic;
-    text-align: right;
-    margin-top: 25px; /* More separation */
-    font-size: 1em;
-    color: #444;
-    border-top: 1px dashed #aaa;
-    padding-top: 12px;
-    align-self: flex-end;
-    width: 100%;
-    box-sizing: border-box;
+    /* ... existing styles ... */
+    flex-shrink: 0;
 }
 
 .options-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px; /* Increased gap between buttons */
-    margin-top: 25px;
+    /* ... existing styles ... */
+    flex-shrink: 0;
 }
 
 /* --- Trays: Deep, recessed wooden document trays --- */
