@@ -91,6 +91,8 @@ const metricElements = {
     cardinalFavor: document.getElementById('metric-cardinalFavor')
 };
 const mapButton = document.getElementById('map-button');
+const mapOverlay = document.getElementById('map-overlay'); // New: Map overlay
+const closeMapButton = document.getElementById('close-map-button'); // New: Close map button
 
 // --- Functions ---
 
@@ -129,6 +131,9 @@ function loadDocument(docId) {
 
     currentDocumentId = docId;
 
+    // Ensure map is closed when a new document loads
+    hideMap();
+
     // Trigger document area animation
     documentArea.classList.remove('show'); // Hide for re-animation
     setTimeout(() => {
@@ -154,8 +159,10 @@ function loadDocument(docId) {
     if (docId !== "intro_briefing" || gameDay !== 0) { // Don't increment on first load
         gameDay++;
     } else {
-        // Reset metrics when restarting demo
-        papalMetrics = { Piety: 50, Authority: 50, Gold: 100, PublicOpinion: 50, CardinalFavor: 50 };
+        // Reset metrics when restarting demo (only on explicit restart, not if gameDay is already > 0)
+        if (gameDay === 0 || docId === 'intro_briefing') { // Also handles the "Restart Demo" button
+            papalMetrics = { Piety: 50, Authority: 50, Gold: 100, PublicOpinion: 50, CardinalFavor: 50 };
+        }
         gameDay = 1; // Start at day 1 for a new demo run
     }
     gameDayCounter.textContent = gameDay;
@@ -191,12 +198,18 @@ function handleDecision(option) {
     }
 }
 
-// --- Event Listeners ---
-// Map button - currently non-functional, just an alert
-mapButton.addEventListener('click', () => {
-    alert("The map shows the state of Europe! (Feature to be implemented)");
-});
+// --- Map Functions ---
+function showMap() {
+    mapOverlay.classList.add('show');
+}
 
+function hideMap() {
+    mapOverlay.classList.remove('show');
+}
+
+// --- Event Listeners ---
+mapButton.addEventListener('click', showMap);
+closeMapButton.addEventListener('click', hideMap);
 
 // --- Initial Game Setup ---
 document.addEventListener('DOMContentLoaded', () => {
