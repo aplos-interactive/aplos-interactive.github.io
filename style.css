@@ -1,149 +1,141 @@
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
-    padding: 0;
-    background-color: #f8f9fa; 
-    color: #495057; 
-    line-height: 1.6;
-    overflow-x: hidden; 
-}
-
-header {
-    background: linear-gradient(135deg, #007bff, #6610f2); 
-    color: white;
-    padding: 30px 20px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-header h1 {
-    margin-bottom: 15px;
-    font-size: 2.5em;
-    font-weight: 500;
-    letter-spacing: 0.5px;
-}
-
-.search-bar {
-    display: flex;
-    justify-content: center;
-    max-width: 600px;
-    margin: 0 auto 30px;
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.9);
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-}
-
-.search-bar input[type="text"] {
-    padding: 12px;
-    border: none;
-    border-radius: 5px 0 0 5px;
-    flex-grow: 1;
-    font-size: 1em;
+    overflow: hidden; /* Hide scrollbars */
+    font-family: 'Georgia', serif; /* A more historical-looking font */
     color: #333;
 }
 
-.search-bar button {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 12px 15px;
-    border-radius: 0 5px 5px 0;
-    cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.3s ease;
+.game-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #2c3e50; /* Dark background for overall scene */
 }
 
-.search-bar button:hover {
-    background-color: #1e7e34;
+.desk {
+    width: 90%;
+    height: 90%;
+    background-color: #5a3c22; /* Darker brown for the desk */
+    border: 10px solid #4a301f; /* Darker border for depth */
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.destinations {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
-    gap: 30px;
-    padding: 30px;
-    background-color: #f8f9fa;
+.metrics-panel {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(255, 255, 255, 0.85);
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border: 1px solid #ccc;
+    font-size: 1.1em;
+    min-width: 150px;
 }
 
-.destination-card {
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
-    overflow: hidden;
-    transition: transform 0.2s ease-in-out;
-}
-
-.destination-card:hover {
-    transform: translateY(-5px);
-}
-
-.destination-card img {
-    width: 100%;
-    height: 250px; 
-    object-fit: cover;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
-}
-
-.destination-card .info { 
-    padding: 20px;
-}
-
-.destination-card h2 {
+.metrics-panel h2 {
     margin-top: 0;
-    font-size: 1.8em;
-    color: #343a40; 
+    color: #8B0000; /* Dark red for heading */
+    font-size: 1.2em;
+    border-bottom: 1px solid #8B0000;
+    padding-bottom: 5px;
     margin-bottom: 10px;
 }
 
-.destination-card p {
-    color: #6c757d; 
-    font-size: 1em;
-    line-height: 1.7;
-    margin-bottom: 15px;
+.metrics-panel p {
+    margin: 5px 0;
 }
 
+.metrics-panel span {
+    font-weight: bold;
+    color: #006400; /* Dark green for values */
+}
 
-.destination-card a.destination-button {
-    display: block; 
-    background-color: #007bff;
+.map-button {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #a08c69; /* Button color */
     color: white;
+    padding: 10px 20px;
     border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    margin: 15px;
+    border-radius: 5px;
+    font-size: 1.2em;
     cursor: pointer;
-    font-size: 1em;
-    text-align: center;
-    text-decoration: none; 
-    transition: background-color 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s ease;
 }
 
-.destination-card a.destination-button:hover {
-    background-color: #0056b3;
+.map-button:hover {
+    background-color: #c0b095;
 }
 
-footer {
+.document-area {
+    width: 60%;
+    height: 70%;
+    background-color: #fff8dc; /* Parchment color */
+    border: 2px solid #5a3c22; /* Desk color border */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    padding: 30px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Pushes options to the bottom */
+}
+
+.document-area h3 {
     text-align: center;
-    padding: 20px;
-    background-color: #343a40; 
-    color: white;
+    margin-top: 0;
+    font-size: 1.8em;
+    color: #8B0000; /* Dark red for document titles */
+}
+
+.document-content {
+    flex-grow: 1; /* Allows content to take available space */
+    font-size: 1.1em;
+    line-height: 1.6;
+    overflow-y: auto; /* Enable scrolling for long content */
+    padding-right: 10px; /* Space for scrollbar */
+}
+
+.document-source {
+    font-style: italic;
+    text-align: right;
+    margin-top: 15px;
     font-size: 0.9em;
+    color: #666;
 }
 
+.options-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Space between buttons */
+    margin-top: 20px;
+}
 
-@media (max-width: 768px) {
-    .search-bar {
-        width: 95%;
-    }
+.option-button {
+    background-color: #a08c69; /* Button color */
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    text-align: left; /* Align text to the left within the button */
+}
 
-    .destinations {
-        grid-template-columns: 1fr;
-        padding: 20px;
-    }
+.option-button:hover {
+    background-color: #c0b095;
+    transform: translateY(-2px); /* Slight lift on hover */
+}
 
-    .destination-card {
-        margin-bottom: 20px;
-    }
+.option-button:active {
+    transform: translateY(0); /* Press effect */
 }
