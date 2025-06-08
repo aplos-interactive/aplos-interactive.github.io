@@ -1,4 +1,4 @@
-// --- Game Data ---
+// --- Game Data (No changes, as the content was already good) ---
 const DOCUMENTS = {
     "intro_briefing": {
         title: "Your First Briefing: The State of the Church",
@@ -66,6 +66,7 @@ let papalMetrics = {
     CardinalFavor: 50
 };
 
+// A placeholder for global game state if needed for more complex decisions later
 let globalGameState = {
     CrusadeStatus: "None",
     PapalStatesControl: "Strong",
@@ -75,7 +76,7 @@ let globalGameState = {
 let currentDocumentId = "intro_briefing";
 let gameDay = 0; // Start at day 0, increment for first document
 
-// --- DOM Elements (References to HTML elements) ---
+// --- DOM Elements ---
 const docTitle = document.getElementById('document-title');
 const docContent = document.getElementById('document-content');
 const docSource = document.getElementById('document-source');
@@ -92,10 +93,14 @@ const metricElements = {
 };
 const mapButton = document.getElementById('map-button');
 const mapOverlay = document.getElementById('map-overlay'); // Map overlay
-const closeMapButton = document.getElementById('close-map-button'); // Close map button
+const closeMapButton = document.getElementById('close-map_button'); // Close map button
 
 // --- Functions ---
 
+/**
+ * Updates the display of Papal metrics and applies visual feedback for changes.
+ * @param {Object} changes - An object mapping metric names to their change amounts.
+ */
 function updateMetricsDisplay(changes = {}) {
     for (const metric in papalMetrics) {
         const element = metricElements[metric.toLowerCase()];
@@ -103,12 +108,14 @@ function updateMetricsDisplay(changes = {}) {
             const oldValue = parseFloat(element.textContent);
             const newValue = papalMetrics[metric];
 
+            // Update text content
             element.textContent = newValue;
 
-            // Apply temporary color change and animation if value changed
+            // Apply temporary class for visual feedback if value changed
             if (metric in changes && oldValue !== newValue) {
-                element.classList.remove('metric-change-positive', 'metric-change-negative'); // Clean previous classes
-                // Force reflow for animation to re-trigger
+                // Remove existing classes to ensure animation re-triggers
+                element.classList.remove('metric-change-positive', 'metric-change-negative');
+                // Force reflow/re-render to reset animation
                 void element.offsetWidth; // eslint-disable-line no-void
 
                 if (newValue > oldValue) {
@@ -116,15 +123,20 @@ function updateMetricsDisplay(changes = {}) {
                 } else if (newValue < oldValue) {
                     element.classList.add('metric-change-negative');
                 }
-                // Remove class after a short delay
+
+                // Remove the class after a short delay to reset the animation
                 setTimeout(() => {
                     element.classList.remove('metric-change-positive', 'metric-change-negative');
-                }, 800); // Flash for 0.8 seconds
+                }, 800); // Animation duration is 0.8s in CSS
             }
         }
     }
 }
 
+/**
+ * Loads a document into the display area with an animation.
+ * @param {string} docId - The ID of the document to load.
+ */
 function loadDocument(docId) {
     const doc = DOCUMENTS[docId];
     if (!doc) {
@@ -137,10 +149,10 @@ function loadDocument(docId) {
     // Ensure map is closed when a new document loads
     hideMap();
 
-    // Hide document area for re-animation
+    // Hide document area to trigger 'hide' animation
     documentArea.classList.remove('show');
 
-    // Small delay to allow 'hide' animation to complete before content updates
+    // After the hide animation (or a short delay), update content and re-show
     setTimeout(() => {
         docTitle.textContent = doc.title;
         docContent.textContent = doc.content;
@@ -160,21 +172,25 @@ function loadDocument(docId) {
 
         // Show with animation after content is loaded
         documentArea.classList.add('show');
-    }, 300); // Match or slightly exceed the document-area hide transition duration
+    }, 500); // Match or slightly exceed the document-area hide transition duration (0.5s)
 
-    // Increment day counter, unless restarting demo
-    if (docId !== "intro_briefing" || gameDay !== 0) { // Don't increment on first load
+    // Increment day counter. Reset to Day 1 if it's the intro briefing (new game/restart)
+    if (docId === "intro_briefing" && gameDay !== 0) { // If restarting demo
+        papalMetrics = { Piety: 50, Authority: 50, Gold: 100, PublicOpinion: 50, CardinalFavor: 50 };
+        updateMetricsDisplay(); // Reset metrics visually
+        gameDay = 1;
+    } else if (docId === "intro_briefing") { // First time loading intro
+        gameDay = 1;
+    } else { // Normal progression
         gameDay++;
-    } else {
-        // Reset metrics when restarting demo (only on explicit restart, not if gameDay is already > 0)
-        if (gameDay === 0 || docId === 'intro_briefing') { // Also handles the "Restart Demo" button
-            papalMetrics = { Piety: 50, Authority: 50, Gold: 100, PublicOpinion: 50, CardinalFavor: 50 };
-        }
-        gameDay = 1; // Start at day 1 for a new demo run
     }
     gameDayCounter.textContent = gameDay;
 }
 
+/**
+ * Handles a player's decision, applies consequences, and loads the next document.
+ * @param {Object} option - The chosen option object.
+ */
 function handleDecision(option) {
     const changes = {}; // Track changes for visual feedback
 
@@ -192,16 +208,16 @@ function handleDecision(option) {
     // Update metrics display with visual feedback
     updateMetricsDisplay(changes);
 
-    // Update global game state (placeholder for future use)
-    // if (option.globalStateChange) {
-    //     Object.assign(globalGameState, option.globalStateChange);
-    // }
+    // Update global game state if specified (for future complex logic)
+    if (option.globalStateChange) {
+        Object.assign(globalGameState, option.globalStateChange);
+    }
 
     // Load next document
     if (option.next_doc_id) {
         loadDocument(option.next_doc_id);
     } else {
-        console.log("No next document specified. End of path.");
+        console.warn("No next document specified. This path may end here.");
     }
 }
 
@@ -214,20 +230,27 @@ function hideMap() {
     mapOverlay.classList.remove('show');
 }
 
-// --- Event Listeners ---
-mapButton.addEventListener('click', showMap);
-closeMapButton.addEventListener('click', hideMap);
-
-// Initial game setup
+// --- Initial Setup and Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
     loadDocument(currentDocumentId); // This will also set initial gameDay to 1
     updateMetricsDisplay(); // Initial display without changes
 
-    // Add event listeners for map paths for potential future interaction/tooltip
-    const mapPaths = document.querySelectorAll('.detailed-map path');
-    mapPaths.forEach(path => {
-        path.addEventListener('mouseover', function() {
-            // console.log(this.querySelector('title').textContent); // Example: log country name on hover
+    // Event listeners for map button
+    mapButton.addEventListener('click', showMap);
+    closeMapButton.addEventListener('click', hideMap);
+
+    // Add subtle hover effects for decorative desk items
+    const deskItems = document.querySelectorAll('.desk-item');
+    deskItems.forEach(item => {
+        item.addEventListener('mouseover', () => {
+            item.style.filter = 'brightness(1.1) drop-shadow(0 0 5px rgba(255,255,0,0.3))'; // Subtle glow
+        });
+        item.addEventListener('mouseout', () => {
+            item.style.filter = 'none';
         });
     });
+
+    // You could also add tooltips here for each item for extra polish:
+    // For example, on quill-inkwell:
+    // quillInkwell.addEventListener('click', () => alert('A faithful quill for your holy decrees.'));
 });
