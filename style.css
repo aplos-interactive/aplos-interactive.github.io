@@ -1,141 +1,278 @@
 body {
     margin: 0;
-    overflow: hidden; /* Hide scrollbars */
-    font-family: 'Georgia', serif; /* A more historical-looking font */
+    overflow: hidden;
+    font-family: 'EB Garamond', serif; /* Default content font */
     color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(to bottom right, #1a2a3a, #0a151d); /* Dark, rich background */
 }
 
 .game-container {
-    width: 100vw;
-    height: 100vh;
+    width: 95vw;
+    height: 95vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #2c3e50; /* Dark background for overall scene */
 }
 
 .desk {
-    width: 90%;
-    height: 90%;
-    background-color: #5a3c22; /* Darker brown for the desk */
-    border: 10px solid #4a301f; /* Darker border for depth */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    /* Wood texture via gradient */
+    background: linear-gradient(
+        135deg,
+        #5a3c22 0%, #704b2c 25%,
+        #5a3c22 50%, #704b2c 75%,
+        #5a3c22 100%
+    );
+    background-size: 40px 40px; /* Small wood grain effect */
+    border: 15px solid #3d2817; /* Deeper, more substantial border */
+    border-radius: 8px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7); /* Stronger shadow for depth */
     position: relative;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: space-between; /* Space out left/right panels */
+    align-items: flex-start; /* Align elements to top */
+    padding: 30px; /* Internal padding for desk items */
+    box-sizing: border-box;
 }
 
+/* --- Panel Styling --- */
+.left-panel, .right-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    align-items: flex-start;
+    padding: 10px;
+}
+
+.right-panel {
+    align-items: flex-end;
+}
+
+/* --- Metrics Panel --- */
 .metrics-panel {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-    background-color: rgba(255, 255, 255, 0.85);
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border: 1px solid #ccc;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 18px;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    border: 2px solid #b8a78e; /* Lighter, subtle border */
     font-size: 1.1em;
-    min-width: 150px;
+    min-width: 180px;
+    text-align: left;
 }
 
 .metrics-panel h2 {
     margin-top: 0;
-    color: #8B0000; /* Dark red for heading */
-    font-size: 1.2em;
-    border-bottom: 1px solid #8B0000;
-    padding-bottom: 5px;
-    margin-bottom: 10px;
+    font-family: 'Cormorant Garamond', serif; /* Title font */
+    color: #8B0000;
+    font-size: 1.5em;
+    border-bottom: 2px solid #8B0000;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .metrics-panel p {
-    margin: 5px 0;
+    margin: 6px 0;
 }
 
 .metrics-panel span {
     font-weight: bold;
-    color: #006400; /* Dark green for values */
+    color: #006400; /* Default green for values */
+    transition: color 0.1s ease-in-out; /* Smooth color change */
 }
 
-.map-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background-color: #a08c69; /* Button color */
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.2em;
-    cursor: pointer;
+/* Metric change feedback colors */
+.metric-change-positive {
+    color: #008000 !important; /* Brighter green */
+}
+.metric-change-negative {
+    color: #FF0000 !important; /* Bright red */
+}
+
+/* --- Game Day Counter --- */
+.game-day {
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 10px 15px;
+    border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.2s ease;
+    border: 1px solid #ccc;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4em;
+    color: #4a301f;
+    text-align: center;
+    margin-bottom: 20px; /* Space from map button */
+}
+
+/* --- Map Button --- */
+.map-button {
+    background-color: #a08c69;
+    color: white;
+    padding: 12px 25px;
+    border: 2px solid #8B0000; /* More defined border */
+    border-radius: 8px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3em;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .map-button:hover {
     background-color: #c0b095;
+    transform: translateY(-3px);
 }
 
+.map-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* --- Document Area --- */
 .document-area {
-    width: 60%;
-    height: 70%;
-    background-color: #fff8dc; /* Parchment color */
-    border: 2px solid #5a3c22; /* Desk color border */
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    width: 60%; /* Adjusted width to make space for trays */
+    height: 90%; /* Take up more vertical space */
+    background-color: #fffaf0; /* Slightly creamier parchment */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%"><text x="50%" y="50%" font-size="200" fill="%23e0e0e0" opacity="0.1" text-anchor="middle" dominant-baseline="middle" transform="rotate(-15 500 350)">SEAL</text></svg>'); /* Subtle watermark */
+    background-repeat: no-repeat;
+    background-position: center center;
+    border: 3px solid #8B0000; /* Red border for official feel */
+    border-radius: 5px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(0, 0, 0, 0.1); /* Inner shadow for depth */
     padding: 30px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Pushes options to the bottom */
+    justify-content: space-between;
+    opacity: 0; /* Start hidden for animation */
+    transform: scale(0.8) translateY(-20px); /* Start smaller and higher */
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out; /* Smooth transition */
+}
+
+.document-area.show {
+    opacity: 1;
+    transform: scale(1) translateY(0);
 }
 
 .document-area h3 {
+    font-family: 'Cormorant Garamond', serif;
     text-align: center;
     margin-top: 0;
-    font-size: 1.8em;
-    color: #8B0000; /* Dark red for document titles */
+    font-size: 2.2em;
+    color: #8B0000;
+    border-bottom: 1px solid #8B0000;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .document-content {
-    flex-grow: 1; /* Allows content to take available space */
-    font-size: 1.1em;
-    line-height: 1.6;
-    overflow-y: auto; /* Enable scrolling for long content */
-    padding-right: 10px; /* Space for scrollbar */
+    flex-grow: 1;
+    font-size: 1.15em;
+    line-height: 1.7;
+    overflow-y: auto;
+    padding-right: 15px; /* More space for scrollbar */
+    /* Custom scrollbar for a nicer look */
+    scrollbar-width: thin;
+    scrollbar-color: #a08c69 #f5f5dc;
+}
+.document-content::-webkit-scrollbar {
+    width: 12px;
+}
+.document-content::-webkit-scrollbar-track {
+    background: #f5f5dc;
+    border-radius: 10px;
+}
+.document-content::-webkit-scrollbar-thumb {
+    background-color: #a08c69;
+    border-radius: 10px;
+    border: 3px solid #f5f5dc;
 }
 
 .document-source {
     font-style: italic;
     text-align: right;
-    margin-top: 15px;
-    font-size: 0.9em;
+    margin-top: 20px;
+    font-size: 1em;
     color: #666;
+    border-top: 1px dashed #ccc; /* Subtle separation */
+    padding-top: 10px;
 }
 
 .options-container {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Space between buttons */
-    margin-top: 20px;
+    gap: 12px;
+    margin-top: 30px;
 }
 
 .option-button {
-    background-color: #a08c69; /* Button color */
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.1em;
+    background-color: #4a301f; /* Darker, richer brown */
+    color: #fffaf0; /* Parchment-like text */
+    padding: 15px 25px;
+    border: 1px solid #3d2817;
+    border-radius: 8px;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2em;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    text-align: left; /* Align text to the left within the button */
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    text-align: center; /* Center text in button */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .option-button:hover {
-    background-color: #c0b095;
-    transform: translateY(-2px); /* Slight lift on hover */
+    background-color: #5a3c22; /* Slightly lighter on hover */
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
 
 .option-button:active {
-    transform: translateY(0); /* Press effect */
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    background-color: #3d2817;
+}
+
+/* --- Trays --- */
+.tray {
+    width: 150px;
+    height: 120px;
+    background-color: #8b6b4b; /* Lighter wood */
+    border: 3px solid #5a3c22;
+    border-radius: 5px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Push content to bottom */
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.tray p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1em;
+    color: #3d2817;
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(255,255,255,0.3);
+    position: absolute;
+    top: 5px;
+}
+
+.paper-stack {
+    width: 80%;
+    height: 60px; /* Placeholder stack */
+    background-color: #fffaf0;
+    border: 1px solid #ccc;
+    border-bottom: 3px solid #bbb;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 10px;
+    position: relative;
+    top: 20px; /* Position it slightly in the tray */
+}
+
+.in-tray .paper-stack {
+    background-color: #e0e0e0; /* Unread documents look slightly different */
+    border-color: #999;
 }
