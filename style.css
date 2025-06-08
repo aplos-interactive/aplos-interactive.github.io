@@ -350,75 +350,82 @@ body {
     border-color: #888;
 }
 
-/* --- Decorative Elements --- */
+/* --- Decorative Elements: Enhanced Pixel Art --- */
 .quill-inkwell {
     position: absolute;
     bottom: 5%;
-    left: 10%;
-    width: 70px; /* Larger */
+    left: 8%; /* Move slightly inwards */
+    width: 70px;
     height: 70px;
-    background: #3a2b1f;
-    border: 2px solid #2e241c;
-    box-shadow: 3px 3px 0px rgba(0,0,0,0.5);
-    border-radius: 3px;
-    z-index: 1; /* Keep it below the document area */
+    background: #3a2b1f; /* Inkwell body */
+    border: 2px solid #2e241c; /* Sharp, dark border */
+    border-radius: 4px; /* Slightly rounded corners, but still pixelated */
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.6); /* More pronounced, blocky shadow */
+    z-index: 1;
 
     &::before { /* Quill feather */
         content: '';
         position: absolute;
-        top: -40px; /* Adjusted position */
+        top: -50px; /* Adjust position to extend higher */
         left: 50%;
-        transform: translateX(-50%) rotate(-10deg); /* Slightly less rotation */
-        width: 10px; /* Thicker feather */
-        height: 80px; /* Longer feather */
-        background-color: #e0e0e0;
-        border-radius: 3px;
-        box-shadow: -2px -2px 3px rgba(0,0,0,0.3);
-        border: 1px solid #ccc;
+        transform: translateX(-50%) rotate(-15deg); /* Angle */
+        width: 12px; /* Thicker feather base */
+        height: 100px; /* Longer feather */
+        background-color: #e0e0e0; /* Feather color */
+        border-radius: 3px; /* Slightly rounded feather */
+        box-shadow: -3px -3px 0px rgba(0,0,0,0.3); /* Pixelated shadow for feather */
+        border: 2px solid #ccc; /* Defined feather outline */
+        /* Add feather "barbs" with gradients */
+        background-image:
+            linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px);
+        background-size: 4px 4px; /* Tiny pixel details */
     }
-    &::after { /* Quill tip */
+    &::after { /* Quill tip (nib) */
         content: '';
         position: absolute;
-        bottom: 20px; /* Adjusted position */
+        bottom: 20px; /* Position at the top of the inkwell opening */
         left: 50%;
         transform: translateX(-50%);
-        width: 5px;
-        height: 20px;
+        width: 6px; /* Wider nib */
+        height: 25px; /* Longer nib */
         background-color: black;
-        border-radius: 0 0 2px 2px;
+        border-radius: 0 0 2px 2px; /* Sharp top, slightly rounded bottom */
+        box-shadow: 1px 1px 0px rgba(0,0,0,0.4);
     }
 }
 
 .decorative-scroll {
     position: absolute;
     bottom: 8%;
-    right: 10%;
-    width: 120px; /* Larger scroll */
-    height: 25px;
-    background-color: #e0d8c0;
-    border: 2px solid #7a6e5b;
-    border-radius: 3px;
-    box-shadow: 3px 3px 0px rgba(0,0,0,0.4);
-    z-index: 1; /* Keep it below the document area */
+    right: 8%; /* Move slightly inwards */
+    width: 140px; /* Wider scroll */
+    height: 30px; /* Taller scroll */
+    background-color: #e0d8c0; /* Parchment color */
+    border: 2px solid #7a6e5b; /* Defined border */
+    border-radius: 4px; /* Slightly rounded corners */
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.5); /* Stronger, blocky shadow */
+    z-index: 1;
 
+    /* Simulate rolled scroll ends */
     &::before, &::after {
         content: '';
         position: absolute;
-        width: 12px; /* Thicker ends */
+        width: 15px; /* Thicker rolled ends */
         height: 100%;
-        background-color: #b0a890;
+        background-color: #b0a890; /* Darker parchment for rolled part */
         border: 2px solid #7a6e5b;
         top: 0;
+        border-radius: 3px; /* Match scroll body radius */
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.3); /* Inner shadow for depth */
     }
     &::before {
-        left: -12px;
-        border-top-left-radius: 3px;
-        border-bottom-left-radius: 3px;
+        left: -15px; /* Position outside the main scroll body */
+        border-right: none; /* No double border in the middle */
     }
     &::after {
-        right: -12px;
-        border-top-right-radius: 3px;
-        border-bottom-right-radius: 3px;
+        right: -15px; /* Position outside the main scroll body */
+        border-left: none; /* No double border in the middle */
     }
 }
 
