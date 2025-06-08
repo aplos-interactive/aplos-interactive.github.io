@@ -1,907 +1,97 @@
-/* --- Global Variables & Base Styles --- */
+/* --- Google Fonts --- */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=IM+Fell+English+SC&family=MedievalSharp&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+
+/* --- CSS Variables (Theme Colors, Fonts, Shadows) --- */
 :root {
-    /* Color Palette - Deeper, richer tones */
-    --color-room-wall: #3d2b1f; /* Dark reddish-brown for room */
-    --color-room-floor: #2a1f18; /* Even darker brown for floor */
-    --color-dark-wood: #2e241c; /* Deep espresso wood */
-    --color-medium-wood: #4f3624; /* Rich walnut */
-    --color-light-wood: #6a4933; /* Aged oak */
-    --color-parchment-light: #fdf6e6; /* Bright, clean parchment */
-    --color-parchment-medium: #e8e0c8; /* Slightly aged parchment */
-    --color-parchment-dark: #b0a890; /* Very aged, antique parchment */
-    --color-paper-white: #fffaf0; /* Crisp new paper */
-    --color-red-seal: #8b0000; /* Classic wax seal red */
-    --color-dark-red: #6a0000; /* Deep cardinal red */
-    --color-gold-accent: #a08c69; /* Muted antique gold */
-    --color-silver-accent: #c0c0c0; /* Polished silver */
-    --color-text-dark: #2e2e2e; /* Almost black for text */
-    --color-text-light: #f0e6d2; /* Off-white for light text */
-    --color-metric-positive: #00b000; /* Vibrant green */
-    --color-metric-negative: #d00000; /* Intense red */
-    --color-ink: #1a1a1a; /* Dark ink */
-    --color-brass: #b58d3d; /* Rich brass */
+    /* Colors */
+    --color-background-dark: #2c2c2c; /* Dark base for outside desk */
+    --color-parchment-light: #fdf5e6; /* Light, readable parchment */
+    --color-parchment-dark: #d2b48c; /* Darker, aged parchment for contrast */
+    --color-dark-red: #8b0000; /* Deep, regal red */
+    --color-gold: #daa520; /* Rich gold for accents */
+    --color-silver: #c0c0c0; /* Subtle silver for details */
+    --color-green-dark: #3a5e3a; /* Dark green for desk felt */
+    --color-wood-dark: #4e321e; /* Dark wood for desk edges */
+    --color-wood-medium: #6f4e37; /* Medium wood for desk top */
 
-    /* Fonts - More ornate and readable */
-    --font-heading: 'Cinzel Decorative', serif; /* Very decorative for titles */
-    --font-body: 'Cormorant Garamond', serif; /* Elegant, readable serif for content */
-    --font-ui: 'Libre Baskerville', serif; /* Refined serif for UI elements */
+    /* Fonts */
+    --font-heading: 'Cinzel', serif; /* Strong, traditional titles */
+    --font-body: 'Old Standard TT', serif; /* Classic, readable serif */
+    --font-ui: 'Cormorant Garamond', serif; /* Elegant UI elements */
+    --font-script: 'IM Fell English SC', serif; /* For historical, ornate text */
+    --font-medieval: 'MedievalSharp', cursive; /* For more whimsical, hand-written elements */
 
-    /* Shadows & Borders - Multi-layered for realistic depth */
-    --shadow-room-ambient: 0 50px 100px rgba(0, 0, 0, 0.8) inset; /* Room lighting effect */
-    --shadow-desk-ground: 0 30px 60px rgba(0, 0, 0, 0.7), 0 10px 20px rgba(0, 0, 0, 0.5); /* Strong ground shadow */
-    --shadow-raised-heavy: 0 8px 16px rgba(0, 0, 0, 0.6), 0 3px 6px rgba(0, 0, 0, 0.4);
-    --shadow-raised-medium: 0 4px 8px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.2);
-    --shadow-inset-deep: inset 0 3px 6px rgba(0, 0, 0, 0.5), inset 0 -1px 1px rgba(255, 255, 255, 0.1);
-    --shadow-inset-light: inset 0 1px 3px rgba(0, 0, 0, 0.3);
-    --border-thick: 6px solid var(--color-dark-wood);
-    --border-medium: 4px solid var(--color-medium-wood);
-    --border-thin: 2px solid var(--color-dark-wood);
+    /* Shadows */
+    --shadow-raised: 0 5px 15px rgba(0, 0, 0, 0.4);
+    --shadow-raised-heavy: 0 10px 30px rgba(0, 0, 0, 0.6);
+    --shadow-inset: inset 0 2px 5px rgba(0, 0, 0, 0.3);
 
-    /* Transitions - Smooth and elegant */
-    --transition-fast: 0.15s ease-out;
-    --transition-medium: 0.3s ease-out;
-    --transition-slow: 0.5s ease-in-out;
+    /* Transitions */
+    --transition-fast: 0.2s ease-out;
+    --transition-medium: 0.4s ease-in-out;
+    --transition-slow: 0.8s ease-in-out;
 }
 
-body {
+/* --- Global Resets & Body Styles --- */
+html, body {
     margin: 0;
-    overflow: hidden;
+    padding: 0;
+    height: 100%;
     font-family: var(--font-body);
-    color: var(--color-text-dark);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    perspective: 1500px; /* Stronger 3D perspective for the whole scene */
-    touch-action: manipulation;
-    background: radial-gradient(circle at 50% 10%, #4a3a2d 0%, #2c201a 100%); /* Subtle room light */
-}
-
-/* --- Game Room: The immersive background environment --- */
-.game-room {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-    transform-style: preserve-3d;
-    background:
-        /* Top Wall - Rich tapestry effect */
-        linear-gradient(to bottom, rgba(0,0,0,0.4), rgba(0,0,0,0) 50%), /* Shadow from top */
-        repeating-linear-gradient(
-            45deg,
-            #5a0f00 0%, #5a0f00 10px,
-            #8b1500 10px, #8b1500 20px
-        ), /* Pattern for tapestry */
-        linear-gradient(to top, #4f3624, #3a2b1f); /* Base wall color */
-    background-size: cover;
-    background-position: center;
-    box-shadow: var(--shadow-room-ambient); /* Overall room ambiance */
+    color: #333;
+    background-color: var(--color-background-dark);
+    overflow: hidden; /* Prevent scrolling outside the game area */
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-/* --- Game Container: Sets the stage for the desk and elements --- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* --- Game Container (Overall Layout) --- */
 .game-container {
-    width: 90vw;
-    height: 90vh;
-    max-width: 1400px; /* Larger to allow more detail */
-    max-height: 950px;
-    position: relative;
-    transform-style: preserve-3d;
-    box-shadow: var(--shadow-desk-ground); /* Main shadow cast by the desk */
-    border-radius: 10px; /* Slight roundness for the overall scene */
-}
-
-/* --- Desk: The central masterpiece with intricate 3D --- */
-.desk {
-    width: 100%;
-    height: 100%;
-    background-color: var(--color-light-wood);
-    position: relative;
-    display: grid;
-    grid-template-columns: 240px 1fr 240px; /* Panel widths */
-    grid-template-rows: 1fr;
-    padding: 30px; /* Increased padding */
-    box-sizing: border-box;
-    transform: rotateX(20deg) translateY(30px) translateZ(-80px); /* Stronger tilt, lift, push back */
-    transform-style: preserve-3d;
-    transition: transform var(--transition-medium); /* Smooth interaction */
-    border-radius: 8px; /* Slightly rounded corners for the desk */
-    box-shadow: var(--shadow-raised-heavy),
-                inset 0 0 10px rgba(0, 0, 0, 0.7); /* Inner shadow for desk structure */
-
-    /* Wood Texture Overlay - using multiple backgrounds */
-    background:
-        /* Subtle grunge texture */
-        url('https://www.transparenttextures.com/patterns/dust-and-scratches.png'),
-        /* Subtle wood grain pattern */
-        repeating-linear-gradient(
-            45deg,
-            var(--color-light-wood) 0%, var(--color-light-wood) 15px,
-            var(--color-medium-wood) 15px, var(--color-medium-wood) 30px
-        ),
-        /* Base wood color with lighting gradient */
-        linear-gradient(
-            to bottom right,
-            var(--color-light-wood) 0%,
-            var(--color-medium-wood) 50%,
-            var(--color-dark-wood) 100%
-        );
-    background-blend-mode: overlay, multiply, normal; /* Blend modes for rich texture */
-    background-size: auto, auto, cover; /* Adjust size for each background */
-    background-position: center;
-}
-
-.desk:active {
-    transform: rotateX(20deg) translateY(32px) translateZ(-82px); /* Slight press effect */
-    box-shadow: var(--shadow-desk-ground), inset 0 0 15px rgba(0, 0, 0, 0.8);
-}
-
-/* Desk Borders: Creating a thick, ornate edge */
-.desk-border-top, .desk-border-bottom, .desk-border-left, .desk-border-right {
-    position: absolute;
-    background: linear-gradient(to right, #403020, #604030, #403020); /* Beveled edge effect */
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.4);
-    z-index: 1; /* Below elements on top */
-    transform-style: preserve-3d;
-}
-.desk-border-top { top: 0; left: 0; right: 0; height: 30px; transform: translateZ(5px); }
-.desk-border-bottom { bottom: 0; left: 0; right: 0; height: 30px; transform: translateZ(5px); }
-.desk-border-left { top: 0; left: 0; bottom: 0; width: 30px; transform: translateZ(5px); }
-.desk-border-right { top: 0; right: 0; bottom: 0; width: 30px; transform: translateZ(5px); }
-
-
-/* Desk Surface: A recessed inner surface, possibly leather-bound */
-.desk-surface {
-    position: absolute;
-    top: 30px; /* Inset from border */
-    left: 30px;
-    right: 30px;
-    bottom: 30px;
-    background:
-        /* Leather texture */
-        url('https://www.transparenttextures.com/patterns/leather.png'),
-        /* Subtle radial lighting from top-left */
-        radial-gradient(at 15% 15%, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%),
-        /* Base dark green/brown leather color */
-        linear-gradient(to bottom, #504030, #3a2b1f);
-    background-blend-mode: overlay, normal, normal;
-    background-size: auto, cover, cover;
-    border: 3px solid var(--color-dark-wood);
-    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9), inset 0 5px 10px rgba(0, 0, 0, 0.7); /* Deep inner shadow for recess */
-    pointer-events: none;
-    border-radius: 5px;
-    z-index: 0; /* Ensures it's behind other elements */
-}
-
-
-/* --- Panels: Styled to look like carved wood or attached boards --- */
-.panel {
     display: flex;
     flex-direction: column;
-    gap: 25px; /* Increased gap */
-    align-items: stretch;
-    padding: 15px; /* Increased padding */
-    background: var(--color-medium-wood); /* Darker wood for panels */
-    border: var(--border-medium);
-    box-shadow: var(--shadow-raised-medium), var(--shadow-inset-deep); /* More pronounced shadows */
-    position: relative;
-    z-index: 2;
-    transform: translateZ(15px); /* Lift more significantly */
-    border-radius: 8px; /* More rounded */
-    background:
-        url('https://www.transparenttextures.com/patterns/clean-textile.png'), /* Subtle fabric texture */
-        linear-gradient(to bottom, #5a4b3f, #4f3624); /* Richer panel color */
-    background-blend-mode: overlay, normal;
+    width: 100%;
+    height: 90vh; /* Occupy 90% of viewport height */
+    max-width: 1200px; /* Max width for a good desktop experience */
+    border: 8px solid var(--color-wood-dark); /* Thick wooden frame */
+    border-radius: 10px;
+    box-shadow: var(--shadow-raised-heavy);
+    background-color: var(--color-background-dark); /* Background for the frame */
+    position: relative; /* For map overlay positioning */
 }
 
-.left-panel {
-    grid-column: 1;
-    grid-row: 1;
-}
-
-.right-panel {
-    grid-column: 3;
-    grid-row: 1;
-}
-
-/* --- Metrics Panel: Looks like an old, ornate ledger page --- */
-.metrics-panel {
-    background: var(--color-parchment-medium); /* Slightly darker for older feel */
-    padding: 20px; /* Increased padding */
-    border: 3px solid var(--color-dark-red); /* Thicker, richer border */
-    box-shadow: var(--shadow-raised-medium);
-    font-size: 1em;
-    text-align: left;
-    position: relative;
-    overflow: hidden;
-    border-radius: 5px;
-    background:
-        url('https://www.transparenttextures.com/patterns/paper.png'), /* Paper texture */
-        linear-gradient(to bottom right, rgba(255,255,255,0.05), rgba(0,0,0,0.05)), /* Subtle highlight/shadow */
-        var(--color-parchment-medium);
-    background-blend-mode: overlay, overlay, normal;
-
-    /* Top decorative border */
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 8px;
-        background: linear-gradient(to right, #8b6b4b, #a08c69, #8b6b4b); /* Brass line */
-        box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-    }
-}
-
-.metrics-panel h2 {
-    margin-top: 5px; /* Adjust for ::before */
-    font-family: var(--font-heading);
-    color: var(--color-dark-red);
-    font-size: 1.2em;
-    border-bottom: 2px solid var(--color-dark-red);
-    padding-bottom: 10px;
-    margin-bottom: 15px;
-    text-shadow: 1px 1px 2px rgba(255,255,255,0.6);
-}
-
-.metrics-panel p {
-    margin: 8px 0; /* More spacing */
+/* --- Top Bar (Metrics & Day Counter) --- */
+.top-bar {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px; /* More generous padding */
+    background: linear-gradient(to bottom, var(--color-dark-red), #6a0000); /* Regal gradient */
+    color: var(--color-parchment-light);
     font-family: var(--font-ui);
-    color: var(--color-text-dark);
+    border-bottom: 3px solid var(--color-gold); /* Gold divider */
+    box-shadow: var(--shadow-inset);
+    z-index: 10; /* Ensure it's on top */
 }
 
-.metrics-panel span {
+.papal-metrics {
+    display: flex;
+    gap: 25px; /* More space between metrics */
+}
+
+.metric-item {
+    display: flex;
+    align-items: center;
+    font-size: 1.1em;
     font-weight: bold;
-    color: var(--color-metric-positive); /* Default green */
-    transition: color 0.3s ease-out, transform 0.1s ease-out;
-    text-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
-}
-
-/* Metric change animation */
-.metric-change-positive {
-    color: var(--color-metric-positive) !important;
-    transform: scale(1.15) translateY(-2px); /* More pronounced pop */
-    filter: drop-shadow(0 0 5px limegreen); /* Glow effect */
-}
-.metric-change-negative {
-    color: var(--color-metric-negative) !important;
-    transform: scale(1.15) translateY(-2px);
-    filter: drop-shadow(0 0 5px crimson);
-}
-
-/* --- Game Day Card: A special, ornate plaque --- */
-.game-day-card {
-    background: linear-gradient(to bottom, var(--color-brass), #907a50); /* Brass plate effect */
-    padding: 12px 20px;
-    border: 3px solid #5a0000; /* Deep red outline */
-    box-shadow: var(--shadow-raised-medium), inset 0 0 5px rgba(0,0,0,0.5);
-    font-family: var(--font-heading);
-    font-size: 1.1em;
-    color: var(--color-text-light);
-    text-align: center;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    padding: 5px 10px;
     border-radius: 5px;
-    transform: translateZ(10px); /* Lift more */
-    text-shadow: 2px 2px 3px rgba(0,0,0,0.7); /* Stronger text shadow */
-}
-
-.game-day-card h3 {
-    margin: 0;
-    font-size: 1.3em;
-    color: var(--color-dark-red);
-    text-shadow: 1px 1px 2px rgba(255,255,255,0.4);
-}
-
-/* --- Action Buttons (Map, Options) - Beveled metal with a click effect --- */
-.action-button, .option-button {
-    background: linear-gradient(to bottom, #7a7a7a, #5a5a5a); /* Metallic gradient */
-    color: var(--color-text-light);
-    padding: 15px 25px; /* Larger buttons */
-    border: 3px solid #4a4a4a; /* Darker border */
-    border-radius: 6px; /* More rounded */
-    box-shadow:
-        0 4px 8px rgba(0, 0, 0, 0.5), /* Main shadow */
-        inset 0 1px 0 rgba(255, 255, 255, 0.2), /* Top highlight */
-        inset 0 -2px 0 rgba(0, 0, 0, 0.3); /* Bottom shadow for bevel */
-    font-family: var(--font-ui);
-    font-size: 1.05em;
-    cursor: pointer;
-    transition: all var(--transition-fast);
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-    transform: translateZ(8px); /* Lift buttons */
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-}
-
-.action-button:hover, .option-button:hover {
-    background: linear-gradient(to bottom, #8a8a8a, #6a6a6a); /* Lighter metal on hover */
-    box-shadow:
-        0 8px 16px rgba(0, 0, 0, 0.6),
-        inset 0 1px 0 rgba(255, 255, 255, 0.3),
-        inset 0 -2px 0 rgba(0, 0, 0, 0.4);
-    transform: translate(-2px, -2px) translateZ(12px); /* Lift more, subtle shift */
-}
-
-.action-button:active, .option-button:active {
-    background: linear-gradient(to top, #7a7a7a, #5a5a5a); /* Pressed metal effect */
-    box-shadow:
-        inset 0 2px 5px rgba(0, 0, 0, 0.7), /* Strong inset shadow */
-        0 1px 2px rgba(0, 0, 0, 0.3); /* Small shadow under button */
-    transform: translate(1px, 1px) translateZ(4px); /* Push down */
-}
-
-/* --- Document Area: The central focus, styled as a thick, aged parchment --- */
-.document-area {
-    width: 90%; /* A bit smaller to show more desk */
-    max-width: 600px;
-    height: 90%;
-    max-height: 650px;
-    background: var(--color-parchment-light); /* Base parchment color */
-    border: 5px solid var(--color-dark-red); /* Thick, regal border */
-    box-shadow: var(--shadow-raised-heavy); /* Strong shadow for lifted effect */
-    padding: 30px; /* Increased padding */
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: relative;
-    z-index: 4; /* Ensures it's above other desk elements */
-    opacity: 0;
-    transform-origin: center bottom; /* For more dramatic flip from the bottom */
-    transform: scale(0.8) translateY(-50px) rotateX(100deg); /* Initial state: scaled, shifted, flipped deeply */
-    transition: opacity var(--transition-slow), transform var(--transition-slow); /* Slower, more dramatic reveal */
-    grid-column: 2;
-    grid-row: 1;
-    align-self: center;
-    justify-self: center;
-    border-radius: 3px;
-    background:
-        url('https://www.transparenttextures.com/patterns/old-map.png'), /* Aged map-like texture */
-        linear-gradient(to top left, rgba(255,255,255,0.2), rgba(0,0,0,0.1)), /* Lighting overlay */
-        var(--color-parchment-light);
-    background-blend-mode: overlay, overlay, normal;
-
-    /* Subtle paper curl effect with multiple box-shadows */
-    box-shadow:
-        0 10px 20px rgba(0, 0, 0, 0.5), /* Main shadow */
-        0 2px 4px rgba(0, 0, 0, 0.3), /* Closer shadow */
-        -5px 5px 15px rgba(0,0,0,0.2) inset, /* Inner top-left corner shadow for curl */
-        5px -5px 15px rgba(0,0,0,0.2) inset; /* Inner bottom-right corner shadow for curl */
-}
-
-.document-area.show {
-    opacity: 1;
-    transform: scale(1) translateY(0) rotateX(0deg); /* Final state: full size, no flip */
-}
-
-/* Document Seal: A rich, melted wax seal with an imperial cross */
-.document-seal {
-    position: absolute;
-    top: 20px; /* More prominent position */
-    left: 20px;
-    width: 50px; /* Larger seal */
-    height: 50px;
-    background: radial-gradient(circle at 35% 35%, var(--color-red-seal) 0%, #6a0000 100%); /* Depth in gradient */
-    border-radius: 50%;
-    box-shadow:
-        inset 0 0 8px rgba(0,0,0,0.7), /* Deep inner shadow for melted wax */
-        0 3px 6px rgba(0,0,0,0.6); /* Outer shadow for seal lift */
-    z-index: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transform: rotate(-10deg); /* Slightly rotated for organic feel */
-
-    /* Imperial cross effect using pseudo-elements */
-    &::before, &::after {
-        content: '';
-        position: absolute;
-        background-color: var(--color-parchment-light); /* Lighter color for stamp imprint */
-        box-shadow: 1px 1px 3px rgba(0,0,0,0.5); /* Imprint shadow */
-        border-radius: 1px;
-    }
-    &::before { /* Vertical bar */
-        width: 10px;
-        height: 30px;
-    }
-    &::after { /* Horizontal bar */
-        width: 30px;
-        height: 10px;
-    }
-}
-
-.document-area h3 {
-    font-family: var(--font-heading);
-    text-align: center;
-    margin-top: 10px; /* Adjust for seal */
-    font-size: 1.8em; /* Larger title */
-    color: var(--color-dark-red);
-    border-bottom: 3px double var(--color-dark-red); /* Double border for elegance */
-    padding-bottom: 12px;
-    margin-bottom: 25px;
-    text-shadow: 1px 1px 3px rgba(255,255,255,0.7);
-}
-
-.document-content-wrapper {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding-right: 20px; /* Space for scrollbar */
-    margin-right: -10px; /* Pull into padding for cleaner look */
-}
-
-.document-content {
-    font-size: 1.1em; /* Slightly larger text */
-    line-height: 1.8; /* More comfortable reading */
-    text-align: justify;
-    padding-top: 5px; /* Small top padding */
-    hyphens: auto; /* Enable hyphenation for better text flow */
-}
-
-/* Custom Scrollbar Styling - Themed to match parchment */
-.document-content-wrapper::-webkit-scrollbar {
-    width: 15px; /* Thicker scrollbar */
-}
-.document-content-wrapper::-webkit-scrollbar-track {
-    background: var(--color-parchment-medium);
-    border-left: 2px solid rgba(0,0,0,0.1);
-    border-radius: 8px; /* Rounded track */
-}
-.document-content-wrapper::-webkit-scrollbar-thumb {
-    background-color: var(--color-medium-wood);
-    border-radius: 8px;
-    border: 3px solid var(--color-dark-wood);
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.4);
-}
-.document-content-wrapper::-webkit-scrollbar-thumb:hover {
-    background-color: var(--color-gold-accent);
-    filter: brightness(1.2); /* Brighter on hover */
-}
-
-.document-source {
-    font-family: var(--font-ui);
-    font-style: italic;
-    text-align: right;
-    margin-top: 25px; /* More separation */
-    font-size: 1em;
-    color: #444;
-    border-top: 1px dashed #aaa;
-    padding-top: 12px;
-    align-self: flex-end;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-.options-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px; /* Increased gap between buttons */
-    margin-top: 25px;
-}
-
-/* --- Trays: Deep, recessed wooden document trays --- */
-.tray {
-    width: 100%;
-    height: 140px; /* Taller trays */
-    background: linear-gradient(to bottom, #7a6e5b, #5a4b3f); /* Tray base color */
-    border: 3px solid var(--color-dark-wood);
-    border-bottom: 6px solid var(--color-dark-wood); /* Thicker bottom lip */
-    box-shadow: var(--shadow-inset-deep), var(--shadow-raised-medium); /* More pronounced recess */
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-    z-index: 3;
-    border-radius: 5px;
-    transform: translateZ(12px); /* Lift trays more */
-
-    /* Inner lip effect */
-    &::before {
-        content: '';
-        position: absolute;
-        top: 0; left: 0; right: 0;
-        height: 15px;
-        background: linear-gradient(to bottom, #5a4b3f, #7a6e5b);
-        box-shadow: inset 0 3px 5px rgba(0,0,0,0.5);
-        border-bottom: 2px solid var(--color-dark-wood);
-    }
-}
-
-.tray p {
-    font-family: var(--font-ui);
-    font-size: 1em; /* Larger text */
-    color: var(--color-text-light);
-    margin-bottom: 10px;
-    position: absolute;
-    top: 15px; /* Below inner lip */
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-    letter-spacing: 0.5px;
-}
-
-.paper-stack {
-    width: 90%; /* Wider stack */
-    height: 70px; /* Taller stack */
-    background-color: var(--color-paper-white); /* Top paper color */
-    border: 1px solid #bbb;
-    border-bottom: 4px solid #999; /* Stronger bottom edge */
-    box-shadow:
-        0 8px 15px rgba(0, 0, 0, 0.4), /* Deeper shadow for stack depth */
-        inset 0 0 8px rgba(0, 0, 0, 0.2); /* Inner shadow */
-    margin-bottom: 10px;
-    position: relative;
-    transform: translateZ(5px); /* Give paper stack more depth */
-    border-radius: 3px;
-}
-
-.in-tray .paper-stack {
-    background-color: var(--color-parchment-dark); /* Incoming documents are older */
-    border-color: #888;
-    filter: sepia(0.2); /* Slight sepia for old paper */
-}
-
-/* --- Decorative Desk Items - Highly detailed with complex CSS shapes and lighting --- */
-.desk-item {
-    position: absolute;
-    z-index: 3;
-    transform-style: preserve-3d;
-    transform: translateZ(20px); /* Lift all items significantly */
-    pointer-events: auto; /* Allow interaction */
-    cursor: grab;
-    transition: transform var(--transition-fast);
-}
-
-.desk-item:hover {
-    transform: translateZ(30px) translateY(-5px); /* Lift higher on hover */
-    cursor: grab;
-}
-.desk-item:active {
-    cursor: grabbing;
-    transform: translateZ(15px); /* Press down slightly */
-}
-
-
-/* Quill & Inkwell - Crafted with multiple elements for depth */
-.quill-inkwell {
-    bottom: 10%;
-    left: 8%;
-    width: 80px;
-    height: 80px;
-    transform: translateZ(20px) rotateX(10deg); /* Lift and strong tilt */
-
-    /* Inkwell Base (Brass) */
-    .inkwell-base {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: radial-gradient(circle at 30% 30%, var(--color-brass) 0%, #806c4c 100%);
-        border-radius: 50%;
-        border: 2px solid #5a4b3f;
-        box-shadow:
-            var(--shadow-raised-heavy),
-            inset 0 0 15px rgba(0,0,0,0.8); /* Deep inner shadow */
-    }
-
-    /* Ink (Black liquid) */
-    .inkwell-base::before {
-        content: '';
-        position: absolute;
-        top: 20%; left: 20%; right: 20%; bottom: 20%;
-        background-color: var(--color-ink);
-        border-radius: 50%;
-        box-shadow: inset 0 0 10px rgba(0,0,0,0.9); /* Liquid depth */
-        transform: translateZ(5px);
-    }
-
-    /* Quill Body (Feather) */
-    .quill-body {
-        position: absolute;
-        top: -60px;
-        left: 50%;
-        transform: translateX(-50%) rotate(-20deg) translateZ(10px); /* Lift and tilt feather */
-        width: 15px;
-        height: 120px;
-        background: linear-gradient(to top, #d0d0d0, #f8f8f8); /* White feather */
-        border-top-left-radius: 8px;
-        border-bottom-right-radius: 8px;
-        box-shadow: -5px -5px 10px rgba(0,0,0,0.5), inset 0 0 5px rgba(255,255,255,0.8);
-        border: 1px solid #c0c0c0;
-
-        /* Feather Barbs (simulated with gradients) */
-        &::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, transparent 0%, rgba(255,255,255,0.3) 10%, transparent 20%, rgba(255,255,255,0.3) 30%, transparent 40%, rgba(255,255,255,0.3) 50%, transparent 60%, rgba(255,255,255,0.3) 70%, transparent 80%);
-            mask-image: linear-gradient(to bottom, transparent 0%, black 10%, transparent 20%, black 30%, transparent 40%, black 50%, transparent 60%, black 70%, transparent 80%);
-            mask-size: 100% 10px; /* Small intervals for barbs */
-            mask-repeat: repeat-y;
-            transform: scaleX(0.8); /* Narrower barbs */
-        }
-    }
-    /* Quill Nib (Metallic) */
-    .quill-nib {
-        position: absolute;
-        bottom: 10px;
-        left: 50%;
-        transform: translateX(-50%) translateZ(15px); /* Lift nib above inkwell */
-        width: 10px;
-        height: 30px;
-        background: linear-gradient(to bottom, #a0a0a0, #707070); /* Metallic sheen */
-        border-radius: 2px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.6);
-        border: 1px solid #5a5a5a;
-        z-index: 1; /* Above quill body */
-    }
-}
-
-/* Decorative Scroll - Detailed rolled parchment */
-.decorative-scroll {
-    bottom: 12%;
-    right: 8%;
-    width: 180px; /* Wider scroll */
-    height: 30px;
-    transform: translateZ(18px) rotateX(15deg); /* Lift and strong tilt */
-
-    /* Scroll Body (Parchment) */
-    .scroll-body {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        background: var(--color-parchment-medium);
-        border: 2px solid #7e593f;
-        box-shadow: var(--shadow-raised-medium), inset 0 0 8px rgba(0,0,0,0.4);
-        border-radius: 5px;
-        background:
-            url('https://www.transparenttextures.com/patterns/old-map.png'),
-            linear-gradient(to top left, rgba(255,255,255,0.1), rgba(0,0,0,0.1)),
-            var(--color-parchment-medium);
-        background-blend-mode: overlay, overlay, normal;
-    }
-
-    /* Rolled Ends (Brass/Gold) */
-    .scroll-end {
-        position: absolute;
-        width: 20px; /* Thicker ends */
-        height: 100%;
-        background: linear-gradient(to bottom, var(--color-brass), #705c3c); /* Brass */
-        border: 2px solid #5a4b3f;
-        box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
-        border-radius: 3px;
-        top: 0;
-        transform-style: preserve-3d;
-
-        &::before { /* Inner roll shadow */
-            content: '';
-            position: absolute;
-            width: 80%; height: 80%;
-            background: rgba(0,0,0,0.2);
-            border-radius: 50%;
-            top: 10%; left: 10%;
-            box-shadow: inset 0 0 5px rgba(0,0,0,0.7);
-        }
-    }
-    .scroll-end.left {
-        left: -20px;
-        transform-origin: right center;
-        transform: rotateY(-15deg) translateZ(-5px);
-    }
-    .scroll-end.right {
-        right: -20px;
-        transform-origin: left center;
-        transform: rotateY(15deg) translateZ(-5px);
-    }
-}
-
-/* Coin Pouch - Soft leather with drawstrings */
-.coin-pouch {
-    bottom: 5%;
-    left: 45%;
-    width: 70px; /* Larger pouch */
-    height: 80px;
-    transform: translateZ(25px) rotateZ(-8deg); /* Lift and slight rotation */
-
-    .pouch-body {
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(to bottom, #9b5a20, #7b3e10); /* Leather */
-        border-radius: 50% / 30% 30% 50% 50%;
-        border: 3px solid #5a3c2a;
-        box-shadow: var(--shadow-raised-heavy), inset 0 0 15px rgba(0,0,0,0.7);
-        position: relative;
-        overflow: hidden;
-    }
-    .pouch-drawstring {
-        position: absolute;
-        top: -10px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 50px;
-        height: 12px;
-        background: #8b4e18;
-        border-radius: 6px;
-        border: 2px solid #6a3c18;
-        box-shadow: inset 0 1px 5px rgba(0,0,0,0.6);
-
-        &::before, &::after { /* Drawstring knots */
-            content: '';
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background: #5a3c1a;
-            border-radius: 50%;
-            border: 1px solid #3a2b1f;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.6);
-            top: -2px;
-        }
-        &::before { left: -5px; }
-        &::after { right: -5px; }
-    }
-}
-
-/* Chalice - A small, shimmering decorative chalice */
-.chalice {
-    bottom: 8%;
-    right: 35%;
-    width: 40px;
-    height: 60px;
-    background: linear-gradient(to bottom, #f0e6d2, #d4c8b0); /* Silver sheen */
-    border-radius: 0 0 20px 20px / 0 0 10px 10px;
-    border: 2px solid #a0a0a0;
-    box-shadow: var(--shadow-raised-medium), inset 0 0 5px rgba(255,255,255,0.8);
-    transform: translateZ(22px) rotateY(10deg);
-    position: relative;
-
-    &::before { /* Stem */
-        content: '';
-        position: absolute;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        width: 8px; height: 30px;
-        background: linear-gradient(to right, #c0c0c0, #f0f0f0, #c0c0c0);
-        border-radius: 4px;
-        box-shadow: inset 0 0 3px rgba(0,0,0,0.3);
-    }
-    &::after { /* Base */
-        content: '';
-        position: absolute;
-        bottom: 0; left: 0; right: 0;
-        height: 10px;
-        background: linear-gradient(to bottom, #a0a0a0, #707070);
-        border-radius: 50% / 30% 30% 0 0;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-    }
-}
-
-
-/* --- Map Overlay: Full screen, modal, with subtle room blur --- */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.9); /* Even darker, more immersive overlay */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity var(--transition-medium), visibility var(--transition-medium);
-    backdrop-filter: blur(8px); /* Stronger blur effect */
-}
-
-.overlay.show {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-
-.map-content {
-    background: linear-gradient(135deg, var(--color-parchment-light) 0%, #e0dcc6 100%);
-    border: 5px solid var(--color-dark-red);
-    padding: 40px; /* More padding */
-    box-shadow: var(--shadow-deep);
-    max-width: 85%; /* Wider map */
-    max-height: 90%;
-    overflow: hidden; /* Hide map scrollbar if content is too large */
-    text-align: center;
-    position: relative;
-    transform: scale(0.7) translateY(100px); /* More dramatic initial state for pop-up */
-    transition: transform var(--transition-medium), opacity var(--transition-medium);
-    border-radius: 8px;
-    background:
-        url('https://www.transparenttextures.com/patterns/old-map.png'),
-        linear-gradient(to top left, rgba(255,255,255,0.1), rgba(0,0,0,0.1)),
-        var(--color-parchment-light);
-    background-blend-mode: overlay, overlay, normal;
-}
-
-.overlay.show .map-content {
-    transform: scale(1) translateY(0); /* Final state for pop-up */
-}
-
-.map-content h2 {
-    font-family: var(--font-heading);
-    font-size: 2.2em; /* Larger map title */
-    color: var(--color-dark-red);
-    margin-top: 0;
-    margin-bottom: 25px;
-    text-shadow: 1px 1px 3px rgba(255,255,255,0.8);
-}
-
-.map-content p {
-    font-family: var(--font-ui);
-    font-size: 1.1em;
-    margin-bottom: 30px;
-    color: var(--color-text-dark);
-}
-
-.detailed-map {
-    width: 100%;
-    height: auto;
-    max-height: 550px; /* Slightly taller map */
-    border: 4px solid var(--color-dark-wood);
-    background-color: var(--color-parchment-dark);
-    box-shadow: inset 0 0 15px rgba(0,0,0,0.6); /* Deeper inner shadow */
-    border-radius: 5px;
-}
-
-.detailed-map path {
-    stroke-linejoin: round;
-    stroke-linecap: round;
-    transition: fill 0.2s ease-out, transform 0.1s ease-out;
-    transform-origin: center center;
-    fill: #a09d84; /* Default map fill color */
-}
-.detailed-map path:hover {
-    fill: #e8e0c8 !important; /* Brighter highlight on hover */
-    transform: scale(1.01); /* Subtle grow */
-    cursor: pointer;
-    filter: brightness(1.2);
-}
-
-.detailed-map circle, .detailed-map g > path {
-    transition: all 0.2s ease-out;
-}
-.detailed-map circle:hover, .detailed-map g > path:hover {
-    filter: drop-shadow(0 0 5px yellow); /* City glow */
-}
-
-/* Close Button - More pronounced, circular, with shadow */
-.close-button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: linear-gradient(to bottom, #d03030, #8b0000); /* Red metallic button */
-    color: white;
-    border: 3px solid #5a0000;
-    width: 45px; /* Larger */
-    height: 45px;
-    font-family: var(--font-ui);
-    font-size: 1.8em; /* Larger X */
-    cursor: pointer;
-    line-height: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 50%;
-    box-shadow: var(--shadow-raised-medium);
-    transition: all var(--transition-fast);
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
-}
-
-.close-button:hover {
-    background: linear-gradient(to bottom, #ff4040, #a00000);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.6);
-    transform: scale(1.08); /* More noticeable grow */
-}
-
-.close-button:active {
-    background: linear-gradient(to top, #d03030, #8b0000);
-    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.7);
-    transform: scale(0.92); /* More noticeable press */
-}
+    background-color: rgba(0,0,0,0.2); /* Subtle background */
+    border: 1px solid rgba(255,255,255,0.3);
+    min-width: 120px; /* Ensure consistent width */
+    justify
