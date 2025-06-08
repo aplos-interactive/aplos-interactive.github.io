@@ -2,14 +2,15 @@ body {
     margin: 0;
     overflow: hidden;
     font-family: 'EB Garamond', serif;
-    color: #2e2e2e; /* Darker, less vibrant text */
+    color: #2e2e2e;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: #1a1a1a; /* Very dark, almost black background */
+    background: #1a1a1a; /* Dark background for contrast */
 }
 
+/* --- Game Container: Sets the overall perspective --- */
 .game-container {
     width: 95vw;
     height: 95vh;
@@ -17,132 +18,136 @@ body {
     justify-content: center;
     align-items: center;
     position: relative;
-    image-rendering: crisp-edges; /* Important for pixel art scaling */
-    image-rendering: pixelated; /* Fallback for older browsers */
+    /* Apply perspective to the whole scene */
+    perspective: 1000px; /* How "deep" the perspective is */
+    image-rendering: crisp-edges;
+    image-rendering: pixelated;
 }
 
+/* --- Desk: Rotated to give the "looking down" effect --- */
 .desk {
-    width: 100%;
-    height: 100%;
-    /* More pronounced wood grain */
+    width: 90%; /* Make it wider within the container */
+    height: 90%; /* Make it taller within the container */
     background-image: linear-gradient(
         45deg,
         #4f3624 25%, #6a4933 25%, #6a4933 50%,
         #4f3624 50%, #4f3624 75%, #6a4933 75%, #6a4933 100%
     );
-    background-size: 20px 20px; /* Smaller, more distinct "pixels" for grain */
-    border: 8px solid #2e241c; /* Thicker, more pixelated border */
-    border-radius: 2px; /* Sharper corners */
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.7); /* Flatter, darker shadow */
+    background-size: 20px 20px;
+    border: 8px solid #2e241c;
+    border-radius: 4px; /* Slightly softer corners for pixel look */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.7); /* Deeper shadow */
     position: relative;
     display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 20px; /* Reduced padding */
+    /* Use grid for more control over layout */
+    display: grid;
+    grid-template-columns: 180px 1fr 180px; /* Fixed side panel width, flexible center */
+    grid-template-rows: 1fr;
+    padding: 30px; /* More generous padding */
     box-sizing: border-box;
 
-    &::before { /* Remove radial gradient for flatter look */
-        content: none;
-    }
+    /* Rotate the desk itself to simulate looking down */
+    transform: rotateX(15deg) translateY(20px); /* Adjust angle and position */
+    transform-style: preserve-3d; /* Needed for child 3D transforms */
 }
 
-/* --- Panel Styling --- */
+/* --- Panel Styling: Adjusting for the new grid layout --- */
 .left-panel, .right-panel {
     display: flex;
     flex-direction: column;
-    gap: 20px; /* Reduced gap */
-    align-items: flex-start;
-    padding: 5px; /* Reduced padding */
+    gap: 30px; /* Increased gap for better spacing */
+    align-items: stretch; /* Stretch items to fill column width */
+    padding: 10px;
     z-index: 2;
+    /* Use grid areas to place them */
+    grid-column: 1; /* Left panel in first column */
+    grid-row: 1;
 }
 
 .right-panel {
-    align-items: flex-end;
+    align-items: stretch;
+    grid-column: 3; /* Right panel in third column */
+    grid-row: 1;
 }
 
 /* --- Metrics Panel --- */
 .metrics-panel {
-    background-color: #e0d8c0; /* Muted parchment-like background */
-    padding: 15px; /* Reduced padding */
-    border-radius: 2px; /* Sharper corners */
-    box-shadow: 2px 2px 0px #3a2b1f; /* Pixel-art style shadow */
-    border: 1px solid #7a6e5b; /* Simple border */
-    font-size: 1em; /* Slightly smaller text */
-    min-width: 160px;
+    background-color: #e0d8c0;
+    padding: 20px; /* More padding */
+    border-radius: 3px;
+    box-shadow: 3px 3px 0px #3a2b1f; /* Stronger pixel shadow */
+    border: 2px solid #7a6e5b;
+    font-size: 1.1em; /* Slightly larger text */
+    min-width: 150px; /* Ensure a minimum width */
     text-align: left;
     position: relative;
     overflow: hidden;
-
-    &::before, &::after { /* Remove inner shadows for flatter look */
-        content: none;
-    }
+    z-index: 3; /* Ensure it sits above the desk */
 }
 
 .metrics-panel h2 {
     margin-top: 0;
     font-family: 'Cormorant Garamond', serif;
-    color: #6a0000; /* Darker red */
-    font-size: 1.3em; /* Slightly smaller title */
-    border-bottom: 1px solid #6a0000; /* Thinner border */
-    padding-bottom: 5px;
-    margin-bottom: 8px;
-    text-shadow: none; /* Remove text shadow */
+    color: #6a0000;
+    font-size: 1.4em;
+    border-bottom: 2px solid #6a0000; /* Thicker border */
+    padding-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .metrics-panel p {
-    margin: 4px 0; /* Reduced margin */
+    margin: 6px 0;
 }
 
 .metrics-panel span {
     font-weight: bold;
-    color: #005a00; /* Darker green */
+    color: #005a00;
     transition: color 0.1s ease-in-out;
 }
 
 .metric-change-positive {
     color: #00aa00 !important;
-    text-shadow: none;
 }
 .metric-change-negative {
     color: #ee0000 !important;
-    text-shadow: none;
 }
 
 /* --- Game Day Counter --- */
 .game-day {
     background-color: #e0d8c0;
-    padding: 8px 12px; /* Reduced padding */
-    border-radius: 2px; /* Sharper corners */
-    box-shadow: 2px 2px 0px #3a2b1f;
-    border: 1px solid #7a6e5b;
+    padding: 10px 15px;
+    border-radius: 3px;
+    box-shadow: 3px 3px 0px #3a2b1f;
+    border: 2px solid #7a6e5b;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.2em;
-    color: #4f3624; /* Darker text */
+    font-size: 1.3em;
+    color: #4f3624;
     text-align: center;
-    margin-bottom: 15px; /* Reduced margin */
+    margin-bottom: 20px; /* More space */
     position: relative;
     overflow: hidden;
+    z-index: 3;
 }
 
 /* --- Map Button --- */
 .map-button {
-    background-color: #8b6b4b; /* Muted brown */
-    color: #f0e6d2; /* Off-white text */
-    padding: 10px 20px; /* Smaller padding */
-    border: 2px solid #5a0000; /* Darker red border */
-    border-radius: 2px; /* Sharper corners */
+    background-color: #8b6b4b;
+    color: #f0e6d2;
+    padding: 12px 25px; /* Larger button */
+    border: 3px solid #5a0000; /* Thicker border */
+    border-radius: 3px;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1em;
+    font-size: 1.2em;
     cursor: pointer;
-    box-shadow: 2px 2px 0px #3a2b1f; /* Pixel-art style shadow */
-    transition: background-color 0.1s ease, transform 0.05s ease; /* Faster transitions */
-    text-shadow: none;
+    box-shadow: 3px 3px 0px #3a2b1f;
+    transition: background-color 0.1s ease, transform 0.05s ease;
+    z-index: 3;
 }
 
 .map-button:hover {
     background-color: #a08c69;
-    transform: translateY(-1px); /* Less pronounced lift */
-    box-shadow: 3px 3px 0px #3a2b1f;
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 0px #3a2b1f;
 }
 
 .map-button:active {
@@ -151,26 +156,31 @@ body {
     background-color: #705c3c;
 }
 
-/* --- Document Area --- */
+/* --- Document Area: The central focus --- */
 .document-area {
-    width: 60%;
-    height: 90%;
-    background-color: #fffaf0; /* Parchment color */
-    /* Simpler parchment texture with a faint grid/line pattern if desired */
+    width: 90%; /* Take up more space within its grid cell */
+    max-width: 600px; /* Prevent it from getting too wide */
+    height: 90%; /* Adjust height */
+    background-color: #fffaf0;
     background-image: linear-gradient(0deg, transparent 95%, rgba(0,0,0,0.05) 95%),
                       linear-gradient(90deg, transparent 95%, rgba(0,0,0,0.05) 95%);
-    background-size: 10px 10px; /* Small grid size */
-    border: 2px solid #8b0000; /* Thinner, sharp red border */
-    border-radius: 1px; /* Very sharp corners */
-    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5); /* Flatter, blockier shadow */
-    padding: 25px; /* Reduced padding */
+    background-size: 10px 10px;
+    border: 3px solid #8b0000; /* Thicker, sharp red border */
+    border-radius: 2px;
+    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.6); /* Stronger, blockier shadow */
+    padding: 30px; /* More internal padding */
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     opacity: 0;
-    transform: scale(0.98) translateY(-5px); /* Less dramatic animation */
-    transition: opacity 0.3s ease-out, transform 0.3s ease-out; /* Faster transition */
+    transform: scale(0.98) translateY(-10px); /* More pronounced animation */
+    transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+    grid-column: 2; /* Place in the middle column */
+    grid-row: 1;
+    align-self: center; /* Center vertically in its grid cell */
+    justify-self: center; /* Center horizontally in its grid cell */
+    z-index: 4; /* Ensure it's above other desk items */
 }
 
 .document-area.show {
@@ -181,16 +191,15 @@ body {
 /* Document Seal */
 .document-seal {
     position: absolute;
-    top: 5px;
-    left: 5px;
-    width: 20px;
-    height: 20px;
-    background-color: #8b0000; /* Red wax seal color */
-    border: 1px solid #5a0000;
-    border-radius: 2px;
-    box-shadow: 1px 1px 0px rgba(0,0,0,0.3);
+    top: 10px; /* Adjusted position */
+    left: 10px; /* Adjusted position */
+    width: 25px; /* Slightly larger */
+    height: 25px;
+    background-color: #8b0000;
+    border: 2px solid #5a0000;
+    border-radius: 3px;
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.4);
     z-index: 1;
-    /* Simulate a slight impression */
     &::after {
         content: '';
         position: absolute;
@@ -198,136 +207,146 @@ body {
         height: 60%;
         top: 20%;
         left: 20%;
-        border-radius: 1px;
-        border: 1px solid rgba(255,255,255,0.4);
-        box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
+        border-radius: 2px;
+        border: 1px solid rgba(255,255,255,0.5);
+        box-shadow: inset 0 0 4px rgba(0,0,0,0.6);
     }
 }
-
 
 .document-area h3 {
     font-family: 'Cormorant Garamond', serif;
     text-align: center;
     margin-top: 0;
-    font-size: 1.8em; /* Slightly smaller title */
-    color: #6a0000; /* Darker red */
-    border-bottom: 1px solid #6a0000; /* Thinner, sharp border */
-    padding-bottom: 8px;
-    margin-bottom: 15px;
-    text-shadow: none;
+    font-size: 2.2em; /* Larger title */
+    color: #6a0000;
+    border-bottom: 2px solid #6a0000;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .document-content {
     flex-grow: 1;
-    font-size: 1.05em; /* Slightly smaller content text */
-    line-height: 1.6;
+    font-size: 1.1em; /* Slightly larger content text */
+    line-height: 1.7;
     overflow-y: auto;
-    padding-right: 10px;
+    padding-right: 15px; /* More padding for scrollbar */
     scrollbar-width: thin;
-    scrollbar-color: #8b6b4b #f5f5dc; /* Muted scrollbar colors */
+    scrollbar-color: #8b6b4b #f5f5dc;
 }
 .document-content::-webkit-scrollbar {
-    width: 8px; /* Thinner scrollbar */
+    width: 10px; /* Thicker scrollbar */
 }
 .document-content::-webkit-scrollbar-track {
-    background: #f0e6d2; /* Lighter track */
-    border-radius: 0; /* Sharper corners */
+    background: #f0e6d2;
+    border-radius: 0;
 }
 .document-content::-webkit-scrollbar-thumb {
-    background-color: #8b6b4b; /* Muted thumb */
-    border-radius: 0; /* Sharper corners */
-    border: 1px solid #7a6e5b;
+    background-color: #8b6b4b;
+    border-radius: 0;
+    border: 2px solid #7a6e5b; /* More defined thumb border */
 }
 
 .document-source {
     font-style: italic;
     text-align: right;
-    margin-top: 15px;
-    font-size: 0.9em;
-    color: #555; /* Darker grey */
-    border-top: 1px dashed #aaa; /* Lighter dashed line */
-    padding-top: 8px;
-    /* Ensure it's contained within its flex parent and aligns correctly */
-    align-self: flex-end; /* This ensures it pushes to the bottom-right within the flex column */
-    width: 100%; /* Ensure it takes full width to align text right */
-    box-sizing: border-box; /* Include padding/border in width calculation */
+    margin-top: 20px;
+    font-size: 1em; /* Slightly larger source text */
+    color: #444;
+    border-top: 2px dashed #aaa; /* Thicker dashed line */
+    padding-top: 10px;
+    align-self: flex-end;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .options-container {
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Reduced gap */
-    margin-top: 20px;
+    gap: 12px; /* Slightly more space between buttons */
+    margin-top: 25px;
 }
 
 .option-button {
-    background-color: #3a2b1f; /* Darker, more pixelated brown */
-    color: #e0d8c0; /* Muted off-white text */
-    padding: 12px 20px; /* Reduced padding */
-    border: 1px solid #2e241c;
-    border-radius: 2px; /* Sharper corners */
+    background-color: #3a2b1f;
+    color: #e0d8c0;
+    padding: 15px 25px; /* More padding for buttons */
+    border: 2px solid #2e241c;
+    border-radius: 3px;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.1em;
+    font-size: 1.2em;
     cursor: pointer;
     transition: background-color 0.1s ease, transform 0.05s ease, box-shadow 0.1s ease;
     text-align: center;
-    box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.4); /* Flatter, blockier shadow */
-    text-shadow: none;
+    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.5); /* Stronger shadow */
 }
 
 .option-button:hover {
-    background-color: #4f3624; /* Slightly lighter on hover */
-    transform: translateY(-1px);
-    box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.4);
+    background-color: #4f3624;
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.5);
 }
 
 .option-button:active {
     transform: translateY(0);
-    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.4);
+    box-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
     background-color: #2e241c;
 }
 
-/* --- Trays --- */
+/* --- Trays: Enhanced to look more like physical trays --- */
 .tray {
-    width: 120px; /* Smaller trays */
-    height: 100px; /* Smaller trays */
-    background-color: #7a6e5b; /* Muted brown */
-    border: 2px solid #4f3624;
-    border-radius: 2px;
-    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3), 2px 2px 0px rgba(0,0,0,0.3);
+    width: 150px; /* Larger trays */
+    height: 120px;
+    background-color: #7a6e5b;
+    border: 3px solid #4f3624; /* Thicker border */
+    border-radius: 4px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.4), 4px 4px 0px rgba(0,0,0,0.4); /* More depth */
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     align-items: center;
     position: relative;
     overflow: hidden;
+    z-index: 3;
+
+    /* Add a lip to the trays */
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 10px; /* Height of the lip */
+        background-color: #5a4b3f; /* Darker shade for lip */
+        border-bottom: 2px solid #4f3624;
+        box-shadow: inset 0 2px 3px rgba(0,0,0,0.3);
+    }
 }
 
 .tray p {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1em;
+    font-size: 1.1em;
     color: #2e241c;
-    margin-bottom: 3px;
-    text-shadow: none;
+    margin-bottom: 5px;
     position: absolute;
-    top: 3px;
+    top: 15px; /* Position below the new lip */
+    font-weight: bold;
 }
 
 .paper-stack {
-    width: 70%; /* Smaller papers */
-    height: 50px;
+    width: 80%; /* Wider papers */
+    height: 60px; /* Taller papers */
     background-color: #fffaf0;
-    border: 1px solid #bbb;
-    border-bottom: 2px solid #999;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-    margin-bottom: 5px;
+    border: 2px solid #bbb; /* Thicker border */
+    border-bottom: 3px solid #999; /* More pronounced bottom */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Deeper shadow */
+    margin-bottom: 10px; /* More space from bottom */
     position: relative;
-    top: 10px;
-    border-radius: 1px;
+    top: 0; /* Align to the bottom of the tray content area */
+    border-radius: 2px;
 }
 
 .in-tray .paper-stack {
-    background-color: #d0c8b0; /* Slightly darker for unread */
+    background-color: #d0c8b0;
     border-color: #888;
 }
 
@@ -336,104 +355,106 @@ body {
     position: absolute;
     bottom: 5%;
     left: 10%;
-    width: 60px; /* Smaller */
-    height: 60px;
-    background: #3a2b1f; /* Inkwell body */
-    border: 1px solid #2e241c;
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.4);
-    border-radius: 2px; /* Sharper */
+    width: 70px; /* Larger */
+    height: 70px;
+    background: #3a2b1f;
+    border: 2px solid #2e241c;
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.5);
+    border-radius: 3px;
+    z-index: 1; /* Keep it below the document area */
 
     &::before { /* Quill feather */
         content: '';
         position: absolute;
-        top: -30px; /* Adjusted position */
+        top: -40px; /* Adjusted position */
         left: 50%;
-        transform: translateX(-50%) rotate(-15deg); /* Less rotation */
-        width: 8px; /* Thinner feather */
-        height: 60px;
+        transform: translateX(-50%) rotate(-10deg); /* Slightly less rotation */
+        width: 10px; /* Thicker feather */
+        height: 80px; /* Longer feather */
         background-color: #e0e0e0;
-        border-radius: 2px;
-        box-shadow: -1px -1px 2px rgba(0,0,0,0.2);
+        border-radius: 3px;
+        box-shadow: -2px -2px 3px rgba(0,0,0,0.3);
         border: 1px solid #ccc;
     }
     &::after { /* Quill tip */
         content: '';
         position: absolute;
-        bottom: 15px; /* Adjusted position */
+        bottom: 20px; /* Adjusted position */
         left: 50%;
         transform: translateX(-50%);
-        width: 4px;
-        height: 15px;
+        width: 5px;
+        height: 20px;
         background-color: black;
-        border-radius: 0 0 1px 1px;
+        border-radius: 0 0 2px 2px;
     }
 }
 
 .decorative-scroll {
     position: absolute;
-    bottom: 8%; /* Adjust position */
-    right: 10%; /* Adjust position */
-    width: 100px;
-    height: 20px;
-    background-color: #e0d8c0; /* Parchment color */
-    border: 1px solid #7a6e5b;
-    border-radius: 2px;
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.3);
-    /* Simulate rolled scroll */
+    bottom: 8%;
+    right: 10%;
+    width: 120px; /* Larger scroll */
+    height: 25px;
+    background-color: #e0d8c0;
+    border: 2px solid #7a6e5b;
+    border-radius: 3px;
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.4);
+    z-index: 1; /* Keep it below the document area */
+
     &::before, &::after {
         content: '';
         position: absolute;
-        width: 10px;
+        width: 12px; /* Thicker ends */
         height: 100%;
         background-color: #b0a890;
-        border: 1px solid #7a6e5b;
+        border: 2px solid #7a6e5b;
         top: 0;
     }
     &::before {
-        left: -10px;
-        border-top-left-radius: 2px;
-        border-bottom-left-radius: 2px;
+        left: -12px;
+        border-top-left-radius: 3px;
+        border-bottom-left-radius: 3px;
     }
     &::after {
-        right: -10px;
-        border-top-right-radius: 2px;
-        border-bottom-right-radius: 2px;
+        right: -12px;
+        border-top-right-radius: 3px;
+        border-bottom-right-radius: 3px;
     }
 }
 
 
-/* --- Map Overlay --- */
+/* --- Map Overlay: Consistent styling --- */
 .map-overlay {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.9); /* Darker overlay */
+    background-color: rgba(0, 0, 0, 0.9);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 100;
     opacity: 0;
     visibility: hidden;
-    pointer-events: none; /* Crucial fix: disable clicks when hidden */
-    transition: opacity 0.2s ease, visibility 0.2s ease; /* Faster transition */
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .map-overlay.show {
     opacity: 1;
     visibility: visible;
-    pointer-events: auto; /* Crucial fix: enable clicks when shown */
+    pointer-events: auto;
 }
 
 .map-content {
-    background-color: #f0e6d2; /* Muted parchment for map */
-    border: 3px solid #6a0000; /* Darker red, blocky border */
-    border-radius: 2px; /* Sharper corners */
-    padding: 20px; /* Reduced padding */
-    box-shadow: 5px 5px 0px rgba(0, 0, 0, 0.5); /* Flatter, stronger shadow */
-    max-width: 70%; /* Smaller map content */
-    max-height: 85%;
+    background-color: #f0e6d2;
+    border: 4px solid #6a0000; /* Thicker, blocky border */
+    border-radius: 3px;
+    padding: 25px;
+    box-shadow: 6px 6px 0px rgba(0, 0, 0, 0.6);
+    max-width: 75%;
+    max-height: 90%;
     overflow: auto;
     text-align: center;
     position: relative;
@@ -443,62 +464,59 @@ body {
 
 .map-content h2 {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 2em; /* Smaller title */
+    font-size: 2.4em;
     color: #6a0000;
     margin-top: 0;
-    margin-bottom: 15px;
-    text-shadow: none;
+    margin-bottom: 20px;
 }
 
 .map-content p {
-    font-size: 1em;
-    margin-bottom: 15px;
+    font-size: 1.1em;
+    margin-bottom: 20px;
 }
 
 .pixel-map {
     width: 100%;
     height: auto;
-    max-height: 350px; /* Max height for the SVG */
-    border: 1px solid #333;
-    background-color: #b0aa90; /* Base map color, muted */
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    max-height: 400px; /* Slightly taller map */
+    border: 2px solid #333;
+    background-color: #b0aa90;
+    box-shadow: inset 0 0 8px rgba(0,0,0,0.3);
 }
 
 .pixel-map rect, .pixel-map polygon {
-    shape-rendering: crispedges; /* Essential for sharp pixelated SVG shapes */
+    shape-rendering: crispedges;
 }
-
-/* Removed pixel-map text styling as text elements are removed */
 
 .close-map-button {
     position: absolute;
-    top: 5px; /* Closer to corner */
-    right: 5px; /* Closer to corner */
-    background-color: #6a0000; /* Darker red */
+    top: 8px;
+    right: 8px;
+    background-color: #6a0000;
     color: white;
-    border: 1px solid #4a0000;
-    border-radius: 2px; /* Sharper */
-    width: 30px; /* Smaller button */
-    height: 30px;
+    border: 2px solid #4a0000;
+    border-radius: 3px;
+    width: 35px;
+    height: 35px;
     font-family: 'Cormorant Garamond', serif;
-    font-size: 1.2em; /* Smaller X */
+    font-size: 1.4em;
     cursor: pointer;
     line-height: 1;
     display: flex;
     justify-content: center;
     align-items: center;
     transition: background-color 0.1s ease, transform 0.05s ease;
-    box-shadow: 1px 1px 0px rgba(0,0,0,0.3);
+    box-shadow: 2px 2px 0px rgba(0,0,0,0.4);
 }
 
 .close-map-button:hover {
     background-color: #8b0000;
-    transform: scale(1.05); /* Simple scale on hover */
-    box-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+    transform: scale(1.1);
+    box-shadow: 3px 3px 0px rgba(0,0,0,0.4);
 }
 
 .close-map-button:active {
     transform: scale(1);
-    box-shadow: 0.5px 0.5px 0px rgba(0,0,0,0.3);
+    box-shadow: 1px 1px 0px rgba(0,0,0,0.4);
     background-color: #5a0000;
 }
