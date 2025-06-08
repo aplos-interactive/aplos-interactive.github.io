@@ -73,12 +73,16 @@ let globalGameState = {
 };
 
 let currentDocumentId = "intro_briefing";
+let gameDay = 0; // Start at day 0, increment for first document
 
 // --- DOM Elements (References to HTML elements) ---
 const docTitle = document.getElementById('document-title');
 const docContent = document.getElementById('document-content');
 const docSource = document.getElementById('document-source');
 const optionsContainer = document.getElementById('options-container');
+const documentArea = document.getElementById('document-area'); // Reference for animation
+const gameDayCounter = document.getElementById('game-day-counter');
+
 const metricElements = {
     piety: document.getElementById('metric-piety'),
     authority: document.getElementById('metric-authority'),
@@ -90,11 +94,28 @@ const mapButton = document.getElementById('map-button');
 
 // --- Functions ---
 
-function updateMetricsDisplay() {
+function updateMetricsDisplay(changes = {}) {
     for (const metric in papalMetrics) {
         const element = metricElements[metric.toLowerCase()];
         if (element) {
-            element.textContent = papalMetrics[metric];
+            const oldValue = parseFloat(element.textContent);
+            const newValue = papalMetrics[metric];
+
+            element.textContent = newValue;
+
+            // Apply temporary color change if value changed
+            if (metric in changes && oldValue !== newValue) {
+                element.classList.remove('metric-change-positive', 'metric-change-negative'); // Clean previous
+                if (newValue > oldValue) {
+                    element.classList.add('metric-change-positive');
+                } else if (newValue < oldValue) {
+                    element.classList.add('metric-change-negative');
+                }
+                // Remove class after a short delay
+                setTimeout(() => {
+                    element.classList.remove('metric-change-positive', 'metric-change-negative');
+                }, 500); // Flash for 0.5 seconds
+            }
         }
     }
 }
@@ -107,39 +128,60 @@ function loadDocument(docId) {
     }
 
     currentDocumentId = docId;
-    docTitle.textContent = doc.title;
-    docContent.textContent = doc.content;
-    docSource.textContent = `— ${doc.source}`;
 
-    // Clear previous options
-    optionsContainer.innerHTML = '';
+    // Trigger document area animation
+    documentArea.classList.remove('show'); // Hide for re-animation
+    setTimeout(() => {
+        docTitle.textContent = doc.title;
+        docContent.textContent = doc.content;
+        docSource.textContent = `— ${doc.source}`;
 
-    // Create new option buttons
-    doc.options.forEach(option => {
-        const button = document.createElement('button');
-        button.classList.add('option-button');
-        button.textContent = option.text;
-        button.addEventListener('click', () => handleDecision(option));
-        optionsContainer.appendChild(button);
-    });
+        // Clear previous options
+        optionsContainer.innerHTML = '';
+
+        // Create new option buttons
+        doc.options.forEach(option => {
+            const button = document.createElement('button');
+            button.classList.add('option-button');
+            button.textContent = option.text;
+            button.addEventListener('click', () => handleDecision(option));
+            optionsContainer.appendChild(button);
+        });
+        documentArea.classList.add('show'); // Show with animation
+    }, 100); // Small delay to allow 'hide' to register
+
+    // Increment day counter, unless restarting demo
+    if (docId !== "intro_briefing" || gameDay !== 0) { // Don't increment on first load
+        gameDay++;
+    } else {
+        // Reset metrics when restarting demo
+        papalMetrics = { Piety: 50, Authority: 50, Gold: 100, PublicOpinion: 50, CardinalFavor: 50 };
+        gameDay = 1; // Start at day 1 for a new demo run
+    }
+    gameDayCounter.textContent = gameDay;
 }
 
 function handleDecision(option) {
+    const changes = {}; // Track changes for visual feedback
+
     // Apply consequences to papal metrics
     for (const metric in option.consequences) {
         if (papalMetrics.hasOwnProperty(metric)) {
+            const oldValue = papalMetrics[metric];
             papalMetrics[metric] += option.consequences[metric];
-            // Clamp values between 0 and 100 for display
+            // Clamp values between 0 and 100
             papalMetrics[metric] = Math.max(0, Math.min(100, papalMetrics[metric]));
+            changes[metric] = papalMetrics[metric] - oldValue; // Store the change amount
         }
     }
+
+    // Update metrics display with visual feedback
+    updateMetricsDisplay(changes);
 
     // Update global game state (placeholder for future use)
     // if (option.globalStateChange) {
     //     Object.assign(globalGameState, option.globalStateChange);
     // }
-
-    updateMetricsDisplay();
 
     // Load next document
     if (option.next_doc_id) {
@@ -158,6 +200,6 @@ mapButton.addEventListener('click', () => {
 
 // --- Initial Game Setup ---
 document.addEventListener('DOMContentLoaded', () => {
-    updateMetricsDisplay();
-    loadDocument(currentDocumentId);
+    loadDocument(currentDocumentId); // This will also set initial gameDay to 1
+    updateMetricsDisplay(); // Initial display without changes
 });
