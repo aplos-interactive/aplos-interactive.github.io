@@ -31,6 +31,7 @@ const DOCUMENTS = {
               next_doc_id: 'papal_states_revolt' },
             { text: 'Issue a special indulgence. Seek generous donations from wealthy nobles and influential merchants.',
               consequences: { PublicOpinion: -5, Piety: 5, Gold: 10 },
+              consequences: { PublicOpinion: -5, Piety: 5, Gold: 10 },
               next_doc_id: 'papal_states_revolt' }
         ]
     },
@@ -93,7 +94,7 @@ const metricElements = {
 };
 const mapButton = document.getElementById('map-button');
 const mapOverlay = document.getElementById('map-overlay'); // Map overlay
-const closeMapButton = document.getElementById('close-map_button'); // Close map button
+const closeMapButton = document.getElementById('close-map-button'); // <<-- FIX IS HERE!
 
 // --- Functions ---
 
@@ -237,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Event listeners for map button
     mapButton.addEventListener('click', showMap);
-    closeMapButton.addEventListener('click', hideMap);
+    closeMapButton.addEventListener('click', hideMap); // This now references the correctly named element
 
     // Add subtle hover effects for decorative desk items
     const deskItems = document.querySelectorAll('.desk-item');
