@@ -16,9 +16,18 @@ document.addEventListener('DOMContentLoaded', () => {
         imperial_alliance_established: false,
         crusade_launched: false,
         papal_bull_issued: false,
-        crusade_report_received: false, // Ensures report only happens once
+        crusade_report_received: false,
         // Add more flags as your game develops
     };
+
+    // NEW: Game Factions - tracks favor with different powerful groups
+    const gameFactions = {
+        imperial: { favor: 50, name: 'The Holy Roman Emperor' }, // Relationship with the Emperor
+        nobility: { favor: 50, name: 'European Nobility' },     // General favor with noble houses
+        monasticOrders: { favor: 50, name: 'Monastic Orders' }, // Favor with powerful church orders
+        // Add more factions as your game develops (e.g., Italian City-States, Common Populace could be a faction instead of just a metric)
+    };
+
 
     // --- DOM Elements ---
     const metricPiety = document.getElementById('metric-piety');
@@ -38,10 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapOverlay = document.getElementById('map-overlay');
     const closeMapButton = document.getElementById('close-map-button');
 
-    // --- Game Events Data (UPDATED STRUCTURE WITH FLAGS!) ---
+    // --- Game Events Data (UPDATED STRUCTURE WITH FACTIONS!) ---
     const events = [
         {
-            id: 'start_game', // Unique ID for the event
+            id: 'start_game',
             title: 'A New Pontificate',
             content: 'You have been elected to the Holy See. The burdens of the papacy weigh heavily upon you. The world watches.',
             source: 'The Conclave',
@@ -51,21 +60,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     effects: [
                         { type: 'metricChange', metric: 'piety', value: 10 },
                         { type: 'metricChange', metric: 'authority', value: 5 },
-                        { type: 'setNextEvent', eventId: 'first_edict' } // This choice branches to 'first_edict'
+                        { type: 'setNextEvent', eventId: 'first_edict' }
                     ]
                 },
                 {
                     text: 'Seek immediate counsel from the College of Cardinals.',
                     effects: [
                         { type: 'metricChange', metric: 'cardinalFavor', value: 10 },
-                        { type: 'metricChange', metric: 'publicOpinion', value: -5 }, // Multiple effects
-                        { type: 'setNextEvent', eventId: 'cardinal_meeting' } // This choice branches to 'cardinal_meeting'
+                        { type: 'metricChange', metric: 'publicOpinion', value: -5 },
+                        { type: 'setNextEvent', eventId: 'cardinal_meeting' }
                     ]
                 }
             ]
         },
         {
-            id: 'first_edict', // New event accessible via branching
+            id: 'first_edict',
             title: 'The Imperial Demand',
             content: 'Emperor Frederick demands your support for his military campaign against the rebellious northern states. He seeks papal blessing and financial aid.',
             source: 'Imperial Envoy',
@@ -74,25 +83,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     text: 'Grant your blessing and offer 20 Gold.',
                     effects: [
                         { type: 'metricChange', metric: 'authority', value: 15 },
-                        { type: 'metricChange', metric: 'gold', value: -20 }, // Cost Gold
-                        { type: 'metricChange', metric: 'publicOpinion', value: -10 }, // Public opinion drops
-                        { type: 'setNextEvent', eventId: 'noble_dissatisfaction' }, // Leads to another specific event
-                        { type: 'setFlag', flag: 'imperial_alliance_established', value: true } // NEW: Sets this flag
+                        { type: 'metricChange', metric: 'gold', value: -20 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: -10 },
+                        { type: 'factionChange', faction: 'imperial', value: 20 }, // NEW: Increase Imperial Favor
+                        { type: 'setNextEvent', eventId: 'noble_dissatisfaction' },
+                        { type: 'setFlag', flag: 'imperial_alliance_established', value: true }
                     ]
                 },
                 {
                     text: 'Deny his request, citing spiritual concerns and neutrality.',
                     effects: [
                         { type: 'metricChange', metric: 'piety', value: 10 },
-                        { type: 'metricChange', metric: 'authority', value: -10 }, // Authority drops with Emperor
+                        { type: 'metricChange', metric: 'authority', value: -10 },
                         { type: 'metricChange', metric: 'cardinalFavor', value: 5 },
+                        { type: 'factionChange', faction: 'imperial', value: -15 }, // NEW: Decrease Imperial Favor
                         { type: 'setNextEvent', eventId: 'papal_decree_consideration' }
                     ]
                 }
             ]
         },
         {
-            id: 'cardinal_meeting', // New event accessible via branching
+            id: 'cardinal_meeting',
             title: 'The College Convenes',
             content: 'The cardinals are restless. Cardinal Giovanni expresses concerns about your lack of immediate, decisive action. "The faithful demand a strong hand!" he proclaims.',
             source: 'Cardinal Giovanni',
@@ -100,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
                     text: 'Assure them of your wisdom and long-term vision, citing patience as a virtue.',
                     effects: [
-                        { type: 'metricChange', metric: 'cardinalFavor', value: -5 }, // Some cardinals are displeased
+                        { type: 'metricChange', metric: 'cardinalFavor', value: -5 },
                         { type: 'metricChange', metric: 'piety', value: 5 },
                         { type: 'setNextEvent', eventId: 'papal_decree_consideration' }
                     ]
@@ -109,17 +120,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     text: 'Promise swift reforms to address their concerns, consolidating power.',
                     effects: [
                         { type: 'metricChange', metric: 'cardinalFavor', value: 10 },
-                        { type: 'metricChange', metric: 'authority', value: 5 } // You gain authority by acting decisively
+                        { type: 'metricChange', metric: 'authority', value: 5 },
+                        { type: 'factionChange', faction: 'monasticOrders', value: -5 } // Monastics might dislike swift political action
                     ]
                 }
             ]
         },
         {
-            id: 'crusade_proposal', // NEW BRANCHING EVENT - Requires a flag!
+            id: 'crusade_proposal',
             title: 'A Call for Crusade',
             content: 'Emperor Frederick, having secured his northern borders (due to your previous support), now proposes a grand crusade to the Holy Land. This requires significant resources and commitment.',
             source: 'Imperial Message',
-            requiredFlags: ['imperial_alliance_established'], // This event only appears if this flag is true
+            requiredFlags: ['imperial_alliance_established'],
+            requiredFactionFavor: { faction: 'imperial', minFavor: 60 }, // NEW: Emperor must favor you
             options: [
                 {
                     text: 'Launch the Crusade, for God and Glory!',
@@ -127,15 +140,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         { type: 'metricChange', metric: 'piety', value: 20 },
                         { type: 'metricChange', metric: 'gold', value: -50 },
                         { type: 'metricChange', metric: 'publicOpinion', value: 15 },
-                        { type: 'setFlag', flag: 'crusade_launched', value: true }, // NEW: Sets crusade flag
-                        { type: 'setNextEvent', eventId: 'crusade_outcome_report' } // Immediately jump to report
+                        { type: 'factionChange', faction: 'imperial', value: 10 }, // Imperial favor up
+                        { type: 'factionChange', faction: 'nobility', value: -10 }, // Nobility might resent the call for troops/funds
+                        { type: 'setFlag', flag: 'crusade_launched', value: true },
+                        { type: 'setNextEvent', eventId: 'crusade_outcome_report' }
                     ]
                 },
                 {
                     text: 'Decline, citing more pressing internal church matters.',
                     effects: [
                         { type: 'metricChange', metric: 'authority', value: -10 },
-                        { type: 'metricChange', metric: 'cardinalFavor', value: 10 }
+                        { type: 'metricChange', metric: 'cardinalFavor', value: 10 },
+                        { type: 'factionChange', faction: 'imperial', value: -20 } // Imperial favor drops significantly
                     ]
                 }
             ]
@@ -145,20 +161,22 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'Noble Uprising Rumors',
             content: 'Rumors reach your ears that some northern nobles, emboldened by the Emperor\'s campaign, are questioning your authority in their lands. They believe your focus is too worldly.',
             source: 'Your Spymaster',
+            requiredFactionFavor: { faction: 'nobility', maxFavor: 40 }, // NEW: Only appears if nobility favor is somewhat low
             options: [
                 {
                     text: 'Send a Papal Legate to assert your spiritual dominance.',
                     effects: [
-                        { type: 'metricChange', metric: 'piety', value: 10 },
-                        { type: 'metricChange', metric: 'authority', value: -5 },
+                        { type: 'metricChange', metric: 'authority', value: 10 },
+                        { type: 'factionChange', faction: 'nobility', value: -20 }, // Direct confrontation lowers favor
                         { type: 'metricChange', metric: 'publicOpinion', value: 5 }
                     ]
                 },
                 {
-                    text: 'Ignore them; focus on Rome\'s internal affairs.',
+                    text: 'Dispatch envoys to negotiate and hear their grievances.',
                     effects: [
-                        { type: 'metricChange', metric: 'authority', value: -10 },
-                        { type: 'metricChange', metric: 'gold', value: -5 }
+                        { type: 'factionChange', faction: 'nobility', value: 15 }, // Attempt to reconcile
+                        { type: 'metricChange', metric: 'gold', value: -10 },
+                        { type: 'metricChange', metric: 'authority', value: -5 }
                     ]
                 }
             ]
@@ -175,7 +193,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         { type: 'metricChange', metric: 'piety', value: 15 },
                         { type: 'metricChange', metric: 'publicOpinion', value: 10 },
                         { type: 'metricChange', metric: 'cardinalFavor', value: -5 },
-                        { type: 'setFlag', flag: 'papal_bull_issued', value: true } // NEW: Sets papal bull flag
+                        { type: 'factionChange', faction: 'monasticOrders', value: 10 }, // Monastics might like strict doctrine
+                        { type: 'setFlag', flag: 'papal_bull_issued', value: true }
                     ]
                 },
                 {
@@ -183,26 +202,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     effects: [
                         { type: 'metricChange', metric: 'piety', value: -5 },
                         { type: 'metricChange', metric: 'cardinalFavor', value: 5 },
-                        { type: 'metricChange', metric: 'authority', value: 5 }
+                        { type: 'metricChange', metric: 'authority', value: 5 },
+                        { type: 'factionChange', faction: 'monasticOrders', value: -10 } // Monastics might dislike indecision
                     ]
                 }
             ]
         },
         {
-            id: 'crusade_outcome_report', // NEW EVENT - conditional based on flag
+            id: 'crusade_outcome_report',
             title: 'Crusade Report',
             content: 'Your Holy Crusade to the East has returned. What are the tidings?',
             source: 'Crusader Captain',
-            requiredFlags: ['crusade_launched'], // Only appears if crusade was launched
-            forbiddenFlags: ['crusade_report_received'], // Ensures it only happens once per game
+            requiredFlags: ['crusade_launched'],
+            forbiddenFlags: ['crusade_report_received'],
             options: [
                 {
                     text: 'Assess the gains in piety and territory.',
                     effects: [
                         { type: 'metricChange', metric: 'piety', value: 25 },
                         { type: 'metricChange', metric: 'authority', value: 15 },
-                        { type: 'metricChange', metric: 'gold', value: -10 }, // Cost to maintain new territory
-                        { type: 'setFlag', flag: 'crusade_report_received', value: true } // Mark as received
+                        { type: 'metricChange', metric: 'gold', value: -10 },
+                        { type: 'factionChange', faction: 'imperial', value: 5 }, // Emperor slightly pleased
+                        { type: 'factionChange', faction: 'publicOpinion', value: 10 }, // Public opinion is not a faction in gameFactions, so this will affect the metric directly.
+                        { type: 'setFlag', flag: 'crusade_report_received', value: true }
                     ]
                 },
                 {
@@ -210,14 +232,39 @@ document.addEventListener('DOMContentLoaded', () => {
                     effects: [
                         { type: 'metricChange', metric: 'piety', value: -10 },
                         { type: 'metricChange', metric: 'publicOpinion', value: -5 },
+                        { type: 'factionChange', faction: 'imperial', value: -10 }, // Emperor displeased with losses
                         { type: 'setFlag', flag: 'crusade_report_received', value: true }
                     ]
                 }
             ]
         },
-        // The game will try to go through events in order.
-        // If an event has requiredFlags that aren't met, it will skip to the next.
-        // It's good to have a final "end" event or loop.
+        // NEW EVENT: Based on faction favor
+        {
+            id: 'noble_tax_request',
+            title: 'Noble\'s Plea for Tax Exemption',
+            content: 'Lord Bertrand, a powerful noble from Provence, requests a special papal tax exemption for his lands, citing recent hardships. Granting it would set a precedent.',
+            source: 'Lord Bertrand\'s Envoy',
+            requiredFactionFavor: { faction: 'nobility', minFavor: 70 }, // Only appears if Nobility favor is high enough to make this request
+            forbiddenFactionFavor: { faction: 'nobility', maxFavor: 90 }, // Don't want it to be TOO high or it feels cheap
+            options: [
+                {
+                    text: 'Grant the exemption, strengthening ties with the nobility.',
+                    effects: [
+                        { type: 'metricChange', metric: 'gold', value: -15 }, // Lost income
+                        { type: 'factionChange', faction: 'nobility', value: 20 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: -5 } // Public might see it as unfair
+                    ]
+                },
+                {
+                    text: 'Deny the exemption, upholding papal fiscal authority.',
+                    effects: [
+                        { type: 'metricChange', metric: 'authority', value: 10 },
+                        { type: 'factionChange', faction: 'nobility', value: -15 },
+                        { type: 'metricChange', metric: 'gold', value: 5 } // Maintain income
+                    ]
+                }
+            ]
+        },
         {
             id: 'end_game_placeholder',
             title: 'The Papacy Continues...',
@@ -227,8 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
                     text: 'Begin Anew',
                     effects: [
-                        // When beginning anew, reset all game state
-                        { type: 'resetGame', value: true } // NEW: Custom effect type to reset game
+                        { type: 'resetGame', value: true }
                     ]
                 }
             ]
@@ -247,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Checks if an event is eligible to be displayed based on current game flags.
+     * Checks if an event is eligible to be displayed based on current game flags and faction favors.
      * @param {object} event The event object to check.
      * @returns {boolean} True if the event is eligible, false otherwise.
      */
@@ -255,7 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check requiredFlags
         if (event.requiredFlags) {
             for (const flag of event.requiredFlags) {
-                if (!gameFlags[flag]) { // If a required flag is false/undefined
+                if (!gameFlags[flag]) {
                     return false;
                 }
             }
@@ -263,12 +309,28 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check forbiddenFlags
         if (event.forbiddenFlags) {
             for (const flag of event.forbiddenFlags) {
-                if (gameFlags[flag]) { // If a forbidden flag is true
+                if (gameFlags[flag]) {
                     return false;
                 }
             }
         }
-        return true; // All flag conditions met
+
+        // NEW: Check requiredFactionFavor
+        if (event.requiredFactionFavor) {
+            const faction = gameFactions[event.requiredFactionFavor.faction];
+            if (!faction || faction.favor < event.requiredFactionFavor.minFavor) {
+                return false;
+            }
+        }
+        // NEW: Check forbiddenFactionFavor
+        if (event.forbiddenFactionFavor) {
+            const faction = gameFactions[event.forbiddenFactionFavor.faction];
+            if (!faction || faction.favor > event.forbiddenFactionFavor.maxFavor) {
+                return false;
+            }
+        }
+
+        return true; // All flag and faction conditions met
     }
 
     /**
@@ -277,7 +339,6 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {number} value The amount to change the metric by.
      */
     function updateMetric(metricName, value) {
-        const oldValue = gameMetrics[metricName];
         gameMetrics[metricName] = Math.max(0, Math.min(100, gameMetrics[metricName] + value)); // Clamp between 0-100
 
         // Visual flash for metric change
@@ -291,6 +352,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }, 800); // Duration of the flash animation
         }
     }
+
+    /**
+     * NEW: Updates a faction's favor and logs to console.
+     * (You can add a UI update here later)
+     * @param {string} factionName The key for the faction (e.g., 'imperial').
+     * @param {number} value The amount to change favor by.
+     */
+    function updateFactionFavor(factionName, value) {
+        if (gameFactions[factionName]) {
+            gameFactions[factionName].favor = Math.max(0, Math.min(100, gameFactions[factionName].favor + value)); // Clamp favor
+            console.log(`${gameFactions[factionName].name} Favor: ${gameFactions[factionName].favor} (Changed by ${value})`);
+            // TODO: Add visual update for faction favor in UI
+        } else {
+            console.warn(`Attempted to change favor for unknown faction: ${factionName}`);
+        }
+    }
+
 
     /**
      * Updates all metric displays based on current game state.
@@ -349,6 +427,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (effect.type === 'setFlag') { // Handle setting flags
                 gameFlags[effect.flag] = effect.value;
                 console.log(`Flag '${effect.flag}' set to ${effect.value}`);
+            } else if (effect.type === 'factionChange') { // NEW: Handle faction changes
+                updateFactionFavor(effect.faction, effect.value);
             } else if (effect.type === 'resetGame') { // Handle game reset
                 initGame(); // Re-initialize the game state
                 return; // Stop processing effects for this choice and exit applyChoice
@@ -392,7 +472,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextEventToLoad = potentialNextEvent;
                 break; // Found an eligible event
             } else {
-                console.log(`Skipping event '${potentialNextEvent.id}' (Day ${gameDay}) - not eligible due to flags.`);
+                console.log(`Skipping event '${potentialNextEvent.id}' (Day ${gameDay}) - not eligible due to flags or faction favor.`);
                 currentEventIndex++; // Skip and check the next one
             }
         }
@@ -431,8 +511,13 @@ document.addEventListener('DOMContentLoaded', () => {
             gameFlags[flag] = false;
         }
 
+        // NEW: Reset faction favors
+        for (const factionKey in gameFactions) {
+            gameFactions[factionKey].favor = 50; // Reset all factions to 50 favor
+        }
+
         gameDay = 1;
-        gameDayCounter.textContent = gameDay; // FIX: Ensure game day is updated on reset
+        gameDayCounter.textContent = gameDay;
         currentEventIndex = 0; // Start with the first event in the array
         nextEventId = null;
 
