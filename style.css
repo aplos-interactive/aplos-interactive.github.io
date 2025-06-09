@@ -68,7 +68,7 @@ h2 {
     grid-column: 3 / 4; /* Third column */
 }
 
-/* New Conclave Panel positioning */
+/* Conclave Panel positioning */
 .conclave-panel {
     grid-column: 1 / -1; /* Span across all columns when active */
     background-color: #4A148C; /* Deep Purple for Conclave */
@@ -83,20 +83,28 @@ h2 {
     color: #FFD700;
 }
 
-.conclave-panel p {
+.conclave-panel p, .conclave-panel h3 {
     color: #FFF;
+    margin: 10px 0;
 }
 
 .conclave-panel ul {
     list-style: none;
     padding: 0;
     margin: 15px 0;
+    max-height: 200px; /* Limit height for candidate list */
+    overflow-y: auto; /* Enable scrolling */
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    padding: 10px;
 }
 
 .conclave-panel li {
     font-size: 1.1em;
     margin-bottom: 5px;
     color: #FFF;
+    text-align: left; /* Align candidate names left */
+    padding-left: 10px;
 }
 
 
@@ -152,7 +160,7 @@ h2 {
 
 #nextTurnButton:active {
     transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 4px rgba[0, 0, 0, 0.4];
 }
 
 /* Decision panel specific styles */
@@ -181,6 +189,16 @@ h2 {
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
     flex-grow: 1;
     max-width: 48%; /* Default for decision buttons */
+}
+
+/* Specific styling for conclave influence buttons */
+#conclaveInfluenceOptions .action-button {
+    background-color: #8a2be2; /* Blue-violet */
+    border-color: #e6b800;
+}
+
+#conclaveInfluenceOptions .action-button:hover {
+    background-color: #9932cc; /* Dark Orchid */
 }
 
 .cardinal-action-button { /* Smaller for individual cardinal actions */
@@ -221,10 +239,9 @@ h2 {
     padding: 10px;
     margin-bottom: 8px;
     display: flex;
-    flex-direction: column; /* Stack attributes and buttons */
-    /* justify-content: space-between; */ /* Not needed with column flex */
-    /* align-items: center; */ /* Not needed with column flex */
+    flex-direction: column;
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+    position: relative; /* For the on-mission badge */
 }
 
 .cardinal-entry strong {
@@ -236,15 +253,14 @@ h2 {
 .cardinal-entry .attributes {
     font-size: 0.9em;
     color: #e0d8c2;
-    /* text-align: right; */ /* Not needed */
-    margin-bottom: 10px; /* Space between attributes and buttons */
+    margin-bottom: 10px;
 }
 
 .cardinal-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
-    justify-content: flex-end; /* Align buttons to the right */
+    justify-content: flex-end;
 }
 
 .placeholder {
@@ -252,6 +268,20 @@ h2 {
     text-align: center;
     padding: 20px;
     font-style: italic;
+}
+
+/* On Mission Badge */
+.on-mission-badge {
+    background-color: #2196F3; /* Blue */
+    color: white;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-size: 0.7em;
+    font-weight: bold;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    z-index: 10;
 }
 
 /* Ensure padding around list items */
