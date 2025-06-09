@@ -6,40 +6,41 @@ document.addEventListener('DOMContentLoaded', () => {
         gold: 100,
         publicOpinion: 50,
         cardinalFavor: 50,
+        integrity: 50, // Represents moral standing, corruption vs. virtue
     };
     let gameDay = 1;
-    let currentEventIndex = 0; // Tracks current event in the linear sequence
-    let nextEventId = null; // Stores ID of the next event to load if branching occurs
     let hasGameEnded = false; // Flag to track if the game has ended
+
+    // NEW: Max Game Days for a full playthrough before final evaluation
+    const MAX_GAME_DAYS = 730; // Approximately 2 years (365 * 2)
 
     // Game Flags - tracks specific conditions or outcomes of choices
     const gameFlags = {
         imperial_alliance_established: false,
         crusade_launched: false,
         papal_bull_issued: false,
-        crusade_report_received: false, // Ensures report only happens once
-        triumph_divine_mandate_achieved: false, // Prevents re-triggering triumph
-        triumph_absolute_authority_achieved: false, // Prevents re-triggering triumph
-        // Add more flags as your game develops
+        crusade_report_received: false,
+        jubilee_initiated: false,
+        triumph_divine_mandate_achieved: false, // Now just a flag, doesn't end game immediately
+        triumph_absolute_authority_achieved: false, // Now just a flag
     };
 
     // Game Factions - tracks favor with different powerful groups
     const gameFactions = {
-        imperial: { favor: 50, name: 'The Holy Roman Emperor' },     // Relationship with the Emperor
-        nobility: { favor: 50, name: 'European Nobility' },         // General favor with noble houses
-        monasticOrders: { favor: 50, name: 'Monastic Orders' },     // Favor with powerful church orders
-        // Add more factions as your game develops (e.g., Italian City-States)
+        imperial: { favor: 50, name: 'The Holy Roman Emperor' },
+        nobility: { favor: 50, name: 'European Nobility' },
+        monasticOrders: { favor: 50, name: 'Monastic Orders' },
     };
 
-    // NEW: Game Buildings - tracks status, level, and properties of various constructions
+    // Game Buildings - tracks status, level, and properties of various constructions
     const gameBuildings = {
         st_peters_basilica_reconstruction: {
-            level: 0, // 0: not built, 1: completed base
+            level: 0,
             status: 'none', // 'none', 'under_construction', 'completed'
             daysRemaining: 0,
             baseCost: { gold: 150, piety: 50, authority: 30 },
             baseDaysToBuild: 60,
-            passiveBonuses: { piety: 2, publicOpinion: 1 }, // Daily passive gains
+            passiveBonuses: { piety: 2, publicOpinion: 1 },
             completionEventId: 'st_peters_completed'
         },
         papal_library: {
@@ -51,8 +52,22 @@ document.addEventListener('DOMContentLoaded', () => {
             passiveBonuses: { cardinalFavor: 1, authority: 1 },
             completionEventId: 'papal_library_completed'
         },
-        // Add more buildings here
     };
+
+    // NEW: Advisors system (simple for now)
+    const advisors = {
+        cardinalSecretary: { name: "Cardinal Valerius", loyalty: 70, description: "Your chief administrative assistant, practical and efficient." },
+        inquisitorGeneral: { name: "Brother Thomas", loyalty: 80, description: "Stern and devout, leader of the Holy Inquisition." },
+        masterOfCeremonies: { name: "Monsignor Battista", loyalty: 60, description: "Oversees papal ceremonies and Vatican protocol." }
+    };
+
+    // NEW: Event Queue - all events to be processed are added here with a priority
+    // Each entry: { eventId: string, priority: number, triggerDay?: number }
+    // Priority order: 100 (Game Over/Triumph), 90 (Delayed), 80 (Building Completion), 70 (Recurring), 50 (Main Story/Next Event), 40 (Random)
+    let gameEventQueue = [];
+
+    // Tracks the index for the 'main story' progression if no other events are triggered
+    let mainStoryEventIndex = 0;
 
 
     // --- DOM Elements ---
@@ -61,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const metricGold = document.getElementById('metric-gold');
     const metricPublicOpinion = document.getElementById('metric-publicOpinion');
     const metricCardinalFavor = document.getElementById('metric-cardinalFavor');
+    const metricIntegrity = document.getElementById('metric-integrity');
     const gameDayCounter = document.getElementById('game-day-counter');
 
     const documentArea = document.getElementById('document-area');
@@ -73,12 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapOverlay = document.getElementById('map-overlay');
     const closeMapButton = document.getElementById('close-map-button');
 
-    // --- Game Events Data (UPDATED WITH BUILDING EVENTS!) ---
+    // --- Game Events Data ---
+    // Events are now just definitions. Their order in this array is for linear fallback,
+    // but the event queue system will prioritize and manage their loading.
     const events = [
         {
             id: 'start_game',
             title: 'A New Pontificate',
-            content: 'You have been elected to the Holy See. The burdens of the papacy weigh heavily upon you. The world watches.',
+            content: 'You have been elected to the Holy See. The burdens of the papacy weigh heavily upon you.',
             source: 'The Conclave',
             options: [
                 {
@@ -86,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     effects: [
                         { type: 'metricChange', metric: 'piety', value: 10 },
                         { type: 'metricChange', metric: 'authority', value: 5 },
-                        { type: 'setNextEvent', eventId: 'first_edict' }
+                        { type: 'scheduleNextMainEvent' } // Schedule next main event
                     ]
                 },
                 {
@@ -94,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     effects: [
                         { type: 'metricChange', metric: 'cardinalFavor', value: 10 },
                         { type: 'metricChange', metric: 'publicOpinion', value: -5 },
-                        { type: 'setNextEvent', eventId: 'cardinal_meeting' }
+                        { type: 'scheduleNextMainEvent', overrideEventId: 'cardinal_meeting' }
                     ]
                 }
             ]
@@ -112,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         { type: 'metricChange', metric: 'gold', value: -20 },
                         { type: 'metricChange', metric: 'publicOpinion', value: -10 },
                         { type: 'factionChange', faction: 'imperial', value: 20 },
-                        { type: 'setNextEvent', eventId: 'noble_dissatisfaction' },
                         { type: 'setFlag', flag: 'imperial_alliance_established', value: true }
                     ]
                 },
@@ -122,8 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         { type: 'metricChange', metric: 'piety', value: 10 },
                         { type: 'metricChange', metric: 'authority', value: -10 },
                         { type: 'metricChange', metric: 'cardinalFavor', value: 5 },
-                        { type: 'factionChange', faction: 'imperial', value: -15 },
-                        { type: 'setNextEvent', eventId: 'papal_decree_consideration' }
+                        { type: 'factionChange', faction: 'imperial', value: -15 }
                     ]
                 }
             ]
@@ -138,8 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     text: 'Assure them of your wisdom and long-term vision, citing patience as a virtue.',
                     effects: [
                         { type: 'metricChange', metric: 'cardinalFavor', value: -5 },
-                        { type: 'metricChange', metric: 'piety', value: 5 },
-                        { type: 'setNextEvent', eventId: 'papal_decree_consideration' }
+                        { type: 'metricChange', metric: 'piety', value: 5 }
                     ]
                 },
                 {
@@ -169,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         { type: 'factionChange', faction: 'imperial', value: 10 },
                         { type: 'factionChange', faction: 'nobility', value: -10 },
                         { type: 'setFlag', flag: 'crusade_launched', value: true },
-                        { type: 'setNextEvent', eventId: 'crusade_outcome_report' }
+                        { type: 'delayEvent', eventId: 'crusade_outcome_report', days: 90 } // Delayed outcome
                     ]
                 },
                 {
@@ -185,8 +200,8 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             id: 'noble_dissatisfaction',
             title: 'Noble Uprising Rumors',
-            content: 'Rumors reach your ears that some northern nobles, emboldened by the Emperor\'s campaign, are questioning your authority in their lands. They believe your focus is too worldly.',
-            source: 'Your Spymaster',
+            content: 'Rumors reach your ears that some northern nobles are questioning your authority. They believe your focus is too worldly.',
+            source: 'Your Spymaster', // Could be advisors.cardinalSecretary.name
             requiredFactionFavor: { faction: 'nobility', maxFavor: 40 },
             options: [
                 {
@@ -210,7 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             id: 'papal_decree_consideration',
             title: 'A New Papal Bull',
-            content: 'After much deliberation, you consider issuing a Papal Bull on a controversial theological matter regarding the Immaculate Conception. This could reshape doctrine.',
+            content: 'You consider issuing a Papal Bull on a controversial theological matter regarding the Immaculate Conception. This could reshape doctrine.',
             source: 'Your Advisor',
             options: [
                 {
@@ -267,7 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             id: 'noble_tax_request',
             title: 'Noble\'s Plea for Tax Exemption',
-            content: 'Lord Bertrand, a powerful noble from Provence, requests a special papal tax exemption for his lands, citing recent hardships. Granting it would set a precedent.',
+            content: 'Lord Bertrand requests a special papal tax exemption for his lands, citing recent hardships.',
             source: 'Lord Bertrand\'s Envoy',
             requiredFactionFavor: { faction: 'nobility', minFavor: 70 },
             forbiddenFactionFavor: { faction: 'nobility', maxFavor: 90 },
@@ -291,19 +306,18 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
 
-        // NEW: Event to initiate building construction
+        // Event to initiate building construction
         {
             id: 'construction_opportunity_basilica',
             title: 'Rebuilding St. Peter\'s Basilica',
-            content: 'The old St. Peter\'s Basilica, though grand, is showing its age and does not fully reflect the glory of God. A grand reconstruction project could inspire the faithful and solidify Rome\'s prominence, but it will be costly.',
+            content: 'The old St. Peter\'s Basilica, though grand, is showing its age. A grand reconstruction project could inspire the faithful and solidify Rome\'s prominence, but it will be costly.',
             source: 'Master Architect',
-            requiredBuildings: { buildingId: 'st_peters_basilica_reconstruction', status: 'none' }, // Only available if not built yet
+            requiredBuildings: { buildingId: 'st_peters_basilica_reconstruction', status: 'none' },
             options: [
                 {
                     text: 'Begin the grand reconstruction!',
                     effects: [
                         { type: 'startConstruction', buildingId: 'st_peters_basilica_reconstruction' },
-                        { type: 'setNextEvent', eventId: 'papal_decree_consideration' } // Return to normal flow after initiating
                     ]
                 },
                 {
@@ -320,13 +334,12 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'Establish a Papal Library',
             content: 'To foster theological learning and preserve ancient texts, a comprehensive Papal Library is proposed. This will enhance the Holy See\'s reputation as a center of knowledge, but requires significant investment.',
             source: 'Scholar Cardinal',
-            requiredBuildings: { buildingId: 'papal_library', status: 'none' }, // Only available if not built yet
+            requiredBuildings: { buildingId: 'papal_library', status: 'none' },
             options: [
                 {
                     text: 'Commission the new Papal Library.',
                     effects: [
                         { type: 'startConstruction', buildingId: 'papal_library' },
-                        { type: 'setNextEvent', eventId: 'noble_dissatisfaction' } // Return to normal flow after initiating
                     ]
                 },
                 {
@@ -339,7 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
 
-        // NEW: Building Completion Events (triggered by dailyChecks)
+        // Building Completion Events (triggered by dailyChecks via queue)
         {
             id: 'st_peters_completed',
             title: 'St. Peter\'s Basilica Completed!',
@@ -373,19 +386,214 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
 
+        // Jubilee Project Start Event
+        {
+            id: 'initiate_jubilee',
+            title: 'A Holy Jubilee Year',
+            content: 'A proposal for a grand Jubilee year. It would attract pilgrims and generate wealth, but demands great preparations and impeccable integrity.',
+            source: advisors.cardinalSecretary.name,
+            requiredFlags: ['papal_bull_issued'],
+            forbiddenFlags: ['jubilee_initiated'],
+            requiredMetrics: { metric: 'gold', min: 40 },
+            options: [
+                {
+                    text: 'Declare the Jubilee! Let the faithful come!',
+                    effects: [
+                        { type: 'metricChange', metric: 'gold', value: -40 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: 10 },
+                        { type: 'setFlag', flag: 'jubilee_initiated', value: true },
+                        { type: 'delayEvent', eventId: 'jubilee_outcome', days: 120 }
+                    ]
+                },
+                {
+                    text: 'The time is not right. Postpone the Jubilee.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: -10 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: -5 },
+                    ]
+                }
+            ]
+        },
 
-        // Recurring Events
+        // Jubilee Project Outcome (Triggered by delayed event)
+        {
+            id: 'jubilee_outcome',
+            title: 'The Grand Jubilee Concludes!',
+            content: 'After many months, the Holy Jubilee Year has concluded. The faithful return to their homes. The success of the Jubilee largely depended on the perceived purity of your reign.',
+            source: 'Jubilee Commission',
+            options: [
+                {
+                    text: 'Assess the results.',
+                    effects: [
+                        {
+                            type: 'conditionalEffect',
+                            condition: { metric: 'integrity', min: 70 },
+                            effects: [
+                                { type: 'metricChange', metric: 'gold', value: 60 },
+                                { type: 'metricChange', metric: 'piety', value: 40 },
+                                { type: 'metricChange', metric: 'publicOpinion', value: 30 },
+                            ]
+                        },
+                        {
+                            type: 'conditionalEffect',
+                            condition: { metric: 'integrity', min: 40, max: 69 },
+                            effects: [
+                                { type: 'metricChange', metric: 'gold', value: 20 },
+                                { type: 'metricChange', metric: 'piety', value: 15 },
+                                { type: 'metricChange', metric: 'publicOpinion', value: 5 },
+                            ]
+                        },
+                        {
+                            type: 'conditionalEffect',
+                            condition: { metric: 'integrity', max: 39 },
+                            effects: [
+                                { type: 'metricChange', metric: 'gold', value: -10 },
+                                { type: 'metricChange', metric: 'piety', value: -20 },
+                                { type: 'metricChange', metric: 'publicOpinion', value: -15 },
+                                { type: 'factionChange', faction: 'monasticOrders', value: -15 }
+                            ]
+                        },
+                        { type: 'setFlag', flag: 'jubilee_initiated', value: false },
+                    ]
+                }
+            ]
+        },
+
+        // Events showing choices affecting integrity
+        {
+            id: 'indulgences_proposal',
+            title: 'Selling of Indulgences',
+            content: 'A desperate need for funds leads some cardinals to propose a widespread selling of indulgences for sins. This would generate immense wealth but might be seen as corrupt.',
+            source: advisors.masterOfCeremonies.name,
+            requiredMetrics: { metric: 'gold', max: 50 },
+            options: [
+                {
+                    text: 'Approve the sale of indulgences.',
+                    effects: [
+                        { type: 'metricChange', metric: 'gold', value: 50 },
+                        { type: 'metricChange', metric: 'integrity', value: -20 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: -10 },
+                        { type: 'factionChange', faction: 'monasticOrders', value: -15 }
+                    ]
+                },
+                {
+                    text: 'Forbid the practice, maintaining the purity of the Church.',
+                    effects: [
+                        { type: 'metricChange', metric: 'gold', value: -10 },
+                        { type: 'metricChange', metric: 'integrity', value: 10 },
+                        { type: 'metricChange', metric: 'piety', value: 10 }
+                    ]
+                }
+            ]
+        },
+        {
+            id: 'poor_relief_plea',
+            title: 'Plea for the Roman Poor',
+            content: 'The Roman populace suffers from famine and poverty. Local clergy appeal to you for papal relief efforts.',
+            source: 'Bishop of Rome',
+            options: [
+                {
+                    text: 'Allocate significant funds for relief.',
+                    effects: [
+                        { type: 'metricChange', metric: 'gold', value: -30 },
+                        { type: 'metricChange', metric: 'integrity', value: 15 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: 20 },
+                        { type: 'metricChange', metric: 'piety', value: 10 }
+                    ]
+                },
+                {
+                    text: 'Encourage local charities and sermons, but no direct funds.',
+                    effects: [
+                        { type: 'metricChange', metric: 'integrity', value: -5 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: -5 },
+                        { type: 'metricChange', metric: 'piety', value: 5 }
+                    ]
+                }
+            ]
+        },
+        // NEW: More events demonstrating new mechanics
+        {
+            id: 'heresy_inquisition',
+            title: 'Rising Heresy in Saxony',
+            content: 'Reports from Saxony indicate a growing movement of heretics challenging papal authority. The Inquisitor General demands swift action.',
+            source: advisors.inquisitorGeneral.name,
+            options: [
+                {
+                    text: 'Launch a full-scale Inquisition to purge the heresy.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: 15 },
+                        { type: 'metricChange', metric: 'authority', value: 10 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: -10 },
+                        { type: 'metricChange', metric: 'integrity', value: -5 }, // Severity of inquisition can affect integrity
+                        { type: 'factionChange', faction: 'monasticOrders', value: 10 }
+                    ]
+                },
+                {
+                    text: 'Send a mission of learned theologians to debate and persuade.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: -5 },
+                        { type: 'metricChange', metric: 'authority', value: -5 },
+                        { type: 'metricChange', metric: 'integrity', value: 10 },
+                        { type: 'factionChange', faction: 'monasticOrders', value: -5 },
+                        { type: 'metricChange', metric: 'gold', value: -15 }
+                    ]
+                }
+            ]
+        },
+        {
+            id: 'noble_feud',
+            title: 'A Princely Feud',
+            content: 'Two powerful Italian princely families are embroiled in a violent feud, disrupting trade and pilgrimage routes.',
+            source: advisors.cardinalSecretary.name,
+            options: [
+                {
+                    text: 'Intervene forcefully, threatening excommunication.',
+                    effects: [
+                        { type: 'metricChange', metric: 'authority', value: 15 },
+                        { type: 'factionChange', faction: 'nobility', value: -10 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: -5 },
+                        {
+                            type: 'conditionalEffect',
+                            condition: { metric: 'authority', min: 70 },
+                            effects: [
+                                { type: 'metricChange', metric: 'gold', value: 20 },
+                                { type: 'factionChange', faction: 'nobility', value: 15 } // They respect strong hand
+                            ]
+                        }
+                    ]
+                },
+                {
+                    text: 'Offer to mediate a peaceful resolution.',
+                    effects: [
+                        { type: 'metricChange', metric: 'integrity', value: 10 },
+                        { type: 'metricChange', metric: 'cardinalFavor', value: 5 },
+                        { type: 'metricChange', metric: 'gold', value: -5 },
+                        { type: 'factionChange', faction: 'nobility', value: 10 },
+                        {
+                            type: 'conditionalEffect',
+                            condition: { metric: 'integrity', max: 40 },
+                            effects: [
+                                { type: 'factionChange', faction: 'nobility', value: -20 }, // Seen as weakness
+                                { type: 'metricChange', metric: 'authority', value: -10 }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+
+
+        // Recurring Events (triggered by dailyChecks via queue)
         {
             id: 'monthly_treasury_report',
             title: 'Monthly Treasury Report',
-            content: 'A report on the papal finances for the past month. Your income varies with public opinion and overall prosperity. (Includes passive gold from buildings!)',
+            content: 'A report on the papal finances for the past month. Your income varies with public opinion and overall prosperity.',
             source: 'Papal Accountant',
             options: [
                 {
                     text: 'Acknowledge the report.',
                     effects: [
-                        // Dynamic gold income based on public opinion. Passive gold is already applied before this event.
-                        { type: 'metricChange', metric: 'gold', value: Math.floor(gameMetrics.publicOpinion / 10) + 5 } // Example: 5 to 15 gold
+                        { type: 'metricChange', metric: 'gold', value: Math.floor(gameMetrics.publicOpinion / 10) + 5 }
                     ]
                 }
             ]
@@ -393,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             id: 'annual_pilgrimage_season',
             title: 'Annual Pilgrimage Season',
-            content: 'The season of grand pilgrimages draws to a close. Thousands have flocked to Rome and other holy sites, bringing renewed devotion and some offerings.',
+            content: 'The season of grand pilgrimages draws to a close. Thousands have flocked to Rome and other holy sites.',
             source: 'Head of Papal Household',
             requiredFlags: ['papal_bull_issued'],
             options: [
@@ -408,256 +616,123 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
 
-        // Random Events (These should be defined in the randomEvents array)
+        // Random Events (now pulled from randomEvents list, not directly from 'events' array)
+        // These are just placeholder definitions here; the actual randomEvents array holds their IDs and weights.
         {
             id: 'plague_outbreak',
             title: 'Plague Outbreak!',
-            content: 'A virulent plague sweeps through a prominent city in your domains, causing widespread panic and death. What is your response?',
+            content: 'A virulent plague sweeps through a prominent city. What is your response?',
             source: 'Courier from the North',
             options: [
-                {
-                    text: 'Order prayers and offer spiritual guidance.',
-                    effects: [
-                        { type: 'metricChange', metric: 'piety', value: 15 },
-                        { type: 'metricChange', metric: 'publicOpinion', value: -15 },
-                        { type: 'metricChange', metric: 'gold', value: -5 }
-                    ]
-                },
-                {
-                    text: 'Send papal doctors and allocate funds for quarantines.',
-                    effects: [
-                        { type: 'metricChange', metric: 'publicOpinion', value: 10 },
-                        { type: 'metricChange', metric: 'gold', value: -20 },
-                        { type: 'metricChange', metric: 'piety', value: -5 }
-                    ]
-                }
+                { text: 'Order prayers and offer spiritual guidance.', effects: [{ type: 'metricChange', metric: 'piety', value: 15 }, { type: 'metricChange', metric: 'publicOpinion', value: -15 }, { type: 'metricChange', metric: 'gold', value: -5 }] },
+                { text: 'Send papal doctors and allocate funds for quarantines.', effects: [{ type: 'metricChange', metric: 'publicOpinion', value: 10 }, { type: 'metricChange', metric: 'gold', value: -20 }, { type: 'metricChange', metric: 'piety', value: -5 }] }
             ]
         },
         {
             id: 'noble_dispute_arbitration',
             title: 'Noble Dispute Requires Arbitration',
-            content: 'Two powerful noble families are embroiled in a bitter land dispute, threatening to escalate into open warfare. They appeal to your authority to mediate.',
+            content: 'Two powerful noble families are embroiled in a bitter land dispute. They appeal to your authority to mediate.',
             source: 'Conflicting Envoys',
             options: [
-                {
-                    text: 'Meditate and issue a Papal ruling, favoring one side slightly.',
-                    effects: [
-                        { type: 'metricChange', metric: 'authority', value: 10 },
-                        { type: 'factionChange', faction: 'nobility', value: 5 },
-                        { type: 'metricChange', metric: 'cardinalFavor', value: -5 }
-                    ]
-                },
-                {
-                    text: 'Decline to intervene, citing secular matters.',
-                    effects: [
-                        { type: 'metricChange', metric: 'authority', value: -5 },
-                        { type: 'factionChange', faction: 'nobility', value: -10 }
-                    ]
-                }
+                { text: 'Meditate and issue a Papal ruling, favoring one side slightly.', effects: [{ type: 'metricChange', metric: 'authority', value: 10 }, { type: 'factionChange', faction: 'nobility', value: 5 }, { type: 'metricChange', metric: 'cardinalFavor', value: -5 }] },
+                { text: 'Decline to intervene, citing secular matters.', effects: [{ type: 'metricChange', metric: 'authority', value: -5 }, { type: 'factionChange', faction: 'nobility', value: -10 }] }
             ]
         },
         {
             id: 'heretical_preacher_sighted',
             title: 'Heretical Preacher Sighted!',
-            content: 'Reports indicate a charismatic preacher is gaining followers in a remote province, spreading doctrines contrary to Papal teaching. What is your response?',
+            content: 'Reports indicate a charismatic preacher is gaining followers in a remote province, spreading doctrines contrary to Papal teaching.',
             source: 'Local Bishop',
             options: [
-                {
-                    text: 'Dispatch an Inquisition to suppress the heresy.',
-                    effects: [
-                        { type: 'metricChange', metric: 'piety', value: 15 },
-                        { type: 'metricChange', metric: 'publicOpinion', value: -10 },
-                        { type: 'factionChange', faction: 'monasticOrders', value: 10 }
-                    ]
-                },
-                {
-                    text: 'Send a conciliatory envoy to understand their grievances.',
-                    effects: [
-                        { type: 'metricChange', metric: 'piety', value: -5 },
-                        { type: 'metricChange', metric: 'authority', value: -5 },
-                        { type: 'metricChange', metric: 'publicOpinion', value: 5 }
-                    ]
-                }
+                { text: 'Dispatch an Inquisition to suppress the heresy.', effects: [{ type: 'metricChange', metric: 'piety', value: 15 }, { type: 'metricChange', metric: 'publicOpinion', value: -10 }, { type: 'factionChange', faction: 'monasticOrders', value: 10 }] },
+                { text: 'Send a conciliatory envoy to understand their grievances.', effects: [{ type: 'metricChange', metric: 'piety', value: -5 }, { type: 'metricChange', metric: 'authority', value: -5 }, { type: 'metricChange', metric: 'publicOpinion', value: 5 }] }
             ]
         },
 
-        // Game Ending / Triumph Events (from previous iteration)
-        {
-            id: 'game_over_heresy',
-            title: 'The Papacy Fractures! A Schism of Faith',
-            content: 'Your pious neglect or controversial doctrine has sown deep seeds of heresy. The faithful abandon Rome, and the Church falls into irreparable schism. Your legacy is one of failure.',
-            source: 'The Annals of History',
-            options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
-        },
-        {
-            id: 'game_over_tyranny',
-            title: 'The Tyrant Pope! Public Uprising',
-            content: 'Your relentless pursuit of power and neglect of the common folk has led to widespread revolt. The people rise up, storming the Vatican and deposing you by force. Your reign ends in chaos.',
-            source: 'The Streets of Rome',
-            options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
-        },
-        {
-            id: 'game_over_impoverished',
-            title: 'The Bankrupt See! Ruin of Rome',
-            content: 'Years of mismanagement and costly ventures have drained the papal coffers. With no funds, your authority crumbles, and hostile powers seize control of Rome. The Holy See is ruined.',
-            source: 'Papal Treasury Records',
-            options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
-        },
-        {
-            id: 'game_over_deposed_cardinals',
-            title: 'Deposed! A Cardinal Conspiracy',
-            content: 'Your constant disregard for the College of Cardinals has led to a secret plot. They have unanimously voted for your deposition, backed by powerful secular rulers. Your authority crumbles.',
-            source: 'The Conclave Transcripts',
-            options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
-        },
-        {
-            id: 'game_over_imperial_control',
-            title: 'Puppet of the Emperor! Loss of Autonomy',
-            content: 'Your excessive reliance on the Emperor has left the Papacy utterly subservient to his will. The Holy See is no longer an independent power, but merely a tool of the Empire. Your spiritual authority is lost.',
-            source: 'Imperial Edicts',
-            options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
-        },
-        {
-            id: 'game_over_noble_revolt',
-            title: 'Noble Wars! Christendom Fractured',
-            content: 'Your inability to manage the nobility has plunged Europe into endless feudal warfare. The Papacy, unable to exert influence, is powerless amidst the chaos. Your reign is a period of strife.',
-            source: 'Chronicles of Conflict',
-            options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
-        },
-        {
-            id: 'triumph_divine_mandate',
-            title: 'An Age of Unwavering Faith!',
-            content: 'Your unwavering piety has inspired Christendom to a new golden age of faith. The Church stands as a beacon of spiritual purity, guiding all souls toward salvation. Your legacy is secured for eternity!',
-            source: 'Divine Providence',
-            options: [{ text: 'Continue Reign (Endless Mode / New Game+ placeholder)', effects: [{ type: 'resetGame' }] }]
-        },
-        {
-            id: 'triumph_absolute_authority',
-            title: 'The Papal Hegemony! Uncontested Rule',
-            content: 'Through masterful politics and astute decision-making, the Holy See has become the undisputed temporal and spiritual power in Europe. Kings and Emperors bow to your will. Your authority is absolute and unquestioned!',
-            source: 'The Throne Room',
-            options: [{ text: 'Continue Reign (Endless Mode / New Game+ placeholder)', effects: [{ type: 'resetGame' }] }]
-        },
+        // Game Ending / Triumph Events (now just definitions, loading handled by queue)
+        { id: 'game_over_heresy', title: 'The Papacy Fractures! A Schism of Faith', content: 'Your pious neglect or controversial doctrine has sown deep seeds of heresy. The faithful abandon Rome, and the Church falls into irreparable schism. Your legacy is one of failure.', source: 'The Annals of History', options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }] },
+        { id: 'game_over_tyranny', title: 'The Tyrant Pope! Public Uprising', content: 'Your relentless pursuit of power and neglect of the common folk has led to widespread revolt. The people rise up, storming the Vatican and deposing you by force. Your reign ends in chaos.', source: 'The Streets of Rome', options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }] },
+        { id: 'game_over_impoverished', title: 'The Bankrupt See! Ruin of Rome', content: 'Years of mismanagement and costly ventures have drained the papal coffers. With no funds, your authority crumbles, and hostile powers seize control of Rome. The Holy See is ruined.', source: 'Papal Treasury Records', options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }] },
+        { id: 'game_over_deposed_cardinals', title: 'Deposed! A Cardinal Conspiracy', content: 'Your constant disregard for the College of Cardinals has led to a secret plot. They have unanimously voted for your deposition, backed by powerful secular rulers. Your authority crumbles.', source: 'The Conclave Transcripts', options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }] },
+        { id: 'game_over_imperial_control', title: 'Puppet of the Emperor! Loss of Autonomy', content: 'Your excessive reliance on the Emperor has left the Papacy utterly subservient to his will. The Holy See is no longer an independent power, but merely a tool of the Empire. Your spiritual authority is lost.', source: 'Imperial Edicts', options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }] },
+        { id: 'game_over_noble_revolt', title: 'Noble Wars! Christendom Fractured', content: 'Your inability to manage the nobility has plunged Europe into endless feudal warfare. The Papacy, unable to exert influence, is powerless amidst the chaos. Your reign is a period of strife.', source: 'Chronicles of Conflict', options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }] },
+        { id: 'game_over_corrupt', title: 'The Corrupt See! Loss of Moral Authority', content: 'Your reign has been marked by venality and moral compromise. The faithful have lost all trust in the Papacy, and your spiritual authority is irrevocably broken. The Church faces utter moral decay.', source: 'The Cries of the Faithful', options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }] },
 
+        // Triumph conditions (now just flags, not game enders until final evaluation)
+        { id: 'triumph_divine_mandate', title: 'An Age of Unwavering Faith Achieved!', content: 'Your piety has inspired Christendom to a new golden age of faith. This achievement will be noted in your final evaluation.', source: 'Divine Providence', options: [{ text: 'Acknowledge this blessing', effects: [] }] },
+        { id: 'triumph_absolute_authority', title: 'Papal Hegemony Achieved!', content: 'Through masterful politics, the Holy See has become the undisputed temporal and spiritual power. Kings and Emperors bow to your will. This achievement will be noted in your final evaluation.', source: 'The Throne Room', options: [{ text: 'Relish in your power', effects: [] }] },
 
-        // The game will try to go through events in order.
-        // If an event has requiredFlags that aren't met, it will skip to the next.
-        // It's good to have a final "end" event or loop.
+        // NEW: Final Game Evaluation Event
         {
-            id: 'end_game_placeholder',
-            title: 'The Papacy Continues...',
-            content: 'You have navigated the initial challenges of your pontificate. More trials and triumphs await. You can start a new game from here.',
-            source: 'History Itself',
+            id: 'final_evaluation',
+            title: 'Your Pontificate Concludes!',
+            content: 'Your time as Supreme Pontiff has come to an end. The legacy you leave behind will shape the Church for centuries. Let us review your reign...',
+            source: 'The Hand of History',
             options: [
                 {
-                    text: 'Begin Anew',
+                    text: 'Review your legacy.',
                     effects: [
-                        { type: 'resetGame', value: true }
+                        // This effect will be handled by a function that generates a summary
+                        { type: 'displayFinalSummary' }
                     ]
                 }
             ]
+        },
+        // Fallback for when no other events are eligible (should be rare with queue)
+        {
+            id: 'idle_day',
+            title: 'A Quiet Day in Rome',
+            content: 'The day passes quietly. No urgent matters demand your immediate attention.',
+            source: 'Your Chambers',
+            options: [{ text: 'Continue your peaceful contemplation.', effects: [] }]
         }
     ];
 
     // Random Events Array (separate for easier management of probabilities)
     const randomEvents = [
-        {
-            id: 'plague_outbreak',
-            weight: 3, // Higher weight means more likely to occur
-            requiredMetrics: { metric: 'publicOpinion', min: 20 } // Only occurs if public opinion isn't completely gone
-        },
-        {
-            id: 'noble_dispute_arbitration',
-            weight: 2,
-            requiredFactionFavor: { faction: 'nobility', minFavor: 40 } // Requires some nobility favor to be approached
-        },
-        {
-            id: 'heretical_preacher_sighted',
-            weight: 4,
-            requiredMetrics: { metric: 'piety', min: 30 }
-        },
-        // Add more random event IDs here with their weights
+        { id: 'plague_outbreak', weight: 3, requiredMetrics: { metric: 'publicOpinion', min: 20 } },
+        { id: 'noble_dispute_arbitration', weight: 2, requiredFactionFavor: { faction: 'nobility', minFavor: 40 } },
+        { id: 'heretical_preacher_sighted', weight: 4, requiredMetrics: { metric: 'piety', min: 30 } },
+        { id: 'indulgences_proposal', weight: 1, requiredMetrics: { metric: 'gold', max: 50 }, forbiddenFlags: ['jubilee_initiated'] }, // Only if gold is low, and not during Jubilee
+        { id: 'poor_relief_plea', weight: 2, requiredMetrics: { metric: 'publicOpinion', max: 70 } },
+        { id: 'heresy_inquisition', weight: 2, requiredMetrics: { metric: 'piety', min: 40, max: 80 } }, // Moderate piety for heresy to be a concern
+        { id: 'noble_feud', weight: 2, requiredFactionFavor: { faction: 'nobility', minFavor: 20, maxFavor: 80 } }
     ];
 
 
     // --- Helper Functions ---
 
-    /**
-     * Finds an event by its ID.
-     * @param {string} eventId The ID of the event to find.
-     * @returns {object|undefined} The event object or undefined if not found.
-     */
     function findEventById(eventId) {
         return events.find(event => event.id === eventId);
     }
 
-    /**
-     * Checks if an event is eligible to be displayed based on current game flags, faction favors, metrics, and buildings.
-     * @param {object} event The event object to check.
-     * @returns {boolean} True if the event is eligible, false otherwise.
-     */
     function isEventEligible(event) {
-        // Check requiredFlags
-        if (event.requiredFlags) {
-            for (const flag of event.requiredFlags) {
-                if (!gameFlags[flag]) {
-                    return false;
-                }
-            }
-        }
-        // Check forbiddenFlags
-        if (event.forbiddenFlags) {
-            for (const flag of event.forbiddenFlags) {
-                if (gameFlags[flag]) {
-                    return false;
-                }
-            }
-        }
-
-        // Check requiredFactionFavor
+        if (event.requiredFlags) { for (const flag of event.requiredFlags) { if (!gameFlags[flag]) return false; } }
+        if (event.forbiddenFlags) { for (const flag of event.forbiddenFlags) { if (gameFlags[flag]) return false; } }
         if (event.requiredFactionFavor) {
             const faction = gameFactions[event.requiredFactionFavor.faction];
-            if (!faction || faction.favor < event.requiredFactionFavor.minFavor || (event.requiredFactionFavor.maxFavor !== undefined && faction.favor > event.requiredFactionFavor.maxFavor)) {
-                return false;
-            }
+            if (!faction || faction.favor < event.requiredFactionFavor.minFavor || (event.requiredFactionFavor.maxFavor !== undefined && faction.favor > event.requiredFactionFavor.maxFavor)) return false;
         }
-
-        // Check requiredMetrics
         if (event.requiredMetrics) {
             const metricValue = gameMetrics[event.requiredMetrics.metric];
-            if (metricValue === undefined || metricValue < event.requiredMetrics.min || (event.requiredMetrics.max !== undefined && metricValue > event.requiredMetrics.max)) {
-                return false;
-            }
+            if (metricValue === undefined || metricValue < event.requiredMetrics.min || (event.requiredMetrics.max !== undefined && metricValue > event.requiredMetrics.max)) return false;
         }
-
-        // NEW: Check requiredBuildings
         if (event.requiredBuildings) {
             const building = gameBuildings[event.requiredBuildings.buildingId];
-            if (!building || building.status !== event.requiredBuildings.status) {
-                return false;
-            }
-            // Add level check if needed: && building.level >= event.requiredBuildings.minLevel
+            if (!building || building.status !== event.requiredBuildings.status) return false;
         }
-
-        return true; // All conditions met
+        return true;
     }
 
-    /**
-     * Updates a single metric and applies a visual flash.
-     * @param {string} metricName The name of the metric (e.g., 'piety').
-     * @param {number} value The amount to change the metric by.
-     */
     function updateMetric(metricName, value) {
-        // Special handling for dynamic gold income from monthly report
         if (metricName === 'gold' && typeof value === 'string' && value.includes('gameMetrics.publicOpinion')) {
             const calculatedValue = Math.floor(gameMetrics.publicOpinion / 10) + 5;
             gameMetrics[metricName] = Math.max(0, Math.min(100, gameMetrics[metricName] + calculatedValue));
             console.log(`Gold changed dynamically by: ${calculatedValue}`);
         } else {
-            gameMetrics[metricName] = Math.max(0, Math.min(100, gameMetrics[metricName] + value)); // Clamp between 0-100
+            gameMetrics[metricName] = Math.max(0, Math.min(100, gameMetrics[metricName] + value));
         }
 
-        // Visual flash for metric change
         const metricElement = document.getElementById(`metric-${metricName}`);
         if (metricElement) {
             metricElement.textContent = gameMetrics[metricName];
@@ -665,31 +740,19 @@ document.addEventListener('DOMContentLoaded', () => {
             metricElement.classList.add(changeClass);
             setTimeout(() => {
                 metricElement.classList.remove(changeClass);
-            }, 800); // Duration of the flash animation
+            }, 800);
         }
     }
 
-    /**
-     * Updates a faction's favor and logs to console.
-     * (You can add a UI update here later)
-     * @param {string} factionName The key for the faction (e.g., 'imperial').
-     * @param {number} value The amount to change favor by.
-     */
     function updateFactionFavor(factionName, value) {
         if (gameFactions[factionName]) {
-            gameFactions[factionName].favor = Math.max(0, Math.min(100, gameFactions[factionName].favor + value)); // Clamp favor
+            gameFactions[factionName].favor = Math.max(0, Math.min(100, gameFactions[factionName].favor + value));
             console.log(`${gameFactions[factionName].name} Favor: ${gameFactions[factionName].favor} (Changed by ${value})`);
-            // TODO: Add visual update for faction favor in UI
         } else {
             console.warn(`Attempted to change favor for unknown faction: ${factionName}`);
         }
     }
 
-    /**
-     * NEW: Initiates construction for a specified building.
-     * Deducts costs and sets building status to 'under_construction'.
-     * @param {string} buildingId The ID of the building to start construction.
-     */
     function startConstruction(buildingId) {
         const building = gameBuildings[buildingId];
         if (!building || building.status !== 'none') {
@@ -697,76 +760,54 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Check if player can afford the cost
         let canAfford = true;
         for (const metricCost in building.baseCost) {
             if (gameMetrics[metricCost] < building.baseCost[metricCost]) {
                 canAfford = false;
                 console.warn(`Not enough ${metricCost} to build ${buildingId}. Required: ${building.baseCost[metricCost]}, Have: ${gameMetrics[metricCost]}`);
-                // TODO: Provide UI feedback to the player about insufficient funds
-                return; // Exit if cannot afford any part of the cost
+                return;
             }
         }
 
         if (canAfford) {
-            // Deduct costs
             for (const metricCost in building.baseCost) {
                 updateMetric(metricCost, -building.baseCost[metricCost]);
             }
-
-            // Set building status
             building.status = 'under_construction';
             building.daysRemaining = building.baseDaysToBuild;
             console.log(`Construction started for ${buildingId}! Days remaining: ${building.daysRemaining}`);
-            // TODO: Add UI feedback for construction started
         }
     }
 
-    /**
-     * Updates all metric displays based on current game state.
-     */
     function updateAllMetricsDisplay() {
         metricPiety.textContent = gameMetrics.piety;
         metricAuthority.textContent = gameMetrics.authority;
         metricGold.textContent = gameMetrics.gold;
         metricPublicOpinion.textContent = gameMetrics.publicOpinion;
         metricCardinalFavor.textContent = gameMetrics.cardinalFavor;
-        // TODO: Add display for buildings and their status
+        metricIntegrity.textContent = gameMetrics.integrity;
     }
 
-    /**
-     * Loads and displays an event from the `events` array.
-     * @param {object} event The event object to display.
-     */
-    function loadEvent(event) {
-        // Hide document briefly for effect
+    // NEW: Function to display an event. No longer directly called from choice effects.
+    function displayEvent(event) {
         documentArea.classList.remove('show');
         setTimeout(() => {
             documentTitle.textContent = event.title;
             documentContent.textContent = event.content;
             documentSource.textContent = `- ${event.source}`;
-
-            // Clear previous options
             optionsContainer.innerHTML = '';
 
-            // Create new option buttons
-            event.options.forEach((option, index) => {
+            event.options.forEach((option) => {
                 const button = document.createElement('button');
                 button.classList.add('option-button');
                 button.textContent = option.text;
                 button.addEventListener('click', () => applyChoice(option));
                 optionsContainer.appendChild(button);
             });
-
-            // Show document after content is loaded
             documentArea.classList.add('show');
-        }, 300); // Short delay for animation
+        }, 300);
     }
 
-    /**
-     * Selects an eligible random event based on weights.
-     * @returns {object|null} An eligible random event, or null if none found.
-     */
     function selectRandomEvent() {
         const eligibleRandomEvents = randomEvents.filter(re => {
             const eventData = findEventById(re.id);
@@ -777,68 +818,46 @@ document.addEventListener('DOMContentLoaded', () => {
             return null;
         }
 
-        // Calculate total weight of eligible events
         const totalWeight = eligibleRandomEvents.reduce((sum, re) => sum + re.weight, 0);
-
-        // Pick a random number within the total weight
         let randomNum = Math.random() * totalWeight;
 
-        // Find the event corresponding to that random number
         for (const re of eligibleRandomEvents) {
             randomNum -= re.weight;
             if (randomNum <= 0) {
                 return findEventById(re.id);
             }
         }
-        return null; // Should not happen if totalWeight > 0
+        return null;
     }
 
-    /**
-     * Checks for game ending or special achievement conditions.
-     * If a condition is met, it loads the appropriate ending event.
-     * Prioritizes game over conditions over triumph conditions.
-     * @returns {boolean} True if an ending event was loaded, false otherwise.
-     */
-    function checkGameStatus() {
-        if (hasGameEnded) return true; // If game has already ended, do nothing
+    // NEW: Check game status and add relevant events to the queue
+    function checkGameStatusAndQueueEvents() {
+        if (hasGameEnded) return;
 
-        // --- Game Over Conditions (priority) ---
-        if (gameMetrics.piety <= 0) {
-            hasGameEnded = true; loadEvent(findEventById('game_over_heresy')); return true;
-        }
-        if (gameMetrics.publicOpinion <= 0) {
-            hasGameEnded = true; loadEvent(findEventById('game_over_tyranny')); return true;
-        }
-        if (gameMetrics.gold <= 0) {
-            hasGameEnded = true; loadEvent(findEventById('game_over_impoverished')); return true;
-        }
-        if (gameMetrics.cardinalFavor <= 0) {
-            hasGameEnded = true; loadEvent(findEventById('game_over_deposed_cardinals')); return true;
-        }
-        if (gameFactions.imperial.favor <= 0) {
-            hasGameEnded = true; loadEvent(findEventById('game_over_imperial_control')); return true;
-        }
-        if (gameFactions.nobility.favor <= 0) {
-            hasGameEnded = true; loadEvent(findEventById('game_over_noble_revolt')); return true;
-        }
+        // --- Game Over Conditions (Highest Priority) ---
+        // Push game over events to queue, then set hasGameEnded. The queue will load it.
+        if (gameMetrics.piety <= 0) { gameEventQueue.push({ eventId: 'game_over_heresy', priority: 100 }); hasGameEnded = true; return; }
+        if (gameMetrics.publicOpinion <= 0) { gameEventQueue.push({ eventId: 'game_over_tyranny', priority: 100 }); hasGameEnded = true; return; }
+        if (gameMetrics.gold <= 0) { gameEventQueue.push({ eventId: 'game_over_impoverished', priority: 100 }); hasGameEnded = true; return; }
+        if (gameMetrics.cardinalFavor <= 0) { gameEventQueue.push({ eventId: 'game_over_deposed_cardinals', priority: 100 }); hasGameEnded = true; return; }
+        if (gameFactions.imperial.favor <= 0) { gameEventQueue.push({ eventId: 'game_over_imperial_control', priority: 100 }); hasGameEnded = true; return; }
+        if (gameFactions.nobility.favor <= 0) { gameEventQueue.push({ eventId: 'game_over_noble_revolt', priority: 100 }); hasGameEnded = true; return; }
+        if (gameMetrics.integrity <= 0) { gameEventQueue.push({ eventId: 'game_over_corrupt', priority: 100 }); hasGameEnded = true; return; }
 
-        // --- Triumph/High Metric Conditions ---
+
+        // --- Triumph/High Metric Conditions (High Priority, but not ending the game immediately) ---
         if (gameMetrics.piety >= 95 && !gameFlags.triumph_divine_mandate_achieved) {
-            hasGameEnded = true; gameFlags.triumph_divine_mandate_achieved = true; loadEvent(findEventById('triumph_divine_mandate')); return true;
+            gameFlags.triumph_divine_mandate_achieved = true;
+            gameEventQueue.push({ eventId: 'triumph_divine_mandate', priority: 95 }); // High priority
         }
         if (gameMetrics.authority >= 95 && !gameFlags.triumph_absolute_authority_achieved) {
-            hasGameEnded = true; gameFlags.triumph_absolute_authority_achieved = true; loadEvent(findEventById('triumph_absolute_authority')); return true;
+            gameFlags.triumph_absolute_authority_achieved = true;
+            gameEventQueue.push({ eventId: 'triumph_absolute_authority', priority: 95 }); // High priority
         }
-
-        return false; // No ending event was loaded
     }
 
-    /**
-     * NEW: Checks and updates progress for buildings under construction.
-     * Triggers completion events when a building is finished.
-     * @returns {boolean} True if a building completion event was loaded, false otherwise.
-     */
-    function checkBuildingProgress() {
+    // NEW: Checks and updates progress for buildings under construction.
+    function checkBuildingProgressAndQueueEvents() {
         for (const buildingId in gameBuildings) {
             const building = gameBuildings[buildingId];
             if (building.status === 'under_construction') {
@@ -847,87 +866,170 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (building.daysRemaining <= 0) {
                     building.status = 'completed';
-                    building.level = 1; // Mark as base level 1
+                    building.level = 1;
                     console.log(`${buildingId} construction completed!`);
-                    // Trigger completion event if specified
                     if (building.completionEventId) {
-                        const completionEvent = findEventById(building.completionEventId);
-                        if (completionEvent) {
-                            loadEvent(completionEvent);
-                            return true; // A completion event was loaded
-                        }
+                        gameEventQueue.push({ eventId: building.completionEventId, priority: 80 }); // Add to queue
                     }
                 }
             }
         }
-        return false; // No completion event was loaded
     }
 
-    /**
-     * NEW: Applies passive bonuses from completed buildings.
-     * @returns {boolean} True if any passive bonuses were applied.
-     */
+    // NEW: Applies passive bonuses from completed buildings.
     function applyPassiveBonuses() {
-        let applied = false;
         for (const buildingId in gameBuildings) {
             const building = gameBuildings[buildingId];
             if (building.status === 'completed' && building.passiveBonuses) {
                 for (const metric in building.passiveBonuses) {
                     const bonusValue = building.passiveBonuses[metric];
                     updateMetric(metric, bonusValue);
-                    console.log(`Applied passive bonus from ${buildingId}: +${bonusValue} ${metric}`);
-                    applied = true;
+                    // console.log(`Applied passive bonus from ${buildingId}: +${bonusValue} ${metric}`); // Too chatty
                 }
             }
         }
-        return applied;
+    }
+
+    // NEW: Checks and queues any events that have been scheduled for a future day.
+    function checkDelayedEventsAndQueue() {
+        // Filter out events that are no longer pending
+        const stillPendingDelayedEvents = [];
+        for (const delayed of gameEventQueue) {
+            if (delayed.type === 'delayed' && gameDay >= delayed.triggerDay) {
+                // This event is ready to trigger, push it to main queue
+                gameEventQueue.push({ eventId: delayed.eventId, priority: 90 });
+            } else {
+                stillPendingDelayedEvents.push(delayed);
+            }
+        }
+        // Replace delayedEvents with only those still pending
+        gameEventQueue = stillPendingDelayedEvents;
     }
 
 
-    /**
-     * Performs daily checks for recurring events and random events.
-     * This is called after game state updates and game end checks.
-     * @returns {boolean} True if a recurring or random event was loaded, false otherwise.
-     */
-    function dailyChecks() {
-        // If game has ended, don't trigger daily events
-        if (hasGameEnded) return true; // Indicate that an event was "handled" (by being ended)
+    // NEW: Main daily game loop logic - adds events to queue
+    function dailyChecksAndQueueEvents() {
+        // High priority system events
+        checkGameStatusAndQueueEvents(); // Checks for Game Over / Triumph
+        checkBuildingProgressAndQueueEvents(); // Checks for building completions
+        checkDelayedEventsAndQueue(); // Checks for specific scheduled events
 
-        // 1. NEW: Check Building Progress (highest priority among daily checks)
-        if (checkBuildingProgress()) {
-            return true; // A building just completed, so its event was loaded. Stop further daily checks.
-        }
+        // Apply passive bonuses (always happen)
+        applyPassiveBonuses();
 
-        // 2. NEW: Apply Passive Bonuses from completed buildings
-        applyPassiveBonuses(); // Apply bonuses regardless of other events, as they are "daily"
-
-        // 3. Check for Recurring Events
+        // Recurring Events
         if (gameDay % 30 === 0 && gameDay > 0) {
             const recurringEvent = findEventById('monthly_treasury_report');
             if (recurringEvent && isEventEligible(recurringEvent)) {
-                loadEvent(recurringEvent);
-                return true;
+                gameEventQueue.push({ eventId: recurringEvent.id, priority: 70 });
             }
         }
         if (gameDay % 100 === 0 && gameDay > 0) {
              const recurringEvent = findEventById('annual_pilgrimage_season');
              if (recurringEvent && isEventEligible(recurringEvent)) {
-                 loadEvent(recurringEvent);
-                 return true;
+                 gameEventQueue.push({ eventId: recurringEvent.id, priority: 70 });
              }
          }
 
-
-        // 4. Roll for Random Events
-        if (Math.random() < 0.2) {
+        // Random Events (lower priority)
+        if (Math.random() < 0.2) { // 20% chance each day for a random event
             const randomEvent = selectRandomEvent();
             if (randomEvent) {
-                loadEvent(randomEvent);
-                return true;
+                gameEventQueue.push({ eventId: randomEvent.id, priority: 40 });
             }
         }
 
-        return false; // No special event (recurring, random, or completion) was loaded
+        // Check if MAX_GAME_DAYS reached (triggers final evaluation)
+        if (gameDay >= MAX_GAME_DAYS && !hasGameEnded) {
+            gameEventQueue.push({ eventId: 'final_evaluation', priority: 100 });
+            hasGameEnded = true; // Mark as ended to prevent further events
+        }
+    }
+
+    // NEW: Function to load the next event from the queue
+    function loadNextEventFromQueue() {
+        if (gameEventQueue.length === 0) {
+            // If nothing else to do, try to advance main story or load idle day
+            const nextMainEvent = events[mainStoryEventIndex];
+            if (nextMainEvent && isEventEligible(nextMainEvent) && !nextMainEvent.id.startsWith('game_over_') && !nextMainEvent.id.startsWith('triumph_')) {
+                // Ensure we don't load special events from linear flow
+                const specialEventIds = ['monthly_treasury_report', 'annual_pilgrimage_season', 'st_peters_completed', 'papal_library_completed', 'jubilee_outcome', 'final_evaluation', ...randomEvents.map(re => re.id)];
+                if (!specialEventIds.includes(nextMainEvent.id)) {
+                    displayEvent(nextMainEvent);
+                    return;
+                }
+            }
+            // Fallback to idle day if no other event is pending or eligible
+            displayEvent(findEventById('idle_day'));
+            return;
+        }
+
+        // Sort queue by priority (descending)
+        gameEventQueue.sort((a, b) => b.priority - a.priority);
+
+        // Get the highest priority event
+        const nextQueuedEvent = gameEventQueue.shift(); // .shift() removes from array
+
+        const eventToLoad = findEventById(nextQueuedEvent.eventId);
+
+        if (eventToLoad && isEventEligible(eventToLoad)) {
+            displayEvent(eventToLoad);
+        } else {
+            console.warn(`Queued event '${nextQueuedEvent.eventId}' (Priority: ${nextQueuedEvent.priority}) is not eligible or not found. Skipping.`);
+            loadNextEventFromQueue(); // Try to load the next one
+        }
+    }
+
+    // NEW: Function to display the final summary
+    function displayFinalSummary() {
+        documentArea.classList.remove('show');
+        setTimeout(() => {
+            documentTitle.textContent = 'Your Pontificate: A Historical Review';
+            let summaryContent = '<p>You have concluded your reign as Supreme Pontiff. Your actions have shaped the destiny of the Holy See and Christendom. Here is your legacy:</p>';
+
+            summaryContent += '<h3>Final Metrics:</h3>';
+            summaryContent += `<ul>
+                <li>Piety: ${gameMetrics.piety}</li>
+                <li>Authority: ${gameMetrics.authority}</li>
+                <li>Gold: ${gameMetrics.gold}</li>
+                <li>Public Opinion: ${gameMetrics.publicOpinion}</li>
+                <li>Cardinal Favor: ${gameMetrics.cardinalFavor}</li>
+                <li>Integrity: ${gameMetrics.integrity}</li>
+            </ul>`;
+
+            summaryContent += '<h3>Key Achievements:</h3><ul>';
+            if (gameFlags.triumph_divine_mandate_achieved) summaryContent += '<li>**Divine Mandate:** You inspired an age of unwavering faith!</li>';
+            if (gameFlags.triumph_absolute_authority_achieved) summaryContent += '<li>**Absolute Authority:** The Papacy\'s power became unquestioned!</li>';
+            if (gameFlags.crusade_launched && gameFlags.crusade_report_received) summaryContent += '<li>**Holy Crusade:** You answered the call to arms for the Holy Land.</li>';
+            if (gameFlags.papal_bull_issued) summaryContent += '<li>**Papal Bull:** You decisively shaped theological doctrine.</li>';
+            if (gameFlags.jubilee_initiated) summaryContent += '<li>**Grand Jubilee:** You brought pilgrims and blessings to Rome.</li>';
+            if (gameBuildings.st_peters_basilica_reconstruction.status === 'completed') summaryContent += '<li>**St. Peter\'s Basilica:** You oversaw the reconstruction of the holiest church!</li>';
+            if (gameBuildings.papal_library.status === 'completed') summaryContent += '<li>**Papal Library:** You fostered knowledge and intellectual pursuit.</li>';
+
+            if (!gameFlags.triumph_divine_mandate_achieved && !gameFlags.triumph_absolute_authority_achieved) {
+                summaryContent += '<li>No major triumphs achieved.</li>';
+            }
+            summaryContent += '</ul>';
+
+            // Add narrative based on overall metrics/flags (simple example)
+            summaryContent += '<h3>Historical Assessment:</h3>';
+            if (gameMetrics.integrity > 70 && gameMetrics.piety > 70) {
+                summaryContent += '<p>Your reign is remembered as a beacon of **moral purity and divine inspiration**, guiding the Church through turbulent times with unwavering faith.</p>';
+            } else if (gameMetrics.authority > 70 && gameMetrics.gold > 70) {
+                summaryContent += '<p>You were a **masterful temporal ruler**, solidifying the Papacy\'s power and wealth, though some questioned your methods.</p>';
+            } else if (gameMetrics.publicOpinion > 70 && gameMetrics.cardinalFavor > 70) {
+                summaryContent += '<p>You were a **beloved and diplomatic pontiff**, skilled at maintaining harmony within the Church and among the faithful.</p>';
+            } else {
+                summaryContent += '<p>Your pontificate was marked by complex challenges. History\'s judgment is yet to be fully cast on your complex legacy.</p>';
+            }
+
+            documentContent.innerHTML = summaryContent; // Use innerHTML for rich text
+            documentSource.textContent = '— The Judgment of History';
+            optionsContainer.innerHTML = '<button class="option-button" id="start-new-game-button">Begin a New Pontificate</button>';
+            document.getElementById('start-new-game-button').addEventListener('click', initGame);
+
+            documentArea.classList.add('show');
+        }, 300);
     }
 
 
@@ -936,31 +1038,76 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {object} chosenOption The option object that was clicked.
      */
     function applyChoice(chosenOption) {
-        // Reset nextEventId for linear progression unless overridden by an effect
-        nextEventId = null;
-
         // Apply all effects defined for the chosen option
         chosenOption.effects.forEach(effect => {
             if (effect.type === 'metricChange') {
                 updateMetric(effect.metric, effect.value);
-            } else if (effect.type === 'setNextEvent') {
-                nextEventId = effect.eventId; // Set the ID of the next event to load
-            } else if (effect.type === 'setFlag') { // Handle setting flags
+            } else if (effect.type === 'scheduleNextMainEvent') { // NEW: Schedule next main story event
+                // If overrideEventId is provided, use that, otherwise increment mainStoryEventIndex
+                const targetEventId = effect.overrideEventId || events[mainStoryEventIndex + 1]?.id;
+                if (targetEventId) {
+                    const eventData = findEventById(targetEventId);
+                    if (eventData) {
+                        // Ensure we don't double-add if it's already in queue
+                        const isAlreadyQueued = gameEventQueue.some(item => item.eventId === targetEventId && item.priority === 50);
+                        if (!isAlreadyQueued) {
+                            gameEventQueue.push({ eventId: targetEventId, priority: 50 });
+                            console.log(`Scheduled next main event: ${targetEventId}`);
+                            // Only increment if we actually added the 'next' one, not an override
+                            if (!effect.overrideEventId) {
+                                mainStoryEventIndex++;
+                            }
+                        }
+                    } else {
+                        console.warn(`Event ID '${targetEventId}' for 'scheduleNextMainEvent' not found.`);
+                    }
+                }
+            } else if (effect.type === 'setFlag') {
                 gameFlags[effect.flag] = effect.value;
                 console.log(`Flag '${effect.flag}' set to ${effect.value}`);
-            } else if (effect.type === 'factionChange') { // Handle faction changes
+            } else if (effect.type === 'factionChange') {
                 updateFactionFavor(effect.faction, effect.value);
-            } else if (effect.type === 'startConstruction') { // NEW: Handle starting construction
+            } else if (effect.type === 'startConstruction') {
                 startConstruction(effect.buildingId);
-            }
-            else if (effect.type === 'resetGame') { // Handle game reset
-                initGame(); // Re-initialize the game state
-                return; // Stop processing effects for this choice and exit applyChoice
+            } else if (effect.type === 'delayEvent') {
+                // Add delayed event to the queue with a 'delayed' type for specific handling
+                gameEventQueue.push({ eventId: effect.eventId, priority: 90, type: 'delayed', triggerDay: gameDay + effect.days });
+                console.log(`Event '${effect.eventId}' scheduled for Day ${gameDay + effect.days}`);
+            } else if (effect.type === 'conditionalEffect') {
+                const conditionMet = (() => {
+                    const cond = effect.condition;
+                    if (cond.metric) {
+                        const val = gameMetrics[cond.metric];
+                        if (val === undefined) return false;
+                        if (cond.min !== undefined && val < cond.min) return false;
+                        if (cond.max !== undefined && val > cond.max) return false;
+                    }
+                    return true;
+                })();
+
+                if (conditionMet) {
+                    console.log(`Conditional effect condition met: ${JSON.stringify(effect.condition)}. Applying sub-effects...`);
+                    effect.effects.forEach(subEffect => {
+                        if (subEffect.type === 'metricChange') {
+                            updateMetric(subEffect.metric, subEffect.value);
+                        } else if (subEffect.type === 'factionChange') {
+                            updateFactionFavor(subEffect.faction, subEffect.value);
+                        }
+                    });
+                } else {
+                    console.log(`Conditional effect condition NOT met: ${JSON.stringify(effect.condition)}. Skipping sub-effects.`);
+                }
+            } else if (effect.type === 'resetGame') {
+                initGame();
+                return;
+            } else if (effect.type === 'displayFinalSummary') { // NEW: Handle final summary display
+                displayFinalSummary();
+                return; // Stop further processing after showing summary
             }
         });
 
-        // If a game reset was triggered, we're done here
-        if (chosenOption.effects.some(e => e.type === 'resetGame')) {
+        // If a game reset was triggered or final summary is shown, we're done here
+        if (chosenOption.effects.some(e => e.type === 'resetGame' || e.type === 'displayFinalSummary')) {
             return;
         }
 
@@ -968,67 +1115,11 @@ document.addEventListener('DOMContentLoaded', () => {
         gameDay++;
         gameDayCounter.textContent = gameDay;
 
-        // Perform daily checks for game status, recurring, and random events, and building progress/bonuses.
-        // If any of these checks loads an event (including game end), stop further normal event loading.
-        if (checkGameStatus() || dailyChecks()) {
-            return;
-        }
+        // Perform all daily checks and populate the event queue
+        dailyChecksAndQueueEvents();
 
-        // Determine and load the next eligible event (Only if no special event took priority)
-        let nextEventToLoad = null;
-
-        if (nextEventId) {
-            // Try to load a specific branched event first
-            const branchedEvent = findEventById(nextEventId);
-            if (branchedEvent && isEventEligible(branchedEvent)) {
-                nextEventToLoad = branchedEvent;
-                currentEventIndex = events.indexOf(branchedEvent); // Update current index to the branched event
-            } else {
-                console.warn(`Branched event '${nextEventId}' is not eligible or not found. Attempting linear sequence.`);
-                // If branched event isn't eligible, try next in linear sequence
-                currentEventIndex++;
-            }
-        } else {
-            currentEventIndex++; // Move to the next event in the linear array
-        }
-
-        // Loop through subsequent events in the array to find the next eligible one
-        // This handles both linear progression and skipping ineligible events after a branch
-        while (currentEventIndex < events.length) {
-            const potentialNextEvent = events[currentEventIndex];
-            // Ensure we don't accidentally load special events that are handled by dailyChecks or gameStatus
-            // This list of IDs should include all IDs that are explicitly triggered outside the linear flow.
-            const specialEventIds = [
-                'monthly_treasury_report',
-                'annual_pilgrimage_season',
-                'st_peters_completed', // Building completion events
-                'papal_library_completed', // Building completion events
-                ...randomEvents.map(re => re.id) // All random event IDs
-            ];
-
-            if (potentialNextEvent.id.startsWith('game_over_') || potentialNextEvent.id.startsWith('triumph_') ||
-                specialEventIds.includes(potentialNextEvent.id)) {
-                 currentEventIndex++; // Skip these special event IDs if found in linear path
-                 continue;
-            }
-
-            if (isEventEligible(potentialNextEvent)) {
-                nextEventToLoad = potentialNextEvent;
-                break; // Found an eligible event
-            } else {
-                console.log(`Skipping event '${potentialNextEvent.id}' (Day ${gameDay}) - not eligible due to flags or faction favor.`);
-                currentEventIndex++; // Skip and check the next one
-            }
-        }
-
-
-        if (nextEventToLoad) {
-            loadEvent(nextEventToLoad);
-        } else {
-            // No more eligible events, handle end of game or loop back
-            console.log('End of game/event sequence reached. No eligible events left.');
-            loadEvent(findEventById('end_game_placeholder')); // Fallback to a placeholder
-        }
+        // Load the next event from the queue
+        loadNextEventFromQueue();
     }
 
 
@@ -1043,42 +1134,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Game Initialization ---
     function initGame() {
-        // Reset metrics
         gameMetrics.piety = 50;
         gameMetrics.authority = 50;
         gameMetrics.gold = 100;
         gameMetrics.publicOpinion = 50;
         gameMetrics.cardinalFavor = 50;
+        gameMetrics.integrity = 50;
 
-        // Reset flags
         for (const flag in gameFlags) {
             gameFlags[flag] = false;
         }
-        gameFlags.triumph_divine_mandate_achieved = false;
-        gameFlags.triumph_absolute_authority_achieved = false;
 
-        // Reset faction favors
         for (const factionKey in gameFactions) {
-            gameFactions[factionKey].favor = 50; // Reset all factions to 50 favor
+            gameFactions[factionKey].favor = 50;
         }
 
-        // NEW: Reset building states
         for (const buildingId in gameBuildings) {
             const building = gameBuildings[buildingId];
             building.level = 0;
             building.status = 'none';
             building.daysRemaining = 0;
-            // Retain baseCost, baseDaysToBuild, passiveBonuses
         }
 
+        gameEventQueue = []; // Clear any pending events in the queue
+        mainStoryEventIndex = 0; // Reset main story index
         gameDay = 1;
         gameDayCounter.textContent = gameDay;
-        currentEventIndex = 0; // Start with the first event in the array
-        nextEventId = null;
-        hasGameEnded = false; // Reset game ended flag
+        hasGameEnded = false;
 
-        updateAllMetricsDisplay(); // Set initial metric values
-        loadEvent(events[currentEventIndex]); // Load the very first event
+        updateAllMetricsDisplay();
+        displayEvent(findEventById('start_game')); // Load the very first event to start the game
     }
 
     initGame(); // Call to start the game when the DOM is ready
