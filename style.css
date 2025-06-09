@@ -1,10 +1,10 @@
 :root {
-    --parchment-color: #f7e6c4; /* Light parchment */
-    --dark-parchment-color: #d1c099; /* Darker for borders/accents */
-    --text-color: #4a3e2c; /* Dark brown/sepia text */
-    --border-color: #8c714c; /* Medium brown for borders */
-    --accent-color: #a04040; /* Muted red for highlights */
-    --button-bg: #5c4a30; /* Darker brown for buttons */
+    --parchment-color: #f7e6c4;
+    --dark-parchment-color: #d1c099;
+    --text-color: #4a3e2c;
+    --border-color: #8c714c;
+    --accent-color: #a04040;
+    --button-bg: #5c4a30;
     --button-hover: #7a6344;
 }
 
@@ -12,18 +12,19 @@ body {
     font-family: 'Merriweather', serif;
     margin: 0;
     padding: 20px;
-    background-color: #3b3026; /* Dark background behind the parchment */
+    background-color: #3b3026;
     color: var(--text-color);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    box-sizing: border-box; /* Include padding in element's total width and height */
 }
 
 #game-container {
     display: grid;
-    grid-template-columns: 280px 1fr; /* Sidebar width and main content */
-    grid-template-rows: auto 1fr auto; /* Header, main, footer */
+    grid-template-columns: 280px 1fr;
+    grid-template-rows: auto 1fr auto;
     gap: 20px;
     background-color: var(--parchment-color);
     border: 5px solid var(--border-color);
@@ -33,10 +34,11 @@ body {
     width: 100%;
     min-height: 80vh;
     padding: 20px;
+    box-sizing: border-box;
 }
 
 #game-header {
-    grid-column: 1 / -1; /* Spans all columns */
+    grid-column: 1 / -1;
     text-align: center;
     padding-bottom: 15px;
     border-bottom: 2px solid var(--border-color);
@@ -63,6 +65,7 @@ body {
     padding: 15px;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--border-color);
+    overflow-y: auto; /* For potentially many cardinals/actions */
 }
 
 #resource-sidebar h2, #resource-sidebar h3 {
@@ -110,7 +113,7 @@ body {
 #cardinals-display {
     list-style: none;
     padding: 0;
-    max-height: 150px; /* Limit height to allow scrolling */
+    max-height: 150px;
     overflow-y: auto;
     border: 1px dashed var(--border-color);
     padding: 5px;
@@ -148,9 +151,15 @@ body {
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.game-button:hover {
+.game-button:hover:not([disabled]) {
     background-color: var(--button-hover);
     color: white;
+}
+
+.game-button[disabled] {
+    background-color: #8a7a6c;
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
 #game-main {
@@ -161,6 +170,10 @@ body {
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--border-color);
     position: relative; /* For absolute positioning of panels */
+    display: flex;
+    flex-direction: column; /* Allow content to stack */
+    justify-content: center;
+    align-items: center;
 }
 
 #game-event-display {
@@ -168,12 +181,15 @@ body {
     border: 2px solid var(--border-color);
     border-radius: 5px;
     background-color: var(--parchment-color);
-    min-height: 300px; /* Ensure space for content */
+    min-height: 300px;
+    width: 90%;
+    max-width: 700px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
+    box-sizing: border-box;
 }
 
 #event-title {
@@ -237,8 +253,10 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* Align content to top */
     text-align: center;
+    box-sizing: border-box;
+    overflow-y: auto; /* Allow panels to scroll if content is long */
 }
 
 .game-panel h2 {
@@ -246,18 +264,30 @@ body {
     color: var(--accent-color);
     font-size: 2.5em;
     margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+    width: 90%;
+    max-width: 600px;
+}
+
+.game-panel h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--button-bg);
+    margin-top: 20px;
+    margin-bottom: 10px;
 }
 
 .game-panel p {
     font-size: 1.1em;
     line-height: 1.6;
     max-width: 80%;
-    margin-bottom: 30px;
+    margin-bottom: 15px;
 }
 
 .close-panel-button {
     width: 200px;
-    margin-top: 20px;
+    margin-top: auto; /* Push to bottom */
+    margin-bottom: 10px;
 }
 
 .hidden {
@@ -274,22 +304,194 @@ body {
     margin-top: 10px;
 }
 
-/* Scrollbar styles for the cardinal list */
-#cardinals-display::-webkit-scrollbar {
+/* Scrollbar styles for lists/panels */
+::-webkit-scrollbar {
     width: 8px;
 }
 
-#cardinals-display::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
     background: var(--dark-parchment-color);
     border-radius: 10px;
 }
 
-#cardinals-display::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     background: var(--button-bg);
     border-radius: 10px;
     border: 1px solid var(--border-color);
 }
 
-#cardinals-display::-webkit-scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
     background: var(--button-hover);
+}
+
+/* Specific Panel Styles */
+
+/* Curia Panel */
+#curia-details-container {
+    display: flex;
+    width: 90%;
+    max-width: 900px;
+    gap: 20px;
+    flex-grow: 1; /* Allow content to grow */
+    padding-bottom: 20px; /* Space for close button */
+}
+
+#cardinal-detail-view {
+    flex: 2; /* Takes 2 parts of the available space */
+    background-color: var(--dark-parchment-color);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 15px;
+    text-align: left;
+    height: fit-content;
+}
+
+#cardinal-detail-view h3 {
+    text-align: center;
+    margin-top: 0;
+}
+
+#cardinal-detail-view p {
+    margin: 8px 0;
+    max-width: 100%; /* Override parent max-width */
+}
+
+#curia-cardinal-list {
+    flex: 1; /* Takes 1 part of the available space */
+    list-style: none;
+    padding: 0;
+    border: 1px dashed var(--border-color);
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+    overflow-y: auto;
+    max-height: 500px; /* Adjust as needed */
+}
+
+#curia-cardinal-list li {
+    padding: 10px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    cursor: pointer;
+    transition: background-color 0.1s;
+    text-align: left;
+}
+
+#curia-cardinal-list li:last-child {
+    border-bottom: none;
+}
+
+#curia-cardinal-list li:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+#curia-cardinal-list li.selected {
+    background-color: var(--accent-color);
+    color: white;
+    font-weight: bold;
+}
+
+#cardinal-actions {
+    display: flex;
+    flex-direction: column;
+    margin-top: 15px;
+}
+
+/* Decrees Panel */
+#decree-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#decree-options .game-button {
+    width: 200px;
+    margin-bottom: 0; /* Override default button margin */
+}
+
+#decree-details {
+    width: 90%;
+    max-width: 700px;
+    background-color: var(--dark-parchment-color);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+#decree-details h3 {
+    margin-top: 0;
+    text-align: center;
+}
+
+#decree-text {
+    width: calc(100% - 20px); /* Account for padding */
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-family: 'Merriweather', serif;
+    font-size: 1em;
+    background-color: var(--parchment-color);
+    color: var(--text-color);
+    resize: vertical;
+    min-height: 100px;
+    box-sizing: border-box;
+}
+
+#issue-decree-button {
+    margin-top: 15px;
+    width: 50%;
+    max-width: 300px;
+}
+
+/* Map Panel */
+#interactive-map {
+    width: 90%;
+    max-width: 900px;
+    aspect-ratio: 16 / 9; /* Maintain aspect ratio */
+    border: 2px solid var(--border-color);
+    background-color: #e0d0b0; /* Light beige for a map background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5em;
+    color: #6a5c48;
+}
+
+/* Ledger Panel */
+#ledger-content {
+    width: 90%;
+    max-width: 800px;
+    background-color: var(--dark-parchment-color);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 20px;
+    text-align: left;
+}
+
+#ledger-content h3 {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+#ledger-event-log {
+    list-style: disc;
+    padding-left: 20px;
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px dashed var(--border-color);
+    padding: 10px;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+#ledger-event-log li {
+    margin-bottom: 5px;
+    padding-bottom: 3px;
+    border-bottom: 1px dotted rgba(0,0,0,0.1);
+    font-size: 0.95em;
+}
+#ledger-event-log li:last-child {
+    border-bottom: none;
 }
