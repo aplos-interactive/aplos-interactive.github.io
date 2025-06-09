@@ -24,7 +24,10 @@
 
             <div class="pope-panel panel">
                 <h2>Pope's Attributes</h2>
-                <p>Name: <span id="popeName">Leo X</span></p> <p>Age: <span id="popeAge">50</span></p> <p>Health: <span id="popeHealth">100</span>%</p> <p>Theology: <span id="theology">50</span></p>
+                <p>Name: <span id="popeName">Leo X</span></p>
+                <p>Age: <span id="popeAge">50</span></p>
+                <p>Health: <span id="popeHealth">100</span>%</p>
+                <p>Theology: <span id="theology">50</span></p>
                 <p>Diplomacy: <span id="diplomacy">50</span></p>
                 <p>Intrigue: <span id="intrigue">50</span></p>
                 <p>Administration: <span id="administration">50</span></p>
@@ -49,13 +52,17 @@
             <p id="conclaveMessage">The Holy See is Vacant! Cardinals gather to elect a new Pope.</p>
             <div id="conclaveProgress">
                 <p>Ballot: <span id="ballotNumber">0</span></p>
-                <p>Current Votes:</p>
+                <p>Required Votes: <span id="winningThreshold">--</span></p>
+                <h3>Candidates:</h3>
                 <ul id="candidateVotes">
                     </ul>
             </div>
-            <button id="advanceConclaveButton" class="action-button">Proceed to Next Ballot</button>
             <div id="conclaveInfluenceOptions" class="options-container">
-                </div>
+                <button id="influenceGoldButton" class="action-button">Influence with Gold (-50 Gold)</button>
+                <button id="influencePromisesButton" class="action-button">Make Promises (-10 Piety)</button>
+                <button id="influenceIntrigueButton" class="action-button">Employ Intrigue (-10 Stability)</button>
+            </div>
+            <button id="advanceConclaveButton" class="action-button">Proceed to Next Ballot</button>
         </div>
 
         <div class="decision-panel panel hidden">
