@@ -3,265 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Habeas Papam: The Pope's Throne</title>
+    <title>Habeus Papam</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Playfair+Display:wght%40400;700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="game-container">
-        <header id="game-header">
-            <h1 class="ornate-text">Habeas Papam</h1>
-            <h2 class="subtitle">The Pope's Throne</h2>
-            <div id="game-date" class="ornate-text">Year of Our Lord: <span id="current-year">1100 AD</span></div>
-        </header>
+    <div class="game-container">
+        <h1>Habeus Papam: A Medieval Papal Simulator</h1>
 
-        <aside id="resource-sidebar" class="parchment-frame">
-            <h2 class="panel-title">Your Holiness</h2>
-            <div class="resource-group">
-                <div class="resource-item">
-                    <span class="resource-icon">⚜️</span>
-                    <span class="resource-label">Piety:</span>
-                    <span id="resource-piety" class="resource-value">100</span>
-                </div>
-                <div class="resource-item">
-                    <span class="resource-icon">💰</span>
-                    <span class="resource-label">Wealth:</span>
-                    <span id="resource-wealth" class="resource-value">500</span>
-                </div>
-                <div class="resource-item">
-                    <span class="resource-icon">👑</span>
-                    <span class="resource-label">Influence:</span>
-                    <span id="resource-influence" class="resource-value">75</span>
-                </div>
-                <div class="resource-item">
-                    <span class="resource-icon">❤️</span>
-                    <span class="resource-label">Curia Support:</span>
-                    <span id="resource-curia" class="resource-value">60</span>
-                </div>
+        <div class="top-panels">
+            <div class="stats-panel panel">
+                <h2>Papal State Stats</h2>
+                <p>Turn: <span id="turn">1</span></p>
+                <p>Piety: <span id="piety">500</span></p>
+                <p>Gold: <span id="gold">200</span></p>
+                <p>Influence: <span id="influence">100</span></p>
+                <p>Stability: <span id="stability">75</span></p>
+                <p>Heresy Level: <span id="heresyLevel">0</span></p> </div>
+
+            <div class="pope-panel panel">
+                <h2>Pope's Attributes</h2>
+                <p>Theology: <span id="theology">50</span></p>
+                <p>Diplomacy: <span id="diplomacy">50</span></p>
+                <p>Intrigue: <span id="intrigue">50</span></p>
+                <p>Administration: <span id="administration">50</span></p>
             </div>
-
-            <div id="pope-attributes" class="resource-group">
-                <h3 class="panel-subtitle">Pope's Attributes</h3>
-                <div class="resource-item">
-                    <span class="resource-icon">👨‍🦳</span>
-                    <span class="resource-label">Age:</span>
-                    <span id="pope-age" class="resource-value">60</span>
-                </div>
-                <div class="resource-item">
-                    <span class="resource-icon">🧠</span>
-                    <span class="resource-label">Wisdom:</span>
-                    <span id="pope-wisdom" class="resource-value">70</span>
-                </div>
-                <div class="resource-item">
-                    <span class="resource-icon">🗣️</span>
-                    <span class="resource-label">Diplomacy:</span>
-                    <span id="pope-diplomacy" class="resource-value">65</span>
-                </div>
-                <div class="resource-item">
-                    <span class="resource-icon">⚔️</span>
-                    <span class="resource-label">Martial:</span>
-                    <span id="pope-martial" class="resource-value">40</span>
-                </div>
-                <div class="resource-item">
-                    <span class="resource-icon">⚕️</span>
-                    <span class="resource-label">Health:</span>
-                    <span id="resource-health" class="resource-value">80</span>
-                </div>
-                <div class="resource-item">
-                    <span class="resource-icon">📜</span>
-                    <span class="resource-label">Prestige:</span>
-                    <span id="resource-prestige" class="resource-value">20</span>
-                </div>
-                <div class="resource-item">
-                    <span class="resource-icon">📚</span>
-                    <span class="resource-label">Theology:</span>
-                    <span id="resource-theology" class="resource-value">50</span>
-                </div>
+        </div>
+        
+        <div class="cardinals-panel panel">
+            <h2>College of Cardinals (<span id="cardinalSupportOverall">50</span>% Support)</h2>
+            <div id="cardinalsList" class="scrollable-content">
+                <p class="placeholder">No Cardinals appointed yet.</p>
             </div>
+            <button id="appointCardinalButton" class="action-button">Appoint New Cardinal (-50 Gold)</button>
+        </div>
 
-            <div id="reputation-section" class="resource-group">
-                <h3 class="panel-subtitle">Reputation</h3>
-                <div class="resource-item">
-                    <span class="resource-icon">🤴</span>
-                    <span class="resource-label">Royalty:</span>
-                    <span id="reputation-royalty" class="resource-value">50</span>
+
+        <div class="message-panel panel">
+            <h2>Chronicle</h2>
+            <p id="gameMessage">Welcome, Holy Father! Your reign begins.</p>
+        </div>
+
+        <div class="decision-panel panel hidden">
+            <h2>Papal Decree</h2>
+            <p id="decisionDescription"></p>
+            <div id="decisionOptions" class="options-container">
                 </div>
-                <div class="resource-item">
-                    <span class="resource-icon">⛪</span>
-                    <span class="resource-label">Clergy:</span>
-                    <span id="reputation-clergy" class="resource-value">60</span>
-                </div>
-                <div class="resource-item">
-                    <span class="resource-icon">🧑‍🤝‍🧑</span>
-                    <span class="resource-label">Commoners:</span>
-                    <span id="reputation-commoners" class="resource-value">70</span>
-                </div>
-                <div class="resource-item">
-                    <span class="resource-icon">📈</span>
-                    <span class="resource-label">Merchants:</span>
-                    <span id="reputation-merchants" class="resource-value">40</span>
-                </div>
-            </div>
+        </div>
 
-
-            <div id="cardinal-list" class="resource-group">
-                <h3 class="panel-subtitle">Curia (<span id="num-cardinals">0</span> Cardinals)</h3>
-                <ul id="cardinals-display" class="scrollable-list"></ul>
-            </div>
-
-            <div id="active-crises" class="resource-group">
-                <h3 class="panel-subtitle">Active Crises</h3>
-                <ul id="crises-display" class="scrollable-list">
-                    <li>No active crises.</li>
-                </ul>
-            </div>
-
-            <div id="actions-panel">
-                <button class="game-button primary-button" id="next-turn-button">End Month</button>
-                <button class="game-button" id="open-curia-button">Manage Curia</button>
-                <button class="game-button" id="open-decrees-button">Issue Decrees</button>
-                <button class="game-button" id="open-map-button">View Map</button>
-                <button class="game-button" id="open-ledger-button">Ledger</button>
-            </div>
-        </aside>
-
-        <main id="game-main">
-            <div id="game-event-display" class="parchment-frame">
-                <h2 id="event-title" class="event-title">Welcome to Habeas Papam!</h2>
-                <p id="event-description" class="event-description">You are the newly elected Pope. The medieval world is a complex tapestry of faith, power, and intrigue. Your actions will shape the destiny of the Church and Europe. Click 'End Month' to begin your reign.</p>
-                <div id="event-choices" class="event-choices">
-                </div>
-            </div>
-
-            <div id="conclave-panel" class="game-panel hidden parchment-frame">
-                <h2 class="panel-title">The Papal Conclave</h2>
-                <p class="panel-description">The Holy See is vacant! Cardinals from across Christendom gather to elect a new Vicar of Christ. Your influence during this sacred process is paramount.</p>
-                <div id="conclave-state">
-                    <p>Current Round: <span id="conclave-round">1</span></p>
-                    <p>Votes for Candidate 1: <span id="candidate1-votes">0</span></p>
-                    <p>Votes for Candidate 2: <span id="candidate2-votes">0</span></p>
-                    <p>Required Votes for Election: <span id="conclave-required-votes">--</span></p>
-                </div>
-                <div id="conclave-cardinal-list">
-                    <h3 class="panel-subtitle">Conclave Cardinals</h3>
-                    <ul id="conclave-cardinals-display" class="scrollable-list">
-                        </ul>
-                </div>
-                <div id="conclave-actions">
-                    <button class="game-button primary-button" id="conclave-lobby-button">Lobby Cardinals (Influence)</button>
-                    <button class="game-button" id="conclave-intrigue-button">Engage in Intrigue (Wealth/Risk)</button>
-                    <button class="game-button" id="conclave-vote-button">Proceed to Vote</button>
-                </div>
-                <button class="game-button close-panel-button hidden">Return to Game</button>
-            </div>
-
-            <div id="curia-panel" class="game-panel hidden parchment-frame">
-                <h2 class="panel-title">Manage Curia</h2>
-                <p class="panel-description">Here you can interact with the College of Cardinals, vital pillars of the Church.</p>
-                <div id="curia-details-container">
-                    <div id="cardinal-detail-view" class="detail-view parchment-frame">
-                        <h3 id="selected-cardinal-name" class="panel-subtitle">Select a Cardinal</h3>
-                        <p id="selected-cardinal-description">Click on a cardinal in the list to see their details.</p>
-                        <p>Loyalty: <span id="selected-cardinal-loyalty">--</span></p>
-                        <p>Influence: <span id="selected-cardinal-influence">--</span></p>
-                        <p>Faction: <span id="selected-cardinal-faction">--</span></p>
-                        <p>Personality: <span id="selected-cardinal-personality">--</span></p>
-                        <p>Traits: <span id="selected-cardinal-traits">--</span></p>
-                        <p>Skills: <span id="selected-cardinal-skills">--</span></p>
-                        <p class="secret-info hidden" id="selected-cardinal-secret-display">Secret: <span id="selected-cardinal-secret">--</span></p>
-                        <div id="cardinal-actions" class="action-buttons-group">
-                            <button class="game-button hidden" id="bribe-cardinal-button">Bribe (💰-20)</button>
-                            <button class="game-button hidden" id="promote-cardinal-button">Promote (👑-10)</button>
-                            <button class="game-button hidden" id="investigate-cardinal-button">Investigate (📚-5)</button>
-                        </div>
-                    </div>
-                    <ul id="curia-cardinal-list" class="scrollable-list">
-                    </ul>
-                </div>
-                <button class="game-button close-panel-button">Back to Main</button>
-            </div>
-
-            <div id="decrees-panel" class="game-panel hidden parchment-frame">
-                <h2 class="panel-title">Issue Papal Decrees</h2>
-                <p class="panel-description">Formulate new doctrines, condemn heresies, or excommunicate rulers to assert the Holy See's authority.</p>
-                <div id="decree-options" class="action-buttons-group">
-                    <button class="game-button" data-decree-type="doctrine">New Doctrine (📚)</button>
-                    <button class="game-button" data-decree-type="condemn">Condemn Heresy (⚜️)</button>
-                    <button class="game-button" data-decree-type="excommunicate">Excommunicate Ruler (👑)</button>
-                    <button class="game-button" data-decree-type="crusade">Call Crusade (⚔️)</button>
-                </div>
-                <div id="decree-details" class="detail-view hidden">
-                    <h3 class="panel-subtitle">Decree Type: <span id="decree-type-name"></span></h3>
-                    <p id="decree-cost-display">Cost: --</p>
-                    <div id="decree-target-selection" class="hidden">
-                        <label for="decree-target">Target:</label>
-                        <select id="decree-target">
-                            </select>
-                    </div>
-                    <textarea id="decree-text" placeholder="Write your decree here... (Max 200 chars)" rows="5" maxlength="200"></textarea>
-                    <button class="game-button primary-button" id="issue-decree-button">Issue Decree</button>
-                </div>
-                <button class="game-button close-panel-button">Back to Main</button>
-            </div>
-
-            <div id="crusade-panel" class="game-panel hidden parchment-frame">
-                <h2 class="panel-title">The Holy Crusade</h2>
-                <p class="panel-description">Lead the armies of Christendom to reclaim the Holy Land or crush the enemies of the Church!</p>
-                <div id="crusade-summary">
-                    <h3 class="panel-subtitle" id="crusade-name-display">No Active Crusade</h3>
-                    <p>Current Phase: <span id="crusade-phase">Preparation</span></p>
-                    <p>Progress: <span id="crusade-progress">0%</span></p>
-                    <p>Army Strength: <span id="crusade-army-strength">0</span></p>
-                    <p>Supplies: <span id="crusade-supplies">0</span></p>
-                    <p>Morale: <span id="crusade-morale">100</span></p>
-                </div>
-                <div id="crusade-events">
-                    <h3 class="panel-subtitle">Crusade Updates</h3>
-                    <ul id="crusade-event-log" class="scrollable-list">
-                        <li>The call for Crusade is yet to be made.</li>
-                    </ul>
-                </div>
-                <div id="crusade-actions" class="action-buttons-group">
-                    <button class="game-button primary-button hidden" id="crusade-raise-funds">Raise Funds (💰)</button>
-                    <button class="game-button primary-button hidden" id="crusade-recruit-troops">Recruit Troops (👑)</button>
-                    <button class="game-button primary-button hidden" id="crusade-embark">Embark on Crusade</button>
-                    </div>
-                <button class="game-button close-panel-button">Back to Main</button>
-            </div>
-
-
-            <div id="map-panel" class="game-panel hidden parchment-frame">
-                <h2 class="panel-title">Map of Christendom</h2>
-                <p class="panel-description">A stylized map showing the political and religious landscape of medieval Europe.</p>
-                <div id="interactive-map">
-                    <p>**Medieval Europe Map Placeholder - Under Development**</p>
-                    <p>This will eventually display realms, heresies, and major conflicts.</p>
-                </div>
-                <button class="game-button close-panel-button">Back to Main</button>
-            </div>
-
-            <div id="ledger-panel" class="game-panel hidden parchment-frame">
-                <h2 class="panel-title">The Papal Ledger</h2>
-                <p class="panel-description">Review the Church's financial status, historical events, and current affairs.</p>
-                <div id="ledger-content">
-                    <h3 class="panel-subtitle">Financial Overview</h3>
-                    <p>Income per month: +<span id="ledger-income">10</span> Wealth</p>
-                    <p>Expenses per month: -<span id="ledger-expenses">5</span> Wealth</p>
-                    <p>Current Balance: <span id="ledger-balance">500</span> Wealth</p>
-
-                    <h3 class="panel-subtitle">Recent Events & Chronicle</h3>
-                    <ul id="ledger-event-log" class="scrollable-list">
-                        <li>Welcome to Habeas Papam! Your reign begins.</li>
-                    </ul>
-                </div>
-                <button class="game-button close-panel-button">Back to Main</button>
-            </div>
-
-        </main>
-
-        <footer id="game-footer">
-            <p>&copy; 2025 Habeas Papam Simulator. All rights reserved.</p>
-        </footer>
+        <div class="controls">
+            <button id="nextTurnButton">Advance Turn</button>
+        </div>
     </div>
 
     <script src="script.js"></script>
