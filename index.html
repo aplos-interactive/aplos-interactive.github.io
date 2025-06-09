@@ -19,11 +19,12 @@
                 <p>Gold: <span id="gold">200</span></p>
                 <p>Influence: <span id="influence">100</span></p>
                 <p>Stability: <span id="stability">75</span></p>
-                <p>Heresy Level: <span id="heresyLevel">0</span></p> </div>
+                <p>Heresy Level: <span id="heresyLevel">0</span></p>
+            </div>
 
             <div class="pope-panel panel">
                 <h2>Pope's Attributes</h2>
-                <p>Theology: <span id="theology">50</span></p>
+                <p>Name: <span id="popeName">Leo X</span></p> <p>Age: <span id="popeAge">50</span></p> <p>Health: <span id="popeHealth">100</span>%</p> <p>Theology: <span id="theology">50</span></p>
                 <p>Diplomacy: <span id="diplomacy">50</span></p>
                 <p>Intrigue: <span id="intrigue">50</span></p>
                 <p>Administration: <span id="administration">50</span></p>
@@ -38,10 +39,23 @@
             <button id="appointCardinalButton" class="action-button">Appoint New Cardinal (-50 Gold)</button>
         </div>
 
-
         <div class="message-panel panel">
             <h2>Chronicle</h2>
             <p id="gameMessage">Welcome, Holy Father! Your reign begins.</p>
+        </div>
+
+        <div class="conclave-panel panel hidden">
+            <h2>The Papal Conclave</h2>
+            <p id="conclaveMessage">The Holy See is Vacant! Cardinals gather to elect a new Pope.</p>
+            <div id="conclaveProgress">
+                <p>Ballot: <span id="ballotNumber">0</span></p>
+                <p>Current Votes:</p>
+                <ul id="candidateVotes">
+                    </ul>
+            </div>
+            <button id="advanceConclaveButton" class="action-button">Proceed to Next Ballot</button>
+            <div id="conclaveInfluenceOptions" class="options-container">
+                </div>
         </div>
 
         <div class="decision-panel panel hidden">
