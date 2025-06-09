@@ -20,7 +20,7 @@ body {
     padding: 30px;
     border-radius: 15px;
     width: 95%;
-    max-width: 1200px; /* Wider to accommodate more panels */
+    max-width: 1400px; /* Even wider now for more panels */
     display: grid;
     grid-template-columns: 1fr 1fr 1fr; /* Three columns for panels */
     gap: 25px;
@@ -66,8 +66,39 @@ h2 {
 
 .cardinals-panel {
     grid-column: 3 / 4; /* Third column */
-    /* No flex: 1 needed here as it's a standalone panel */
 }
+
+/* New Conclave Panel positioning */
+.conclave-panel {
+    grid-column: 1 / -1; /* Span across all columns when active */
+    background-color: #4A148C; /* Deep Purple for Conclave */
+    border-color: #FFD700; /* Gold border */
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
+    color: #FFF;
+    text-align: center;
+    padding: 30px;
+}
+
+.conclave-panel h2 {
+    color: #FFD700;
+}
+
+.conclave-panel p {
+    color: #FFF;
+}
+
+.conclave-panel ul {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0;
+}
+
+.conclave-panel li {
+    font-size: 1.1em;
+    margin-bottom: 5px;
+    color: #FFF;
+}
+
 
 .message-panel, .decision-panel {
     grid-column: 1 / -1; /* Span across all columns */
@@ -88,7 +119,8 @@ h2 {
 /* Specific styling for stat values */
 .stats-panel span,
 .pope-panel span,
-.cardinals-panel span { /* Apply to new cardinal support stat too */
+.cardinals-panel span,
+.conclave-panel span { /* Apply to conclave stats too */
     font-weight: bold;
     color: #ffdb58; /* Brighter gold for values */
     font-size: 1.1em;
@@ -124,7 +156,7 @@ h2 {
 }
 
 /* Decision panel specific styles */
-.decision-panel.hidden {
+.decision-panel.hidden, .conclave-panel.hidden { /* Hide conclave panel too */
     display: none;
 }
 
@@ -136,7 +168,7 @@ h2 {
     margin-top: 20px;
 }
 
-.decision-button, .action-button { /* Apply similar styles to action buttons */
+.decision-button, .action-button, .cardinal-action-button { /* Apply similar styles to action buttons */
     background-color: #b35900; /* Burnt orange/brown */
     color: #fdfaf3;
     padding: 12px 20px;
@@ -148,51 +180,71 @@ h2 {
     transition: background-color 0.2s ease, transform 0.1s ease;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
     flex-grow: 1;
-    max-width: 48%;
+    max-width: 48%; /* Default for decision buttons */
 }
 
-.decision-button:hover, .action-button:hover {
+.cardinal-action-button { /* Smaller for individual cardinal actions */
+    font-size: 0.8em;
+    padding: 5px 10px;
+    margin-left: 5px;
+    max-width: none; /* Override max-width from .action-button */
+    flex-grow: 0; /* Don't grow to fill space */
+}
+
+
+.decision-button:hover, .action-button:hover, .cardinal-action-button:hover {
     background-color: #cc6600;
     transform: translateY(-1px);
 }
 
-.decision-button:active, .action-button:active {
+.decision-button:active, .action-button:active, .cardinal-action-button:active {
     transform: translateY(0);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Cardinal List Specific Styles */
 .cardinals-panel .scrollable-content {
-    flex-grow: 1; /* Allow content to take available space */
-    overflow-y: auto; /* Enable scrolling if content overflows */
-    max-height: 300px; /* Limit height of scrollable area */
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 300px;
     border: 1px solid #a1887f;
     padding: 10px;
     margin-bottom: 15px;
-    background-color: rgba(0, 0, 0, 0.1); /* Slightly darker background for scroll area */
+    background-color: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
 }
 
 .cardinal-entry {
-    background-color: #6d4c41; /* Darker brown for individual cardinal entry */
+    background-color: #6d4c41;
     border: 1px solid #a1887f;
     border-radius: 5px;
     padding: 10px;
     margin-bottom: 8px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column; /* Stack attributes and buttons */
+    /* justify-content: space-between; */ /* Not needed with column flex */
+    /* align-items: center; */ /* Not needed with column flex */
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .cardinal-entry strong {
-    color: #ffeb3b; /* Brighter gold for name */
+    color: #ffeb3b;
+    margin-bottom: 5px;
+    font-size: 1.1em;
 }
 
 .cardinal-entry .attributes {
     font-size: 0.9em;
     color: #e0d8c2;
-    text-align: right;
+    /* text-align: right; */ /* Not needed */
+    margin-bottom: 10px; /* Space between attributes and buttons */
+}
+
+.cardinal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: flex-end; /* Align buttons to the right */
 }
 
 .placeholder {
