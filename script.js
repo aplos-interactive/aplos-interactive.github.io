@@ -31,6 +31,29 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add more factions as your game develops (e.g., Italian City-States)
     };
 
+    // NEW: Game Buildings - tracks status, level, and properties of various constructions
+    const gameBuildings = {
+        st_peters_basilica_reconstruction: {
+            level: 0, // 0: not built, 1: completed base
+            status: 'none', // 'none', 'under_construction', 'completed'
+            daysRemaining: 0,
+            baseCost: { gold: 150, piety: 50, authority: 30 },
+            baseDaysToBuild: 60,
+            passiveBonuses: { piety: 2, publicOpinion: 1 }, // Daily passive gains
+            completionEventId: 'st_peters_completed'
+        },
+        papal_library: {
+            level: 0,
+            status: 'none',
+            daysRemaining: 0,
+            baseCost: { gold: 80, cardinalFavor: 20 },
+            baseDaysToBuild: 40,
+            passiveBonuses: { cardinalFavor: 1, authority: 1 },
+            completionEventId: 'papal_library_completed'
+        },
+        // Add more buildings here
+    };
+
 
     // --- DOM Elements ---
     const metricPiety = document.getElementById('metric-piety');
@@ -50,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapOverlay = document.getElementById('map-overlay');
     const closeMapButton = document.getElementById('close-map-button');
 
-    // --- Game Events Data (UPDATED WITH RECURRING & RANDOM EVENTS!) ---
+    // --- Game Events Data (UPDATED WITH BUILDING EVENTS!) ---
     const events = [
         {
             id: 'start_game',
@@ -268,17 +291,100 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
 
-        // NEW: Recurring Events
+        // NEW: Event to initiate building construction
+        {
+            id: 'construction_opportunity_basilica',
+            title: 'Rebuilding St. Peter\'s Basilica',
+            content: 'The old St. Peter\'s Basilica, though grand, is showing its age and does not fully reflect the glory of God. A grand reconstruction project could inspire the faithful and solidify Rome\'s prominence, but it will be costly.',
+            source: 'Master Architect',
+            requiredBuildings: { buildingId: 'st_peters_basilica_reconstruction', status: 'none' }, // Only available if not built yet
+            options: [
+                {
+                    text: 'Begin the grand reconstruction!',
+                    effects: [
+                        { type: 'startConstruction', buildingId: 'st_peters_basilica_reconstruction' },
+                        { type: 'setNextEvent', eventId: 'papal_decree_consideration' } // Return to normal flow after initiating
+                    ]
+                },
+                {
+                    text: 'Defer the project for a later date.',
+                    effects: [
+                        { type: 'metricChange', metric: 'publicOpinion', value: -5 },
+                        { type: 'metricChange', metric: 'cardinalFavor', value: -5 },
+                    ]
+                }
+            ]
+        },
+        {
+            id: 'construction_opportunity_library',
+            title: 'Establish a Papal Library',
+            content: 'To foster theological learning and preserve ancient texts, a comprehensive Papal Library is proposed. This will enhance the Holy See\'s reputation as a center of knowledge, but requires significant investment.',
+            source: 'Scholar Cardinal',
+            requiredBuildings: { buildingId: 'papal_library', status: 'none' }, // Only available if not built yet
+            options: [
+                {
+                    text: 'Commission the new Papal Library.',
+                    effects: [
+                        { type: 'startConstruction', buildingId: 'papal_library' },
+                        { type: 'setNextEvent', eventId: 'noble_dissatisfaction' } // Return to normal flow after initiating
+                    ]
+                },
+                {
+                    text: 'Focus on more immediate concerns.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: -5 },
+                        { type: 'metricChange', metric: 'cardinalFavor', value: -10 },
+                    ]
+                }
+            ]
+        },
+
+        // NEW: Building Completion Events (triggered by dailyChecks)
+        {
+            id: 'st_peters_completed',
+            title: 'St. Peter\'s Basilica Completed!',
+            content: 'The magnificent new St. Peter\'s Basilica stands complete! Its grandeur inspires awe and devotion across Christendom. Your name will forever be tied to this monumental achievement.',
+            source: 'The Pope\'s Journal',
+            options: [
+                {
+                    text: 'Rejoice in this divine accomplishment!',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: 20 },
+                        { type: 'metricChange', metric: 'authority', value: 15 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: 20 }
+                    ]
+                }
+            ]
+        },
+        {
+            id: 'papal_library_completed',
+            title: 'The Papal Library Opens!',
+            content: 'The new Papal Library is now open, a repository of knowledge and wisdom. Scholars from across Europe flock to its halls, elevating the Holy See\'s intellectual standing.',
+            source: 'Archivist',
+            options: [
+                {
+                    text: 'Celebrate this intellectual triumph!',
+                    effects: [
+                        { type: 'metricChange', metric: 'cardinalFavor', value: 15 },
+                        { type: 'metricChange', metric: 'authority', value: 10 },
+                        { type: 'factionChange', faction: 'monasticOrders', value: 10 }
+                    ]
+                }
+            ]
+        },
+
+
+        // Recurring Events
         {
             id: 'monthly_treasury_report',
             title: 'Monthly Treasury Report',
-            content: 'A report on the papal finances for the past month. Your income varies with public opinion and overall prosperity.',
+            content: 'A report on the papal finances for the past month. Your income varies with public opinion and overall prosperity. (Includes passive gold from buildings!)',
             source: 'Papal Accountant',
             options: [
                 {
                     text: 'Acknowledge the report.',
                     effects: [
-                        // Dynamic gold income based on public opinion
+                        // Dynamic gold income based on public opinion. Passive gold is already applied before this event.
                         { type: 'metricChange', metric: 'gold', value: Math.floor(gameMetrics.publicOpinion / 10) + 5 } // Example: 5 to 15 gold
                     ]
                 }
@@ -289,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'Annual Pilgrimage Season',
             content: 'The season of grand pilgrimages draws to a close. Thousands have flocked to Rome and other holy sites, bringing renewed devotion and some offerings.',
             source: 'Head of Papal Household',
-            requiredFlags: ['papal_bull_issued'], // Maybe only if a bull has been issued to mark significant papal activity
+            requiredFlags: ['papal_bull_issued'],
             options: [
                 {
                     text: 'Bless the pilgrims and receive their offerings.',
@@ -302,8 +408,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
 
-        // NEW: Random Events (These should be defined in the randomEvents array)
-        // Leaving these in `events` for findEventById convenience, but they'll be chosen by `selectRandomEvent`
+        // Random Events (These should be defined in the randomEvents array)
         {
             id: 'plague_outbreak',
             title: 'Plague Outbreak!',
@@ -314,8 +419,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     text: 'Order prayers and offer spiritual guidance.',
                     effects: [
                         { type: 'metricChange', metric: 'piety', value: 15 },
-                        { type: 'metricChange', metric: 'publicOpinion', value: -15 }, // Some will blame you for inaction
-                        { type: 'metricChange', metric: 'gold', value: -5 } // Small cost for aid
+                        { type: 'metricChange', metric: 'publicOpinion', value: -15 },
+                        { type: 'metricChange', metric: 'gold', value: -5 }
                     ]
                 },
                 {
@@ -323,7 +428,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     effects: [
                         { type: 'metricChange', metric: 'publicOpinion', value: 10 },
                         { type: 'metricChange', metric: 'gold', value: -20 },
-                        { type: 'metricChange', metric: 'piety', value: -5 } // Seen as less spiritual, more worldly
+                        { type: 'metricChange', metric: 'piety', value: -5 }
                     ]
                 }
             ]
@@ -333,21 +438,20 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'Noble Dispute Requires Arbitration',
             content: 'Two powerful noble families are embroiled in a bitter land dispute, threatening to escalate into open warfare. They appeal to your authority to mediate.',
             source: 'Conflicting Envoys',
-            requiredFactionFavor: { faction: 'nobility', minFavor: 50 }, // Requires some nobility favor to be approached
             options: [
                 {
                     text: 'Meditate and issue a Papal ruling, favoring one side slightly.',
                     effects: [
                         { type: 'metricChange', metric: 'authority', value: 10 },
-                        { type: 'factionChange', faction: 'nobility', value: 5 }, // Overall neutrality, slight boost
-                        { type: 'metricChange', metric: 'cardinalFavor', value: -5 } // Cardinals might see it as overreach
+                        { type: 'factionChange', faction: 'nobility', value: 5 },
+                        { type: 'metricChange', metric: 'cardinalFavor', value: -5 }
                     ]
                 },
                 {
                     text: 'Decline to intervene, citing secular matters.',
                     effects: [
                         { type: 'metricChange', metric: 'authority', value: -5 },
-                        { type: 'factionChange', faction: 'nobility', value: -10 } // Nobility loses faith in your leadership
+                        { type: 'factionChange', faction: 'nobility', value: -10 }
                     ]
                 }
             ]
@@ -357,14 +461,13 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'Heretical Preacher Sighted!',
             content: 'Reports indicate a charismatic preacher is gaining followers in a remote province, spreading doctrines contrary to Papal teaching. What is your response?',
             source: 'Local Bishop',
-            requiredMetrics: { metric: 'piety', min: 40 }, // Only if piety isn't too low to care
             options: [
                 {
                     text: 'Dispatch an Inquisition to suppress the heresy.',
                     effects: [
                         { type: 'metricChange', metric: 'piety', value: 15 },
                         { type: 'metricChange', metric: 'publicOpinion', value: -10 },
-                        { type: 'factionChange', faction: 'monasticOrders', value: 10 } // Monastics approve
+                        { type: 'factionChange', faction: 'monasticOrders', value: 10 }
                     ]
                 },
                 {
@@ -456,7 +559,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
-    // NEW: Random Events Array (separate for easier management of probabilities)
+    // Random Events Array (separate for easier management of probabilities)
     const randomEvents = [
         {
             id: 'plague_outbreak',
@@ -489,7 +592,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Checks if an event is eligible to be displayed based on current game flags and faction favors.
+     * Checks if an event is eligible to be displayed based on current game flags, faction favors, metrics, and buildings.
      * @param {object} event The event object to check.
      * @returns {boolean} True if the event is eligible, false otherwise.
      */
@@ -514,24 +617,26 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check requiredFactionFavor
         if (event.requiredFactionFavor) {
             const faction = gameFactions[event.requiredFactionFavor.faction];
-            if (!faction || faction.favor < event.requiredFactionFavor.minFavor) {
-                return false;
-            }
-        }
-        // Check forbiddenFactionFavor
-        if (event.forbiddenFactionFavor) {
-            const faction = gameFactions[event.forbiddenFactionFavor.faction];
-            if (!faction || faction.favor > event.forbiddenFactionFavor.maxFavor) {
+            if (!faction || faction.favor < event.requiredFactionFavor.minFavor || (event.requiredFactionFavor.maxFavor !== undefined && faction.favor > event.requiredFactionFavor.maxFavor)) {
                 return false;
             }
         }
 
-        // NEW: Check requiredMetrics
+        // Check requiredMetrics
         if (event.requiredMetrics) {
             const metricValue = gameMetrics[event.requiredMetrics.metric];
             if (metricValue === undefined || metricValue < event.requiredMetrics.min || (event.requiredMetrics.max !== undefined && metricValue > event.requiredMetrics.max)) {
                 return false;
             }
+        }
+
+        // NEW: Check requiredBuildings
+        if (event.requiredBuildings) {
+            const building = gameBuildings[event.requiredBuildings.buildingId];
+            if (!building || building.status !== event.requiredBuildings.status) {
+                return false;
+            }
+            // Add level check if needed: && building.level >= event.requiredBuildings.minLevel
         }
 
         return true; // All conditions met
@@ -543,17 +648,14 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {number} value The amount to change the metric by.
      */
     function updateMetric(metricName, value) {
-        // Apply dynamic gold income calculation directly
+        // Special handling for dynamic gold income from monthly report
         if (metricName === 'gold' && typeof value === 'string' && value.includes('gameMetrics.publicOpinion')) {
-            // This is a basic example. For more complex dynamic calculations,
-            // you might want a dedicated 'dynamicValue' effect type.
             const calculatedValue = Math.floor(gameMetrics.publicOpinion / 10) + 5;
             gameMetrics[metricName] = Math.max(0, Math.min(100, gameMetrics[metricName] + calculatedValue));
-            console.log(`Gold changed by dynamic value: ${calculatedValue}`);
+            console.log(`Gold changed dynamically by: ${calculatedValue}`);
         } else {
             gameMetrics[metricName] = Math.max(0, Math.min(100, gameMetrics[metricName] + value)); // Clamp between 0-100
         }
-
 
         // Visual flash for metric change
         const metricElement = document.getElementById(`metric-${metricName}`);
@@ -583,6 +685,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /**
+     * NEW: Initiates construction for a specified building.
+     * Deducts costs and sets building status to 'under_construction'.
+     * @param {string} buildingId The ID of the building to start construction.
+     */
+    function startConstruction(buildingId) {
+        const building = gameBuildings[buildingId];
+        if (!building || building.status !== 'none') {
+            console.warn(`Cannot start construction for ${buildingId}. Status is ${building ? building.status : 'undefined'}.`);
+            return;
+        }
+
+        // Check if player can afford the cost
+        let canAfford = true;
+        for (const metricCost in building.baseCost) {
+            if (gameMetrics[metricCost] < building.baseCost[metricCost]) {
+                canAfford = false;
+                console.warn(`Not enough ${metricCost} to build ${buildingId}. Required: ${building.baseCost[metricCost]}, Have: ${gameMetrics[metricCost]}`);
+                // TODO: Provide UI feedback to the player about insufficient funds
+                return; // Exit if cannot afford any part of the cost
+            }
+        }
+
+        if (canAfford) {
+            // Deduct costs
+            for (const metricCost in building.baseCost) {
+                updateMetric(metricCost, -building.baseCost[metricCost]);
+            }
+
+            // Set building status
+            building.status = 'under_construction';
+            building.daysRemaining = building.baseDaysToBuild;
+            console.log(`Construction started for ${buildingId}! Days remaining: ${building.daysRemaining}`);
+            // TODO: Add UI feedback for construction started
+        }
+    }
 
     /**
      * Updates all metric displays based on current game state.
@@ -593,6 +731,7 @@ document.addEventListener('DOMContentLoaded', () => {
         metricGold.textContent = gameMetrics.gold;
         metricPublicOpinion.textContent = gameMetrics.publicOpinion;
         metricCardinalFavor.textContent = gameMetrics.cardinalFavor;
+        // TODO: Add display for buildings and their status
     }
 
     /**
@@ -625,7 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * NEW: Selects an eligible random event based on weights.
+     * Selects an eligible random event based on weights.
      * @returns {object|null} An eligible random event, or null if none found.
      */
     function selectRandomEvent() {
@@ -684,7 +823,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // --- Triumph/High Metric Conditions ---
-        // These can be set to 100 or a high value like 95.
         if (gameMetrics.piety >= 95 && !gameFlags.triumph_divine_mandate_achieved) {
             hasGameEnded = true; gameFlags.triumph_divine_mandate_achieved = true; loadEvent(findEventById('triumph_divine_mandate')); return true;
         }
@@ -696,7 +834,58 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * NEW: Performs daily checks for recurring events and random events.
+     * NEW: Checks and updates progress for buildings under construction.
+     * Triggers completion events when a building is finished.
+     * @returns {boolean} True if a building completion event was loaded, false otherwise.
+     */
+    function checkBuildingProgress() {
+        for (const buildingId in gameBuildings) {
+            const building = gameBuildings[buildingId];
+            if (building.status === 'under_construction') {
+                building.daysRemaining--;
+                console.log(`${buildingId} construction: ${building.daysRemaining} days left.`);
+
+                if (building.daysRemaining <= 0) {
+                    building.status = 'completed';
+                    building.level = 1; // Mark as base level 1
+                    console.log(`${buildingId} construction completed!`);
+                    // Trigger completion event if specified
+                    if (building.completionEventId) {
+                        const completionEvent = findEventById(building.completionEventId);
+                        if (completionEvent) {
+                            loadEvent(completionEvent);
+                            return true; // A completion event was loaded
+                        }
+                    }
+                }
+            }
+        }
+        return false; // No completion event was loaded
+    }
+
+    /**
+     * NEW: Applies passive bonuses from completed buildings.
+     * @returns {boolean} True if any passive bonuses were applied.
+     */
+    function applyPassiveBonuses() {
+        let applied = false;
+        for (const buildingId in gameBuildings) {
+            const building = gameBuildings[buildingId];
+            if (building.status === 'completed' && building.passiveBonuses) {
+                for (const metric in building.passiveBonuses) {
+                    const bonusValue = building.passiveBonuses[metric];
+                    updateMetric(metric, bonusValue);
+                    console.log(`Applied passive bonus from ${buildingId}: +${bonusValue} ${metric}`);
+                    applied = true;
+                }
+            }
+        }
+        return applied;
+    }
+
+
+    /**
+     * Performs daily checks for recurring events and random events.
      * This is called after game state updates and game end checks.
      * @returns {boolean} True if a recurring or random event was loaded, false otherwise.
      */
@@ -704,16 +893,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // If game has ended, don't trigger daily events
         if (hasGameEnded) return true; // Indicate that an event was "handled" (by being ended)
 
-        // 1. Check for Recurring Events (Higher priority than random)
-        // Example: Monthly Treasury Report every 30 days
-        if (gameDay % 30 === 0 && gameDay > 0) { // Ensure it doesn't trigger on Day 0
+        // 1. NEW: Check Building Progress (highest priority among daily checks)
+        if (checkBuildingProgress()) {
+            return true; // A building just completed, so its event was loaded. Stop further daily checks.
+        }
+
+        // 2. NEW: Apply Passive Bonuses from completed buildings
+        applyPassiveBonuses(); // Apply bonuses regardless of other events, as they are "daily"
+
+        // 3. Check for Recurring Events
+        if (gameDay % 30 === 0 && gameDay > 0) {
             const recurringEvent = findEventById('monthly_treasury_report');
             if (recurringEvent && isEventEligible(recurringEvent)) {
                 loadEvent(recurringEvent);
                 return true;
             }
         }
-        // Example: Annual Pilgrimage Season every 100 days
         if (gameDay % 100 === 0 && gameDay > 0) {
              const recurringEvent = findEventById('annual_pilgrimage_season');
              if (recurringEvent && isEventEligible(recurringEvent)) {
@@ -723,9 +918,8 @@ document.addEventListener('DOMContentLoaded', () => {
          }
 
 
-        // 2. Roll for Random Events (Lower priority than recurring)
-        // 20% chance each day for a random event, if no recurring event triggered
-        if (Math.random() < 0.2) { // Adjust probability as desired (e.g., 0.1 for 10%)
+        // 4. Roll for Random Events
+        if (Math.random() < 0.2) {
             const randomEvent = selectRandomEvent();
             if (randomEvent) {
                 loadEvent(randomEvent);
@@ -733,7 +927,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        return false; // No special event (recurring or random) was loaded
+        return false; // No special event (recurring, random, or completion) was loaded
     }
 
 
@@ -756,7 +950,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log(`Flag '${effect.flag}' set to ${effect.value}`);
             } else if (effect.type === 'factionChange') { // Handle faction changes
                 updateFactionFavor(effect.faction, effect.value);
-            } else if (effect.type === 'resetGame') { // Handle game reset
+            } else if (effect.type === 'startConstruction') { // NEW: Handle starting construction
+                startConstruction(effect.buildingId);
+            }
+            else if (effect.type === 'resetGame') { // Handle game reset
                 initGame(); // Re-initialize the game state
                 return; // Stop processing effects for this choice and exit applyChoice
             }
@@ -771,8 +968,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gameDay++;
         gameDayCounter.textContent = gameDay;
 
-        // NEW: Perform daily checks for game status, recurring, and random events
-        // If any of these checks loads an event (including game end), stop further normal event loading
+        // Perform daily checks for game status, recurring, and random events, and building progress/bonuses.
+        // If any of these checks loads an event (including game end), stop further normal event loading.
         if (checkGameStatus() || dailyChecks()) {
             return;
         }
@@ -799,12 +996,18 @@ document.addEventListener('DOMContentLoaded', () => {
         // This handles both linear progression and skipping ineligible events after a branch
         while (currentEventIndex < events.length) {
             const potentialNextEvent = events[currentEventIndex];
-            // Ensure we don't accidentally load an ending event as part of linear progression
-            // or other special events handled by dailyChecks
+            // Ensure we don't accidentally load special events that are handled by dailyChecks or gameStatus
+            // This list of IDs should include all IDs that are explicitly triggered outside the linear flow.
+            const specialEventIds = [
+                'monthly_treasury_report',
+                'annual_pilgrimage_season',
+                'st_peters_completed', // Building completion events
+                'papal_library_completed', // Building completion events
+                ...randomEvents.map(re => re.id) // All random event IDs
+            ];
+
             if (potentialNextEvent.id.startsWith('game_over_') || potentialNextEvent.id.startsWith('triumph_') ||
-                potentialNextEvent.id === 'monthly_treasury_report' ||
-                potentialNextEvent.id === 'annual_pilgrimage_season' ||
-                randomEvents.some(re => re.id === potentialNextEvent.id)) {
+                specialEventIds.includes(potentialNextEvent.id)) {
                  currentEventIndex++; // Skip these special event IDs if found in linear path
                  continue;
             }
@@ -851,13 +1054,21 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const flag in gameFlags) {
             gameFlags[flag] = false;
         }
-        // Ensure achievement flags are reset for a new game if they were set by triumph conditions
         gameFlags.triumph_divine_mandate_achieved = false;
         gameFlags.triumph_absolute_authority_achieved = false;
 
         // Reset faction favors
         for (const factionKey in gameFactions) {
             gameFactions[factionKey].favor = 50; // Reset all factions to 50 favor
+        }
+
+        // NEW: Reset building states
+        for (const buildingId in gameBuildings) {
+            const building = gameBuildings[buildingId];
+            building.level = 0;
+            building.status = 'none';
+            building.daysRemaining = 0;
+            // Retain baseCost, baseDaysToBuild, passiveBonuses
         }
 
         gameDay = 1;
