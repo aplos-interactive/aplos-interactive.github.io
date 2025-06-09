@@ -1,731 +1,269 @@
-/* style.css */
-
-:root {
-    --parchment-color: #f7e6c4; /* Lighter parchment */
-    --dark-parchment-color: #d1c099; /* Darker, aged parchment */
-    --text-color: #4a3e2c; /* Deep brown, ink-like */
-    --border-color: #8c714c; /* Sepia-toned brown */
-    --accent-color: #a04040; /* Muted deep red (papal or noble) */
-    --button-bg: #5c4a30; /* Darker brown, wood-like */
-    --button-hover: #7a6344; /* Lighter brown for hover */
-    --primary-button-bg: #800000; /* Richer red for primary actions */
-    --primary-button-hover: #b00000; /* Brighter red on hover */
-    --gold-color: #d4af37; /* For decorative elements or highlights */
-    --scroll-track: #c0b08e;
-    --scroll-thumb: #6a5c48;
-}
-
-/* Base Styles */
-body {
-    font-family: 'Merriweather', serif;
-    margin: 0;
-    padding: 20px;
-    background: url('https://i.imgur.com/your-medieval-texture.jpg') repeat center center; /* Placeholder for a subtle medieval background texture */
-    background-color: #3b3026; /* Dark brown for background */
-    color: var(--text-color);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    box-sizing: border-box;
-    font-size: 16px; /* Base font size */
-}
-
-/* Game Container - Main Wrapper */
-#game-container {
-    display: grid;
-    grid-template-columns: 320px 1fr; /* Wider sidebar */
-    grid-template-rows: auto 1fr auto;
-    gap: 20px;
-    background-color: var(--parchment-color);
-    border: 5px solid var(--border-color);
-    border-radius: 8px;
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.6);
-    max-width: 1400px; /* Wider game area */
-    width: 100%;
-    min-height: 90vh; /* Taller game area */
-    padding: 20px;
-    box-sizing: border-box;
-    position: relative; /* For panel positioning */
-}
-
-/* Header */
-#game-header {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding-bottom: 15px;
-    border-bottom: 2px solid var(--border-color);
-    margin-bottom: 10px;
-}
-
-#game-header h1 {
-    font-family: 'Playfair Display', serif;
-    color: var(--accent-color);
-    font-size: 3.5em; /* Larger, more imposing title */
-    margin: 0;
-    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
-    position: relative;
-    padding-bottom: 10px;
-}
-
-#game-header h1::after { /* Decorative underline for title */
-    content: '';
-    display: block;
-    width: 80px;
-    height: 3px;
-    background-color: var(--gold-color);
-    margin: 8px auto 0;
-    border-radius: 2px;
-}
-
-#game-header .subtitle {
-    font-family: 'Old Standard TT', serif;
-    font-style: italic;
-    font-size: 1.2em;
-    color: var(--text-color);
-    margin-top: 5px;
-}
-
-#game-date {
-    font-family: 'Old Standard TT', serif;
-    font-size: 1.2em;
-    color: var(--text-color);
-    margin-top: 10px;
-}
-
-/* Parchment Frame Base Class */
-.parchment-frame {
-    background-color: var(--dark-parchment-color);
-    border: 2px solid var(--border-color);
-    border-radius: 6px;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.15);
-    padding: 15px;
-    position: relative; /* For decorative elements */
-}
-
-.parchment-frame::before, .parchment-frame::after { /* Top and bottom decorative lines */
-    content: '';
-    position: absolute;
-    left: 10px;
-    right: 10px;
-    height: 1px;
-    background: linear-gradient(to right, transparent, var(--border-color), transparent);
-}
-.parchment-frame::before { top: 5px; }
-.parchment-frame::after { bottom: 5px; }
-
-
-/* Sidebar */
-#resource-sidebar {
-    grid-column: 1 / 2;
-    padding: 20px 15px; /* More internal padding */
-    display: flex;
-    flex-direction: column;
-}
-
-#resource-sidebar h2, #resource-sidebar h3 {
-    font-family: 'Playfair Display', serif;
-    color: var(--accent-color);
-    margin-top: 0;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 8px;
-    margin-bottom: 12px;
-    font-weight: 700;
-}
-
-.panel-title {
-    font-size: 1.8em;
-    text-align: center;
-}
-
-.panel-subtitle {
-    font-size: 1.3em;
-}
-
-.resource-group {
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 1px dashed rgba(0,0,0,0.1); /* Subtle separator */
-}
-.resource-group:last-of-type {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-.resource-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-    padding: 6px 8px;
-    background-color: rgba(255, 255, 255, 0.15); /* More subtle background */
-    border-radius: 3px;
-    border: 1px solid rgba(0,0,0,0.05);
-}
-
-.resource-icon {
-    font-size: 1.3em; /* Slightly larger icons */
-    margin-right: 12px;
-}
-
-.resource-label {
-    flex-grow: 1;
-    font-weight: 600; /* Bolder labels */
-    font-size: 0.95em;
-}
-
-.resource-value {
-    font-family: 'Old Standard TT', serif; /* Numeric values in a distinct font */
-    font-size: 1.2em;
-    color: var(--button-bg);
-    font-weight: bold;
-}
-
-/* Scrollable Lists */
-.scrollable-list {
-    list-style: none;
-    padding: 0;
-    max-height: 180px; /* Consistent height for lists */
-    overflow-y: auto;
-    border: 1px dashed var(--border-color);
-    padding: 8px;
-    border-radius: 4px;
-    background-color: rgba(255, 255, 255, 0.1);
-    font-size: 0.9em;
-}
-
-.scrollable-list li {
-    padding: 5px 0;
-    border-bottom: 1px dotted rgba(0,0,0,0.1);
-}
-.scrollable-list li:last-child {
-    border-bottom: none;
-}
-
-#crises-display li.crisis-high { color: var(--accent-color); font-weight: bold; }
-#crises-display li.crisis-medium { color: #cc8400; /* Muted orange */ }
-#crises-display li.crisis-low { color: #4CAF50; /* Muted green */ }
-
-/* Action Buttons */
-#actions-panel {
-    margin-top: auto; /* Push to bottom of sidebar */
-    padding-top: 20px;
-    border-top: 1px solid var(--border-color);
-}
-
-.game-button {
-    width: 100%;
-    padding: 12px 15px; /* Larger buttons */
-    margin-bottom: 10px;
-    background-color: var(--button-bg);
-    color: var(--parchment-color);
-    border: 2px solid var(--border-color);
-    border-radius: 5px;
-    font-family: 'Merriweather', serif;
-    font-size: 1.05em;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s, transform 0.1s;
-    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
-    text-shadow: 1px 1px 1px rgba(0,0,0,0.2);
-    letter-spacing: 0.5px;
-}
-
-.game-button:hover:not([disabled]) {
-    background-color: var(--button-hover);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
-}
-
-.game-button:active {
-    transform: translateY(0);
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-.game-button.primary-button {
-    background-color: var(--primary-button-bg);
-    border-color: #500000;
-}
-
-.game-button.primary-button:hover:not([disabled]) {
-    background-color: var(--primary-button-hover);
-}
-
-.game-button[disabled] {
-    background-color: #8a7a6c;
-    cursor: not-allowed;
-    opacity: 0.6;
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-    transform: none;
-}
-
-/* Main Game Display / Event Area */
-#game-main {
-    grid-column: 2 / -1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative; /* For panels */
-}
-
-#game-event-display {
-    min-height: 400px; /* Taller event display */
-    width: 90%;
-    max-width: 750px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    box-sizing: border-box;
-    padding: 30px; /* More padding */
-}
-
-.event-title {
-    font-family: 'Playfair Display', serif;
-    color: var(--accent-color);
-    font-size: 2.5em; /* Larger event titles */
-    margin-bottom: 20px;
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
-    position: relative;
-}
-
-.event-title::after { /* Decorative line below event title */
-    content: '';
-    display: block;
-    width: 60px;
-    height: 2px;
-    background-color: var(--gold-color);
-    margin: 10px auto 0;
-    border-radius: 1px;
-}
-
-.event-description {
-    font-size: 1.15em;
-    line-height: 1.7;
-    margin-bottom: 25px;
-    max-width: 95%;
-    text-align: justify; /* Justified text for more book-like feel */
-}
-
-.event-choices {
-    display: flex;
-    flex-direction: column;
-    width: 90%;
-    max-width: 550px;
-}
-
-.choice-button {
-    background-color: var(--button-bg);
-    color: var(--parchment-color);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    padding: 15px 25px; /* Larger choice buttons */
-    margin-bottom: 12px;
-    font-family: 'Merriweather', serif;
-    font-size: 1.05em;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s, transform 0.1s;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-    text-align: center;
-}
-
-.choice-button:hover {
-    background-color: var(--button-hover);
-    color: white;
-    transform: translateY(-3px);
-}
-
-.choice-button:active {
-    transform: translateY(0);
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-/* Game Panels - Overlays */
-.game-panel {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 10; /* Ensure panels are on top */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    text-align: center;
-    box-sizing: border-box;
-    overflow-y: auto;
-    padding: 30px;
-}
-
-.game-panel h2.panel-title {
-    font-size: 2.8em; /* Panel titles larger */
-    margin-bottom: 25px;
-    width: 90%;
-    max-width: 700px;
-    position: relative;
-    padding-bottom: 15px;
-}
-
-.game-panel h2.panel-title::after {
-    content: '';
-    display: block;
-    width: 100px;
-    height: 4px;
-    background-color: var(--gold-color);
-    margin: 10px auto 0;
-    border-radius: 2px;
-}
-
-.game-panel p.panel-description {
-    font-size: 1.05em;
-    line-height: 1.6;
-    max-width: 85%;
-    margin-bottom: 20px;
-}
-
-.close-panel-button {
-    width: 250px; /* Wider close buttons */
-    margin-top: auto; /* Push to bottom */
-    margin-bottom: 15px;
-}
-
-.hidden {
-    display: none !important;
-}
-
-/* Footer */
-#game-footer {
-    grid-column: 1 / -1;
-    text-align: center;
-    font-size: 0.85em;
-    padding-top: 15px;
-    border-top: 1px solid var(--border-color);
-    color: var(--text-color);
-    margin-top: 10px;
-}
-
-/* Scrollbar styles for lists/panels */
-::-webkit-scrollbar {
-    width: 10px; /* Wider scrollbar */
-}
-
-::-webkit-scrollbar-track {
-    background: var(--scroll-track);
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--scroll-thumb);
-    border-radius: 10px;
-    border: 2px solid var(--border-color);
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: var(--button-bg);
-}
-
-/* Ornate Text Class */
-.ornate-text {
-    font-family: 'Old Standard TT', serif;
-    font-style: italic;
-}
-
-/* Specific Panel Styles */
-
-/* Detail View (for Cardinal, Decree details, etc.) */
-.detail-view {
-    width: 90%;
-    max-width: 700px;
-    padding: 20px;
-    text-align: left;
-    margin-bottom: 20px;
-}
-
-.detail-view h3 {
-    text-align: center;
-    margin-top: 0;
-    margin-bottom: 15px;
-}
-
-.detail-view p {
-    margin: 8px 0;
-    max-width: 100%;
-}
-
-.secret-info {
-    font-style: italic;
-    color: #8b0000; /* Dark red for secrets */
-    font-weight: bold;
-}
-
-.action-buttons-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-    margin-top: 20px;
-    width: 90%;
-    max-width: 800px;
-}
-
-.action-buttons-group .game-button {
-    flex: 1 1 calc(33% - 15px); /* Responsive buttons in a row */
-    min-width: 180px;
-    max-width: 250px;
-    margin-bottom: 0; /* Override default margin */
-}
-
-/* Curia Panel */
-#curia-details-container {
-    display: flex;
-    width: 90%;
-    max-width: 1000px;
-    gap: 20px;
-    flex-grow: 1;
-    padding-bottom: 20px;
-    flex-wrap: wrap; /* Allow wrapping on smaller screens */
-    justify-content: center;
-}
-
-#cardinal-detail-view {
-    flex: 2;
-    min-width: 300px; /* Ensure it's not too small */
-    height: fit-content;
-}
-
-#curia-cardinal-list {
-    flex: 1;
-    min-width: 250px;
-    max-height: 500px; /* Adjust as needed */
-}
-
-#curia-cardinal-list li {
-    padding: 10px 12px;
-    cursor: pointer;
-    transition: background-color 0.1s;
-    text-align: left;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-#curia-cardinal-list li:hover {
-    background-color: rgba(255, 255, 255, 0.25);
-}
-
-#curia-cardinal-list li.selected {
-    background-color: var(--accent-color);
-    color: white;
-    font-weight: bold;
-    border-radius: 4px;
-}
-
-/* Decrees Panel */
-#decree-options .game-button {
-    width: 220px;
-}
-
-#decree-details {
-    margin-top: 20px;
-}
-
-#decree-target-selection {
-    margin-bottom: 15px;
-    text-align: center;
-}
-
-#decree-target {
-    padding: 8px 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--parchment-color);
-    font-family: 'Merriweather', serif;
-    font-size: 1em;
-    color: var(--text-color);
-    width: 70%;
-    max-width: 300px;
-}
-
-#decree-text {
-    width: calc(100% - 20px);
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    font-family: 'Merriweather', serif;
-    font-size: 1em;
-    background-color: var(--parchment-color);
-    color: var(--text-color);
-    resize: vertical;
-    min-height: 120px;
-    box-sizing: border-box;
-    margin-bottom: 15px;
-}
-
-#issue-decree-button {
-    width: 60%;
-    max-width: 350px;
-}
-
-/* Map Panel */
-#interactive-map {
-    width: 90%;
-    max-width: 900px;
-    aspect-ratio: 16 / 9;
-    border: 2px solid var(--border-color);
-    background-color: #e0d0b0; /* Light beige/paper color for map background */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: 'Playfair Display', serif;
-    font-size: 1.5em;
-    color: #6a5c48;
-    text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
-    padding: 20px;
-    box-sizing: border-box;
-}
-
-/* Ledger Panel */
-#ledger-content {
-    width: 90%;
-    max-width: 800px;
-    padding: 25px;
-    text-align: left;
-}
-
-#ledger-content h3 {
-    text-align: center;
-    margin-bottom: 18px;
-}
-
-#ledger-event-log {
-    list-style: none; /* Remove default disc */
-    padding-left: 0;
-    max-height: 350px;
-    padding: 10px;
-}
-
-#ledger-event-log li {
-    margin-bottom: 6px;
-    padding-bottom: 4px;
-    border-bottom: 1px dotted rgba(0,0,0,0.1);
-    font-size: 0.95em;
-    line-height: 1.5;
-}
-
-/* Conclave Panel */
-#conclave-panel {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-}
-
-#conclave-state {
-    background-color: rgba(255, 255, 255, 0.15);
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    padding: 15px 25px;
-    margin-bottom: 20px;
-    text-align: center;
-    width: 80%;
-    max-width: 500px;
-}
-
-#conclave-state p {
-    margin: 8px 0;
-    font-size: 1.1em;
-}
-
-#conclave-cardinal-list {
-    width: 90%;
-    max-width: 700px;
-    flex-grow: 1; /* Allow list to grow */
-}
-
-#conclave-cardinals-display {
-    max-height: 400px; /* Specific height for conclave list */
-}
-
-#conclave-cardinals-display li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 12px;
-    border-bottom: 1px dotted rgba(0,0,0,0.1);
-    cursor: pointer;
-}
-
-#conclave-cardinals-display li:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-}
-
-#conclave-cardinals-display li.candidate {
-    background-color: #d4af3730; /* Light gold tint for candidates */
-    font-weight: bold;
-}
-
-#conclave-actions {
-    margin-top: 25px;
-    width: 90%;
-    max-width: 600px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    justify-content: center;
-}
-
-#conclave-actions .game-button {
-    flex: 1 1 calc(50% - 10px);
-    max-width: 300px;
-}
-
-/* Crusade Panel */
-#crusade-summary {
-    background-color: rgba(255, 255, 255, 0.15);
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    padding: 15px 25px;
-    margin-bottom: 20px;
-    width: 80%;
-    max-width: 600px;
-    text-align: left;
-}
-
-#crusade-summary p {
-    margin: 8px 0;
-    font-size: 1.05em;
-}
-
-#crusade-events {
-    width: 90%;
-    max-width: 700px;
-    flex-grow: 1;
-}
-
-#crusade-event-log {
-    max-height: 300px; /* Adjust as needed */
-}
-
-#crusade-actions {
-    margin-top: 25px;
-    width: 90%;
-    max-width: 600px;
-}
-
-/* General ornate/decorative elements */
-.ornate-border {
-    border: 3px double var(--gold-color);
-    box-shadow: 0 0 5px rgba(0,0,0,0.2);
-}
-
-/* Unicode icon styling where appropriate */
-.resource-icon {
-    font-family: 'Times New Roman', serif; /* Or a symbol font if specific ones are used */
-    font-weight: normal;
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Habeas Papam: The Pope's Throne</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Playfair+Display:wght%40400;700&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="game-container">
+        <header id="game-header">
+            <h1 class="ornate-text">Habeas Papam</h1>
+            <h2 class="subtitle">The Pope's Throne</h2>
+            <div id="game-date" class="ornate-text">Year of Our Lord: <span id="current-year">1100 AD</span></div>
+        </header>
+
+        <aside id="resource-sidebar" class="parchment-frame">
+            <h2 class="panel-title">Your Holiness</h2>
+            <div class="resource-group">
+                <div class="resource-item">
+                    <span class="resource-icon">⚜️</span>
+                    <span class="resource-label">Piety:</span>
+                    <span id="resource-piety" class="resource-value">100</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">💰</span>
+                    <span class="resource-label">Wealth:</span>
+                    <span id="resource-wealth" class="resource-value">500</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">👑</span>
+                    <span class="resource-label">Influence:</span>
+                    <span id="resource-influence" class="resource-value">75</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">❤️</span>
+                    <span class="resource-label">Curia Support:</span>
+                    <span id="resource-curia" class="resource-value">60</span>
+                </div>
+            </div>
+
+            <div id="pope-attributes" class="resource-group">
+                <h3 class="panel-subtitle">Pope's Attributes</h3>
+                <div class="resource-item">
+                    <span class="resource-icon">👨‍🦳</span>
+                    <span class="resource-label">Age:</span>
+                    <span id="pope-age" class="resource-value">60</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">🧠</span>
+                    <span class="resource-label">Wisdom:</span>
+                    <span id="pope-wisdom" class="resource-value">70</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">🗣️</span>
+                    <span class="resource-label">Diplomacy:</span>
+                    <span id="pope-diplomacy" class="resource-value">65</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">⚔️</span>
+                    <span class="resource-label">Martial:</span>
+                    <span id="pope-martial" class="resource-value">40</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">⚕️</span>
+                    <span class="resource-label">Health:</span>
+                    <span id="resource-health" class="resource-value">80</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">📜</span>
+                    <span class="resource-label">Prestige:</span>
+                    <span id="resource-prestige" class="resource-value">20</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">📚</span>
+                    <span class="resource-label">Theology:</span>
+                    <span id="resource-theology" class="resource-value">50</span>
+                </div>
+            </div>
+
+            <div id="reputation-section" class="resource-group">
+                <h3 class="panel-subtitle">Reputation</h3>
+                <div class="resource-item">
+                    <span class="resource-icon">🤴</span>
+                    <span class="resource-label">Royalty:</span>
+                    <span id="reputation-royalty" class="resource-value">50</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">⛪</span>
+                    <span class="resource-label">Clergy:</span>
+                    <span id="reputation-clergy" class="resource-value">60</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">🧑‍🤝‍🧑</span>
+                    <span class="resource-label">Commoners:</span>
+                    <span id="reputation-commoners" class="resource-value">70</span>
+                </div>
+                <div class="resource-item">
+                    <span class="resource-icon">📈</span>
+                    <span class="resource-label">Merchants:</span>
+                    <span id="reputation-merchants" class="resource-value">40</span>
+                </div>
+            </div>
+
+
+            <div id="cardinal-list" class="resource-group">
+                <h3 class="panel-subtitle">Curia (<span id="num-cardinals">0</span> Cardinals)</h3>
+                <ul id="cardinals-display" class="scrollable-list"></ul>
+            </div>
+
+            <div id="active-crises" class="resource-group">
+                <h3 class="panel-subtitle">Active Crises</h3>
+                <ul id="crises-display" class="scrollable-list">
+                    <li>No active crises.</li>
+                </ul>
+            </div>
+
+            <div id="actions-panel">
+                <button class="game-button primary-button" id="next-turn-button">End Month</button>
+                <button class="game-button" id="open-curia-button">Manage Curia</button>
+                <button class="game-button" id="open-decrees-button">Issue Decrees</button>
+                <button class="game-button" id="open-map-button">View Map</button>
+                <button class="game-button" id="open-ledger-button">Ledger</button>
+            </div>
+        </aside>
+
+        <main id="game-main">
+            <div id="game-event-display" class="parchment-frame">
+                <h2 id="event-title" class="event-title">Welcome to Habeas Papam!</h2>
+                <p id="event-description" class="event-description">You are the newly elected Pope. The medieval world is a complex tapestry of faith, power, and intrigue. Your actions will shape the destiny of the Church and Europe. Click 'End Month' to begin your reign.</p>
+                <div id="event-choices" class="event-choices">
+                </div>
+            </div>
+
+            <div id="conclave-panel" class="game-panel hidden parchment-frame">
+                <h2 class="panel-title">The Papal Conclave</h2>
+                <p class="panel-description">The Holy See is vacant! Cardinals from across Christendom gather to elect a new Vicar of Christ. Your influence during this sacred process is paramount.</p>
+                <div id="conclave-state">
+                    <p>Current Round: <span id="conclave-round">1</span></p>
+                    <p>Votes for Candidate 1: <span id="candidate1-votes">0</span></p>
+                    <p>Votes for Candidate 2: <span id="candidate2-votes">0</span></p>
+                    <p>Required Votes for Election: <span id="conclave-required-votes">--</span></p>
+                </div>
+                <div id="conclave-cardinal-list">
+                    <h3 class="panel-subtitle">Conclave Cardinals</h3>
+                    <ul id="conclave-cardinals-display" class="scrollable-list">
+                        </ul>
+                </div>
+                <div id="conclave-actions">
+                    <button class="game-button primary-button" id="conclave-lobby-button">Lobby Cardinals (Influence)</button>
+                    <button class="game-button" id="conclave-intrigue-button">Engage in Intrigue (Wealth/Risk)</button>
+                    <button class="game-button" id="conclave-vote-button">Proceed to Vote</button>
+                </div>
+                <button class="game-button close-panel-button hidden">Return to Game</button>
+            </div>
+
+            <div id="curia-panel" class="game-panel hidden parchment-frame">
+                <h2 class="panel-title">Manage Curia</h2>
+                <p class="panel-description">Here you can interact with the College of Cardinals, vital pillars of the Church.</p>
+                <div id="curia-details-container">
+                    <div id="cardinal-detail-view" class="detail-view parchment-frame">
+                        <h3 id="selected-cardinal-name" class="panel-subtitle">Select a Cardinal</h3>
+                        <p id="selected-cardinal-description">Click on a cardinal in the list to see their details.</p>
+                        <p>Loyalty: <span id="selected-cardinal-loyalty">--</span></p>
+                        <p>Influence: <span id="selected-cardinal-influence">--</span></p>
+                        <p>Faction: <span id="selected-cardinal-faction">--</span></p>
+                        <p>Personality: <span id="selected-cardinal-personality">--</span></p>
+                        <p>Traits: <span id="selected-cardinal-traits">--</span></p>
+                        <p>Skills: <span id="selected-cardinal-skills">--</span></p>
+                        <p class="secret-info hidden" id="selected-cardinal-secret-display">Secret: <span id="selected-cardinal-secret">--</span></p>
+                        <div id="cardinal-actions" class="action-buttons-group">
+                            <button class="game-button hidden" id="bribe-cardinal-button">Bribe (💰-20)</button>
+                            <button class="game-button hidden" id="promote-cardinal-button">Promote (👑-10)</button>
+                            <button class="game-button hidden" id="investigate-cardinal-button">Investigate (📚-5)</button>
+                        </div>
+                    </div>
+                    <ul id="curia-cardinal-list" class="scrollable-list">
+                    </ul>
+                </div>
+                <button class="game-button close-panel-button">Back to Main</button>
+            </div>
+
+            <div id="decrees-panel" class="game-panel hidden parchment-frame">
+                <h2 class="panel-title">Issue Papal Decrees</h2>
+                <p class="panel-description">Formulate new doctrines, condemn heresies, or excommunicate rulers to assert the Holy See's authority.</p>
+                <div id="decree-options" class="action-buttons-group">
+                    <button class="game-button" data-decree-type="doctrine">New Doctrine (📚)</button>
+                    <button class="game-button" data-decree-type="condemn">Condemn Heresy (⚜️)</button>
+                    <button class="game-button" data-decree-type="excommunicate">Excommunicate Ruler (👑)</button>
+                    <button class="game-button" data-decree-type="crusade">Call Crusade (⚔️)</button>
+                </div>
+                <div id="decree-details" class="detail-view hidden">
+                    <h3 class="panel-subtitle">Decree Type: <span id="decree-type-name"></span></h3>
+                    <p id="decree-cost-display">Cost: --</p>
+                    <div id="decree-target-selection" class="hidden">
+                        <label for="decree-target">Target:</label>
+                        <select id="decree-target">
+                            </select>
+                    </div>
+                    <textarea id="decree-text" placeholder="Write your decree here... (Max 200 chars)" rows="5" maxlength="200"></textarea>
+                    <button class="game-button primary-button" id="issue-decree-button">Issue Decree</button>
+                </div>
+                <button class="game-button close-panel-button">Back to Main</button>
+            </div>
+
+            <div id="crusade-panel" class="game-panel hidden parchment-frame">
+                <h2 class="panel-title">The Holy Crusade</h2>
+                <p class="panel-description">Lead the armies of Christendom to reclaim the Holy Land or crush the enemies of the Church!</p>
+                <div id="crusade-summary">
+                    <h3 class="panel-subtitle" id="crusade-name-display">No Active Crusade</h3>
+                    <p>Current Phase: <span id="crusade-phase">Preparation</span></p>
+                    <p>Progress: <span id="crusade-progress">0%</span></p>
+                    <p>Army Strength: <span id="crusade-army-strength">0</span></p>
+                    <p>Supplies: <span id="crusade-supplies">0</span></p>
+                    <p>Morale: <span id="crusade-morale">100</span></p>
+                </div>
+                <div id="crusade-events">
+                    <h3 class="panel-subtitle">Crusade Updates</h3>
+                    <ul id="crusade-event-log" class="scrollable-list">
+                        <li>The call for Crusade is yet to be made.</li>
+                    </ul>
+                </div>
+                <div id="crusade-actions" class="action-buttons-group">
+                    <button class="game-button primary-button hidden" id="crusade-raise-funds">Raise Funds (💰)</button>
+                    <button class="game-button primary-button hidden" id="crusade-recruit-troops">Recruit Troops (👑)</button>
+                    <button class="game-button primary-button hidden" id="crusade-embark">Embark on Crusade</button>
+                    </div>
+                <button class="game-button close-panel-button">Back to Main</button>
+            </div>
+
+
+            <div id="map-panel" class="game-panel hidden parchment-frame">
+                <h2 class="panel-title">Map of Christendom</h2>
+                <p class="panel-description">A stylized map showing the political and religious landscape of medieval Europe.</p>
+                <div id="interactive-map">
+                    <p>**Medieval Europe Map Placeholder - Under Development**</p>
+                    <p>This will eventually display realms, heresies, and major conflicts.</p>
+                </div>
+                <button class="game-button close-panel-button">Back to Main</button>
+            </div>
+
+            <div id="ledger-panel" class="game-panel hidden parchment-frame">
+                <h2 class="panel-title">The Papal Ledger</h2>
+                <p class="panel-description">Review the Church's financial status, historical events, and current affairs.</p>
+                <div id="ledger-content">
+                    <h3 class="panel-subtitle">Financial Overview</h3>
+                    <p>Income per month: +<span id="ledger-income">10</span> Wealth</p>
+                    <p>Expenses per month: -<span id="ledger-expenses">5</span> Wealth</p>
+                    <p>Current Balance: <span id="ledger-balance">500</span> Wealth</p>
+
+                    <h3 class="panel-subtitle">Recent Events & Chronicle</h3>
+                    <ul id="ledger-event-log" class="scrollable-list">
+                        <li>Welcome to Habeas Papam! Your reign begins.</li>
+                    </ul>
+                </div>
+                <button class="game-button close-panel-button">Back to Main</button>
+            </div>
+
+        </main>
+
+        <footer id="game-footer">
+            <p>&copy; 2025 Habeas Papam Simulator. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
