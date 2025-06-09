@@ -203,33 +203,31 @@ html, body {
     left: 20px;
     width: 150px;
     height: 150px;
-    background-image: url('https://i.imgur.com/uR2i1oD.png'); /* A placeholder quill/inkwell image */
+    background-image: url('images/quill-inkwell.png'); /* UPDATED PATH */
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
     transform: rotate(-10deg);
 }
 
-.decorative-scroll { /* Renamed from scroll-holder for consistency */
+.decorative-scroll {
     bottom: 30px;
     right: 20px;
     width: 180px;
     height: 100px;
-    background-image: url('https://i.imgur.com/5l3qA3t.png'); /* A placeholder scroll holder image */
+    background-image: url('images/decorative-scroll.png'); /* UPDATED PATH */
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
     transform: rotate(15deg);
 }
 
-/* Added placeholder for coin pouch and chalice if needed */
 .coin-pouch {
     bottom: 50px;
     left: 180px; /* Example position */
     width: 80px;
     height: 80px;
-    background: url('https://i.imgur.com/your-coin-pouch-image.png') no-repeat center center / contain; /* Placeholder */
-    /* background-image: url('URL_TO_YOUR_COIN_POUCH_IMAGE'); */
+    background: url('images/coin-pouch.png') no-repeat center center / contain; /* UPDATED PATH */
     transform: rotate(5deg);
 }
 
@@ -238,8 +236,7 @@ html, body {
     right: 180px; /* Example position */
     width: 60px;
     height: 90px;
-    background: url('https://i.imgur.com/your-chalice-image.png') no-repeat center center / contain; /* Placeholder */
-    /* background-image: url('URL_TO_YOUR_CHALICE_IMAGE'); */
+    background: url('images/chalice.png') no-repeat center center / contain; /* UPDATED PATH */
     transform: rotate(-8deg);
 }
 
@@ -317,9 +314,9 @@ html, body {
     top: 5px;
     left: 50%;
     transform: translateX(-50%);
-    width: 50px; /* Size of the seal */
+    width: 50px;
     height: 50px;
-    background-image: url('https://i.imgur.com/D4sTq35.png'); /* A placeholder papal seal image */
+    background-image: url('images/papal-seal.png'); /* UPDATED PATH */
     background-repeat: no-repeat;
     background-position: center center;
     background-size: contain;
@@ -435,7 +432,7 @@ html, body {
 }
 
 .map-content {
-    background: url('https://i.imgur.com/z2tUf9g.png') no-repeat center center / cover; /* A placeholder medieval map image */
+    background: url('images/map-background.png') no-repeat center center / cover; /* UPDATED PATH */
     width: 90%;
     height: 90%;
     border: 5px solid var(--color-gold);
@@ -494,7 +491,6 @@ html, body {
     .left-panel { grid-row: 1; }
     .document-area {
         grid-column: 1;
-        grid-row: 2;
         width: 100%;
         max-width: none; /* Allow it to stretch */
         height: 100%; /* Important for vertical filling */
