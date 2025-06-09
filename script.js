@@ -10,22 +10,23 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameDay = 1;
     let currentEventIndex = 0; // Tracks current event in the linear sequence
     let nextEventId = null; // Stores ID of the next event to load if branching occurs
+    let hasGameEnded = false; // NEW: Flag to track if the game has ended
 
     // NEW: Game Flags - tracks specific conditions or outcomes of choices
     const gameFlags = {
         imperial_alliance_established: false,
         crusade_launched: false,
         papal_bull_issued: false,
-        crusade_report_received: false,
+        crusade_report_received: false, // Ensures report only happens once
         // Add more flags as your game develops
     };
 
     // NEW: Game Factions - tracks favor with different powerful groups
     const gameFactions = {
-        imperial: { favor: 50, name: 'The Holy Roman Emperor' }, // Relationship with the Emperor
-        nobility: { favor: 50, name: 'European Nobility' },     // General favor with noble houses
-        monasticOrders: { favor: 50, name: 'Monastic Orders' }, // Favor with powerful church orders
-        // Add more factions as your game develops (e.g., Italian City-States, Common Populace could be a faction instead of just a metric)
+        imperial: { favor: 50, name: 'The Holy Roman Emperor' },     // Relationship with the Emperor
+        nobility: { favor: 50, name: 'European Nobility' },         // General favor with noble houses
+        monasticOrders: { favor: 50, name: 'Monastic Orders' },     // Favor with powerful church orders
+        // Add more factions as your game develops (e.g., Italian City-States)
     };
 
 
@@ -47,10 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapOverlay = document.getElementById('map-overlay');
     const closeMapButton = document.getElementById('close-map-button');
 
-    // --- Game Events Data (UPDATED STRUCTURE WITH FACTIONS!) ---
+    // --- Game Events Data (UPDATED WITH ENDING EVENTS!) ---
     const events = [
         {
-            id: 'start_game',
+            id: 'start_game', // Unique ID for the event
             title: 'A New Pontificate',
             content: 'You have been elected to the Holy See. The burdens of the papacy weigh heavily upon you. The world watches.',
             source: 'The Conclave',
@@ -85,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         { type: 'metricChange', metric: 'authority', value: 15 },
                         { type: 'metricChange', metric: 'gold', value: -20 },
                         { type: 'metricChange', metric: 'publicOpinion', value: -10 },
-                        { type: 'factionChange', faction: 'imperial', value: 20 }, // NEW: Increase Imperial Favor
+                        { type: 'factionChange', faction: 'imperial', value: 20 },
                         { type: 'setNextEvent', eventId: 'noble_dissatisfaction' },
                         { type: 'setFlag', flag: 'imperial_alliance_established', value: true }
                     ]
@@ -96,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         { type: 'metricChange', metric: 'piety', value: 10 },
                         { type: 'metricChange', metric: 'authority', value: -10 },
                         { type: 'metricChange', metric: 'cardinalFavor', value: 5 },
-                        { type: 'factionChange', faction: 'imperial', value: -15 }, // NEW: Decrease Imperial Favor
+                        { type: 'factionChange', faction: 'imperial', value: -15 },
                         { type: 'setNextEvent', eventId: 'papal_decree_consideration' }
                     ]
                 }
@@ -121,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     effects: [
                         { type: 'metricChange', metric: 'cardinalFavor', value: 10 },
                         { type: 'metricChange', metric: 'authority', value: 5 },
-                        { type: 'factionChange', faction: 'monasticOrders', value: -5 } // Monastics might dislike swift political action
+                        { type: 'factionChange', faction: 'monasticOrders', value: -5 }
                     ]
                 }
             ]
@@ -132,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             content: 'Emperor Frederick, having secured his northern borders (due to your previous support), now proposes a grand crusade to the Holy Land. This requires significant resources and commitment.',
             source: 'Imperial Message',
             requiredFlags: ['imperial_alliance_established'],
-            requiredFactionFavor: { faction: 'imperial', minFavor: 60 }, // NEW: Emperor must favor you
+            requiredFactionFavor: { faction: 'imperial', minFavor: 60 },
             options: [
                 {
                     text: 'Launch the Crusade, for God and Glory!',
@@ -140,8 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         { type: 'metricChange', metric: 'piety', value: 20 },
                         { type: 'metricChange', metric: 'gold', value: -50 },
                         { type: 'metricChange', metric: 'publicOpinion', value: 15 },
-                        { type: 'factionChange', faction: 'imperial', value: 10 }, // Imperial favor up
-                        { type: 'factionChange', faction: 'nobility', value: -10 }, // Nobility might resent the call for troops/funds
+                        { type: 'factionChange', faction: 'imperial', value: 10 },
+                        { type: 'factionChange', faction: 'nobility', value: -10 },
                         { type: 'setFlag', flag: 'crusade_launched', value: true },
                         { type: 'setNextEvent', eventId: 'crusade_outcome_report' }
                     ]
@@ -151,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     effects: [
                         { type: 'metricChange', metric: 'authority', value: -10 },
                         { type: 'metricChange', metric: 'cardinalFavor', value: 10 },
-                        { type: 'factionChange', faction: 'imperial', value: -20 } // Imperial favor drops significantly
+                        { type: 'factionChange', faction: 'imperial', value: -20 }
                     ]
                 }
             ]
@@ -161,20 +162,20 @@ document.addEventListener('DOMContentLoaded', () => {
             title: 'Noble Uprising Rumors',
             content: 'Rumors reach your ears that some northern nobles, emboldened by the Emperor\'s campaign, are questioning your authority in their lands. They believe your focus is too worldly.',
             source: 'Your Spymaster',
-            requiredFactionFavor: { faction: 'nobility', maxFavor: 40 }, // NEW: Only appears if nobility favor is somewhat low
+            requiredFactionFavor: { faction: 'nobility', maxFavor: 40 },
             options: [
                 {
                     text: 'Send a Papal Legate to assert your spiritual dominance.',
                     effects: [
                         { type: 'metricChange', metric: 'authority', value: 10 },
-                        { type: 'factionChange', faction: 'nobility', value: -20 }, // Direct confrontation lowers favor
+                        { type: 'factionChange', faction: 'nobility', value: -20 },
                         { type: 'metricChange', metric: 'publicOpinion', value: 5 }
                     ]
                 },
                 {
                     text: 'Dispatch envoys to negotiate and hear their grievances.',
                     effects: [
-                        { type: 'factionChange', faction: 'nobility', value: 15 }, // Attempt to reconcile
+                        { type: 'factionChange', faction: 'nobility', value: 15 },
                         { type: 'metricChange', metric: 'gold', value: -10 },
                         { type: 'metricChange', metric: 'authority', value: -5 }
                     ]
@@ -193,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         { type: 'metricChange', metric: 'piety', value: 15 },
                         { type: 'metricChange', metric: 'publicOpinion', value: 10 },
                         { type: 'metricChange', metric: 'cardinalFavor', value: -5 },
-                        { type: 'factionChange', faction: 'monasticOrders', value: 10 }, // Monastics might like strict doctrine
+                        { type: 'factionChange', faction: 'monasticOrders', value: 10 },
                         { type: 'setFlag', flag: 'papal_bull_issued', value: true }
                     ]
                 },
@@ -203,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         { type: 'metricChange', metric: 'piety', value: -5 },
                         { type: 'metricChange', metric: 'cardinalFavor', value: 5 },
                         { type: 'metricChange', metric: 'authority', value: 5 },
-                        { type: 'factionChange', faction: 'monasticOrders', value: -10 } // Monastics might dislike indecision
+                        { type: 'factionChange', faction: 'monasticOrders', value: -10 }
                     ]
                 }
             ]
@@ -222,8 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         { type: 'metricChange', metric: 'piety', value: 25 },
                         { type: 'metricChange', metric: 'authority', value: 15 },
                         { type: 'metricChange', metric: 'gold', value: -10 },
-                        { type: 'factionChange', faction: 'imperial', value: 5 }, // Emperor slightly pleased
-                        { type: 'factionChange', faction: 'publicOpinion', value: 10 }, // Public opinion is not a faction in gameFactions, so this will affect the metric directly.
+                        { type: 'factionChange', faction: 'imperial', value: 5 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: 10 },
                         { type: 'setFlag', flag: 'crusade_report_received', value: true }
                     ]
                 },
@@ -232,27 +233,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     effects: [
                         { type: 'metricChange', metric: 'piety', value: -10 },
                         { type: 'metricChange', metric: 'publicOpinion', value: -5 },
-                        { type: 'factionChange', faction: 'imperial', value: -10 }, // Emperor displeased with losses
+                        { type: 'factionChange', faction: 'imperial', value: -10 },
                         { type: 'setFlag', flag: 'crusade_report_received', value: true }
                     ]
                 }
             ]
         },
-        // NEW EVENT: Based on faction favor
         {
             id: 'noble_tax_request',
             title: 'Noble\'s Plea for Tax Exemption',
             content: 'Lord Bertrand, a powerful noble from Provence, requests a special papal tax exemption for his lands, citing recent hardships. Granting it would set a precedent.',
             source: 'Lord Bertrand\'s Envoy',
-            requiredFactionFavor: { faction: 'nobility', minFavor: 70 }, // Only appears if Nobility favor is high enough to make this request
-            forbiddenFactionFavor: { faction: 'nobility', maxFavor: 90 }, // Don't want it to be TOO high or it feels cheap
+            requiredFactionFavor: { faction: 'nobility', minFavor: 70 },
+            forbiddenFactionFavor: { faction: 'nobility', maxFavor: 90 },
             options: [
                 {
                     text: 'Grant the exemption, strengthening ties with the nobility.',
                     effects: [
-                        { type: 'metricChange', metric: 'gold', value: -15 }, // Lost income
+                        { type: 'metricChange', metric: 'gold', value: -15 },
                         { type: 'factionChange', faction: 'nobility', value: 20 },
-                        { type: 'metricChange', metric: 'publicOpinion', value: -5 } // Public might see it as unfair
+                        { type: 'metricChange', metric: 'publicOpinion', value: -5 }
                     ]
                 },
                 {
@@ -260,11 +260,76 @@ document.addEventListener('DOMContentLoaded', () => {
                     effects: [
                         { type: 'metricChange', metric: 'authority', value: 10 },
                         { type: 'factionChange', faction: 'nobility', value: -15 },
-                        { type: 'metricChange', metric: 'gold', value: 5 } // Maintain income
+                        { type: 'metricChange', metric: 'gold', value: 5 }
                     ]
                 }
             ]
         },
+
+        // NEW: Game Ending / Triumph Events
+
+        {
+            id: 'game_over_heresy',
+            title: 'The Papacy Fractures! A Schism of Faith',
+            content: 'Your pious neglect or controversial doctrine has sown deep seeds of heresy. The faithful abandon Rome, and the Church falls into irreparable schism. Your legacy is one of failure.',
+            source: 'The Annals of History',
+            options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
+        },
+        {
+            id: 'game_over_tyranny',
+            title: 'The Tyrant Pope! Public Uprising',
+            content: 'Your relentless pursuit of power and neglect of the common folk has led to widespread revolt. The people rise up, storming the Vatican and deposing you by force. Your reign ends in chaos.',
+            source: 'The Streets of Rome',
+            options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
+        },
+        {
+            id: 'game_over_impoverished',
+            title: 'The Bankrupt See! Ruin of Rome',
+            content: 'Years of mismanagement and costly ventures have drained the papal coffers. With no funds, your authority crumbles, and hostile powers seize control of Rome. The Holy See is ruined.',
+            source: 'Papal Treasury Records',
+            options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
+        },
+        {
+            id: 'game_over_deposed_cardinals',
+            title: 'Deposed! A Cardinal Conspiracy',
+            content: 'Your constant disregard for the College of Cardinals has led to a secret plot. They have unanimously voted for your deposition, backed by powerful secular rulers. Your authority crumbles.',
+            source: 'The Conclave Transcripts',
+            options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
+        },
+        {
+            id: 'game_over_imperial_control',
+            title: 'Puppet of the Emperor! Loss of Autonomy',
+            content: 'Your excessive reliance on the Emperor has left the Papacy utterly subservient to his will. The Holy See is no longer an independent power, but merely a tool of the Empire. Your spiritual authority is lost.',
+            source: 'Imperial Edicts',
+            options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
+        },
+        {
+            id: 'game_over_noble_revolt',
+            title: 'Noble Wars! Christendom Fractured',
+            content: 'Your inability to manage the nobility has plunged Europe into endless feudal warfare. The Papacy, unable to exert influence, is powerless amidst the chaos. Your reign is a period of strife.',
+            source: 'Chronicles of Conflict',
+            options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
+        },
+        // NEW: Triumph/Good Ending Examples
+        {
+            id: 'triumph_divine_mandate',
+            title: 'An Age of Unwavering Faith!',
+            content: 'Your unwavering piety has inspired Christendom to a new golden age of faith. The Church stands as a beacon of spiritual purity, guiding all souls toward salvation. Your legacy is secured for eternity!',
+            source: 'Divine Providence',
+            options: [{ text: 'Continue Reign (Endless Mode / New Game+ placeholder)', effects: [{ type: 'resetGame' }] }]
+        },
+        {
+            id: 'triumph_absolute_authority',
+            title: 'The Papal Hegemony! Uncontested Rule',
+            content: 'Through masterful politics and astute decision-making, the Holy See has become the undisputed temporal and spiritual power in Europe. Kings and Emperors bow to your will. Your authority is absolute and unquestioned!',
+            source: 'The Throne Room',
+            options: [{ text: 'Continue Reign (Endless Mode / New Game+ placeholder)', effects: [{ type: 'resetGame' }] }]
+        },
+
+
+        // The game will try to go through events in order.
+        // If an event has requiredFlags that aren't met, it will skip to the next.
+        // It's good to have a final "end" event or loop.
         {
             id: 'end_game_placeholder',
             title: 'The Papacy Continues...',
@@ -315,14 +380,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // NEW: Check requiredFactionFavor
+        // Check requiredFactionFavor
         if (event.requiredFactionFavor) {
             const faction = gameFactions[event.requiredFactionFavor.faction];
             if (!faction || faction.favor < event.requiredFactionFavor.minFavor) {
                 return false;
             }
         }
-        // NEW: Check forbiddenFactionFavor
+        // Check forbiddenFactionFavor
         if (event.forbiddenFactionFavor) {
             const faction = gameFactions[event.forbiddenFactionFavor.faction];
             if (!faction || faction.favor > event.forbiddenFactionFavor.maxFavor) {
@@ -354,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * NEW: Updates a faction's favor and logs to console.
+     * Updates a faction's favor and logs to console.
      * (You can add a UI update here later)
      * @param {string} factionName The key for the faction (e.g., 'imperial').
      * @param {number} value The amount to change favor by.
@@ -411,6 +476,65 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
+     * NEW: Checks for game ending or special achievement conditions.
+     * If a condition is met, it loads the appropriate ending event.
+     * Prioritizes game over conditions over triumph conditions.
+     */
+    function checkGameStatus() {
+        if (hasGameEnded) return; // If game has already ended, do nothing
+
+        // --- Game Over Conditions ---
+        if (gameMetrics.piety <= 0) {
+            hasGameEnded = true;
+            loadEvent(findEventById('game_over_heresy'));
+            return;
+        }
+        if (gameMetrics.publicOpinion <= 0) {
+            hasGameEnded = true;
+            loadEvent(findEventById('game_over_tyranny'));
+            return;
+        }
+        if (gameMetrics.gold <= 0) {
+            hasGameEnded = true;
+            loadEvent(findEventById('game_over_impoverished'));
+            return;
+        }
+        if (gameMetrics.cardinalFavor <= 0) {
+            hasGameEnded = true;
+            loadEvent(findEventById('game_over_deposed_cardinals'));
+            return;
+        }
+        if (gameFactions.imperial.favor <= 0) {
+            hasGameEnded = true;
+            loadEvent(findEventById('game_over_imperial_control'));
+            return;
+        }
+        if (gameFactions.nobility.favor <= 0) {
+            hasGameEnded = true;
+            loadEvent(findEventById('game_over_noble_revolt'));
+            return;
+        }
+
+        // --- Triumph/High Metric Conditions (Optional, can lead to special events or just positive feedback) ---
+        // These can be set to 100 or a high value like 90-95.
+        // For simplicity, I'll put examples at 95.
+        if (gameMetrics.piety >= 95 && !gameFlags.triumph_divine_mandate_achieved) {
+            hasGameEnded = true; // Mark as ended for now to show the triumph screen
+            gameFlags.triumph_divine_mandate_achieved = true; // Set flag to prevent re-triggering
+            loadEvent(findEventById('triumph_divine_mandate'));
+            return;
+        }
+        if (gameMetrics.authority >= 95 && !gameFlags.triumph_absolute_authority_achieved) {
+            hasGameEnded = true;
+            gameFlags.triumph_absolute_authority_achieved = true;
+            loadEvent(findEventById('triumph_absolute_authority'));
+            return;
+        }
+        // Add more triumph conditions as desired
+    }
+
+
+    /**
      * Applies the effects of a chosen option and proceeds to the next day/event.
      * @param {object} chosenOption The option object that was clicked.
      */
@@ -427,13 +551,12 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (effect.type === 'setFlag') { // Handle setting flags
                 gameFlags[effect.flag] = effect.value;
                 console.log(`Flag '${effect.flag}' set to ${effect.value}`);
-            } else if (effect.type === 'factionChange') { // NEW: Handle faction changes
+            } else if (effect.type === 'factionChange') { // Handle faction changes
                 updateFactionFavor(effect.faction, effect.value);
             } else if (effect.type === 'resetGame') { // Handle game reset
                 initGame(); // Re-initialize the game state
                 return; // Stop processing effects for this choice and exit applyChoice
             }
-            // Add more effect types here as you expand mechanics (e.g., 'unlockFeature', 'triggerDelayedEvent')
         });
 
         // If a game reset was triggered, we're done here
@@ -445,6 +568,13 @@ document.addEventListener('DOMContentLoaded', () => {
         gameDay++;
         gameDayCounter.textContent = gameDay;
 
+        // NEW: Check game status AFTER effects are applied and day advanced
+        checkGameStatus();
+
+        // If game has ended by a status check, prevent loading next event
+        if (hasGameEnded) {
+            return;
+        }
 
         // Determine and load the next eligible event
         let nextEventToLoad = null;
@@ -468,6 +598,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // This handles both linear progression and skipping ineligible events after a branch
         while (currentEventIndex < events.length) {
             const potentialNextEvent = events[currentEventIndex];
+            // Ensure we don't accidentally load an ending event as part of linear progression
+            if (potentialNextEvent.id.startsWith('game_over_') || potentialNextEvent.id.startsWith('triumph_')) {
+                 currentEventIndex++; // Skip explicit game end events if reached linearly
+                 continue;
+            }
+
             if (isEventEligible(potentialNextEvent)) {
                 nextEventToLoad = potentialNextEvent;
                 break; // Found an eligible event
@@ -508,10 +644,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Reset flags
         for (const flag in gameFlags) {
+            // Special handling for triumph flags if you want them to be permanently unlocked across games
+            // For now, reset all
             gameFlags[flag] = false;
         }
+        // Ensure achievement flags are reset for a new game if they were set by triumph conditions
+        gameFlags.triumph_divine_mandate_achieved = false;
+        gameFlags.triumph_absolute_authority_achieved = false;
 
-        // NEW: Reset faction favors
+
+        // Reset faction favors
         for (const factionKey in gameFactions) {
             gameFactions[factionKey].favor = 50; // Reset all factions to 50 favor
         }
@@ -520,6 +662,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameDayCounter.textContent = gameDay;
         currentEventIndex = 0; // Start with the first event in the array
         nextEventId = null;
+        hasGameEnded = false; // NEW: Reset game ended flag
 
         updateAllMetricsDisplay(); // Set initial metric values
         loadEvent(events[currentEventIndex]); // Load the very first event
