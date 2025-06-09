@@ -1,257 +1,308 @@
-// --- Game Data (No changes, as the content was already good) ---
-const DOCUMENTS = {
-    "intro_briefing": {
-        title: "Your First Briefing: The State of the Church",
-        content: "Welcome, Your Holiness, to the Chair of St. Peter, a throne burdened by both divine grace and worldly strife. The vast realm of Christendom faces numerous challenges: from distant pagan incursions to unsettling heresies festering within our very flock, and ceaseless disputes among our supposedly loyal monarchs. Your wisdom, divinely bestowed, will now guide our holy endeavors. Let us begin with your first pressing matter, laid before you by the diligent hand of the Cardinal Secretary of State.",
-        source: "Cardinal Secretary of State",
-        options: [
-            { text: 'Embrace my sacred duty. Lead us forward.', consequences: {}, next_doc_id: 'crusade_appeal' }
-        ]
-    },
-    "crusade_appeal": {
-        title: "Urgent Appeal: Holy Land Under Siege!",
-        content: "A desperate, tear-stained plea has arrived from the venerable Latin Patriarch of Jerusalem. The relentless Saracens, ever pressing their advantage, bear down hard upon the dwindling Christian enclaves in the Holy Land. Without immediate and profound divine intervention, or perhaps a renewed and fervent crusade championed by Your Holiness, the sacred sites and all our faithful there may be irrevocably lost! The Kings of Europe, ever wary, now await your unequivocal decree.",
-        source: "Patriarch of Jerusalem",
-        options: [
-            { text: 'Issue a Papal Bull! Call for a new Crusade! Rally the faithful to arms across Europe.',
-              consequences: { Piety: 15, Gold: -30, PublicOpinion: 10, CardinalFavor: 5 },
-              next_doc_id: 'crusade_funding_request' },
-            { text: 'Send only substantial financial aid and spiritual blessings. Avoid direct military entanglement for now.',
-              consequences: { Piety: 5, Gold: -10, PublicOpinion: -5, CardinalFavor: -5 },
-              next_doc_id: 'papal_states_revolt' }
-        ]
-    },
-    "crusade_funding_request": {
-        title: "Funding Request: Equipping the Crusade's Vanguard",
-        content: "Your Holiness's impassioned call for a new Crusade has stirred the very souls of countless faithful across Europe! However, the logistical and material costs of equipping such a formidable expedition are, regrettably, immense. We require significant funds to provision the burgeoning armies, procure essential supplies, and secure safe passage across treacherous lands and seas. Our holy treasury, while substantial, is not limitless, and prudent stewardship is paramount.",
-        source: "Head of Papal Treasury",
-        options: [
-            { text: 'Grant a substantial sum from the holy treasury to ensure the Crusade’s success.',
-              consequences: { Gold: -50, Authority: 10 },
-              next_doc_id: 'papal_states_revolt' },
-            { text: 'Issue a special indulgence. Seek generous donations from wealthy nobles and influential merchants.',
-              consequences: { PublicOpinion: -5, Piety: 5, Gold: 10 },
-              consequences: { PublicOpinion: -5, Piety: 5, Gold: 10 },
-              next_doc_id: 'papal_states_revolt' }
-        ]
-    },
-    "papal_states_revolt": {
-        title: "Insurrection: Revolt in the Papal States!",
-        content: "Grave news, Your Holiness! Dispatches have reached us confirming that a brazenly rebellious lord within the very heart of the Papal States, emboldened by defiance, has declared his independence from your sacred rule! His audacious challenge threatens the very temporal foundation of our Church's power and stability. Immediate and resolute action is paramount to quell this ignoble uprising before it spreads like a plague.",
-        source: "Commander of the Swiss Guard",
-        options: [
-            { text: 'Dispatch the Papal Guard to brutally suppress the revolt. Show no mercy.',
-              consequences: { Authority: 15, PublicOpinion: -15, Gold: -20 },
-              next_doc_id: 'end_of_demo' },
-            { text: 'Attempt peaceful negotiations, offering clemency and carefully considered concessions.',
-              consequences: { Authority: -10, CardinalFavor: -5, Piety: 10 },
-              next_doc_id: 'end_of_demo' }
-        ]
-    },
-    "end_of_demo": {
-        title: "End of Demo: The Pontiff's Burden",
-        content: "This concludes the initial demonstration for 'Habeus Papam: The Pontiff's Burden.' You've experienced the core gameplay loop of receiving crucial documents, making difficult decisions that ripple through the political and religious landscape, and witnessing their immediate consequences on your Papal metrics. Imagine the intricate, branching paths, the moral dilemmas, and the vast historical tapestry that awaits in the full game!",
-        source: "Your Future Self, from a more polished age",
-        options: [
-            { text: 'Begin anew. The Papacy awaits.', consequences: {}, next_doc_id: 'intro_briefing' }
-        ]
-    }
-};
-
-// --- Game State Variables ---
-let papalMetrics = {
-    Piety: 50,
-    Authority: 50,
-    Gold: 100,
-    PublicOpinion: 50,
-    CardinalFavor: 50
-};
-
-// A placeholder for global game state if needed for more complex decisions later
-let globalGameState = {
-    CrusadeStatus: "None",
-    PapalStatesControl: "Strong",
-    HeresyLevel: "Low"
-};
-
-let currentDocumentId = "intro_briefing";
-let gameDay = 0; // Start at day 0, increment for first document
-
-// --- DOM Elements ---
-const docTitle = document.getElementById('document-title');
-const docContent = document.getElementById('document-content');
-const docSource = document.getElementById('document-source');
-const optionsContainer = document.getElementById('options-container');
-const documentArea = document.getElementById('document-area'); // Reference for animation
-const gameDayCounter = document.getElementById('game-day-counter');
-
-const metricElements = {
-    piety: document.getElementById('metric-piety'),
-    authority: document.getElementById('metric-authority'),
-    gold: document.getElementById('metric-gold'),
-    publicOpinion: document.getElementById('metric-publicOpinion'),
-    cardinalFavor: document.getElementById('metric-cardinalFavor')
-};
-const mapButton = document.getElementById('map-button');
-const mapOverlay = document.getElementById('map-overlay'); // Map overlay
-const closeMapButton = document.getElementById('close-map-button'); // <<-- FIX IS HERE!
-
-// --- Functions ---
-
-/**
- * Updates the display of Papal metrics and applies visual feedback for changes.
- * @param {Object} changes - An object mapping metric names to their change amounts.
- */
-function updateMetricsDisplay(changes = {}) {
-    for (const metric in papalMetrics) {
-        const element = metricElements[metric.toLowerCase()];
-        if (element) {
-            const oldValue = parseFloat(element.textContent);
-            const newValue = papalMetrics[metric];
-
-            // Update text content
-            element.textContent = newValue;
-
-            // Apply temporary class for visual feedback if value changed
-            if (metric in changes && oldValue !== newValue) {
-                // Remove existing classes to ensure animation re-triggers
-                element.classList.remove('metric-change-positive', 'metric-change-negative');
-                // Force reflow/re-render to reset animation
-                void element.offsetWidth; // eslint-disable-line no-void
-
-                if (newValue > oldValue) {
-                    element.classList.add('metric-change-positive');
-                } else if (newValue < oldValue) {
-                    element.classList.add('metric-change-negative');
-                }
-
-                // Remove the class after a short delay to reset the animation
-                setTimeout(() => {
-                    element.classList.remove('metric-change-positive', 'metric-change-negative');
-                }, 800); // Animation duration is 0.8s in CSS
-            }
-        }
-    }
-}
-
-/**
- * Loads a document into the display area with an animation.
- * @param {string} docId - The ID of the document to load.
- */
-function loadDocument(docId) {
-    const doc = DOCUMENTS[docId];
-    if (!doc) {
-        console.error("Document not found:", docId);
-        return;
-    }
-
-    currentDocumentId = docId;
-
-    // Ensure map is closed when a new document loads
-    hideMap();
-
-    // Hide document area to trigger 'hide' animation
-    documentArea.classList.remove('show');
-
-    // After the hide animation (or a short delay), update content and re-show
-    setTimeout(() => {
-        docTitle.textContent = doc.title;
-        docContent.textContent = doc.content;
-        docSource.textContent = `— ${doc.source}`;
-
-        // Clear previous options
-        optionsContainer.innerHTML = '';
-
-        // Create new option buttons
-        doc.options.forEach(option => {
-            const button = document.createElement('button');
-            button.classList.add('option-button');
-            button.textContent = option.text;
-            button.addEventListener('click', () => handleDecision(option));
-            optionsContainer.appendChild(button);
-        });
-
-        // Show with animation after content is loaded
-        documentArea.classList.add('show');
-    }, 500); // Match or slightly exceed the document-area hide transition duration (0.5s)
-
-    // Increment day counter. Reset to Day 1 if it's the intro briefing (new game/restart)
-    if (docId === "intro_briefing" && gameDay !== 0) { // If restarting demo
-        papalMetrics = { Piety: 50, Authority: 50, Gold: 100, PublicOpinion: 50, CardinalFavor: 50 };
-        updateMetricsDisplay(); // Reset metrics visually
-        gameDay = 1;
-    } else if (docId === "intro_briefing") { // First time loading intro
-        gameDay = 1;
-    } else { // Normal progression
-        gameDay++;
-    }
-    gameDayCounter.textContent = gameDay;
-}
-
-/**
- * Handles a player's decision, applies consequences, and loads the next document.
- * @param {Object} option - The chosen option object.
- */
-function handleDecision(option) {
-    const changes = {}; // Track changes for visual feedback
-
-    // Apply consequences to papal metrics
-    for (const metric in option.consequences) {
-        if (papalMetrics.hasOwnProperty(metric)) {
-            const oldValue = papalMetrics[metric];
-            papalMetrics[metric] += option.consequences[metric];
-            // Clamp values between 0 and 100
-            papalMetrics[metric] = Math.max(0, Math.min(100, papalMetrics[metric]));
-            changes[metric] = papalMetrics[metric] - oldValue; // Store the change amount
-        }
-    }
-
-    // Update metrics display with visual feedback
-    updateMetricsDisplay(changes);
-
-    // Update global game state if specified (for future complex logic)
-    if (option.globalStateChange) {
-        Object.assign(globalGameState, option.globalStateChange);
-    }
-
-    // Load next document
-    if (option.next_doc_id) {
-        loadDocument(option.next_doc_id);
-    } else {
-        console.warn("No next document specified. This path may end here.");
-    }
-}
-
-// --- Map Functions ---
-function showMap() {
-    mapOverlay.classList.add('show');
-}
-
-function hideMap() {
-    mapOverlay.classList.remove('show');
-}
-
-// --- Initial Setup and Event Listeners ---
 document.addEventListener('DOMContentLoaded', () => {
-    loadDocument(currentDocumentId); // This will also set initial gameDay to 1
-    updateMetricsDisplay(); // Initial display without changes
+    // --- Game State Variables ---
+    const gameMetrics = {
+        piety: 50,
+        authority: 50,
+        gold: 100,
+        publicOpinion: 50,
+        cardinalFavor: 50,
+    };
+    let gameDay = 1;
+    let currentEventIndex = 0; // Tracks current event in the linear sequence
+    let nextEventId = null; // Stores ID of the next event to load if branching occurs
 
-    // Event listeners for map button
-    mapButton.addEventListener('click', showMap);
-    closeMapButton.addEventListener('click', hideMap); // This now references the correctly named element
+    // --- DOM Elements ---
+    const metricPiety = document.getElementById('metric-piety');
+    const metricAuthority = document.getElementById('metric-authority');
+    const metricGold = document.getElementById('metric-gold');
+    const metricPublicOpinion = document.getElementById('metric-publicOpinion');
+    const metricCardinalFavor = document.getElementById('metric-cardinalFavor');
+    const gameDayCounter = document.getElementById('game-day-counter');
 
-    // Add subtle hover effects for decorative desk items
-    const deskItems = document.querySelectorAll('.desk-item');
-    deskItems.forEach(item => {
-        item.addEventListener('mouseover', () => {
-            item.style.filter = 'brightness(1.1) drop-shadow(0 0 5px rgba(255,255,0,0.3))'; // Subtle glow
+    const documentArea = document.getElementById('document-area');
+    const documentTitle = document.getElementById('document-title');
+    const documentContent = document.getElementById('document-content');
+    const documentSource = document.getElementById('document-source');
+    const optionsContainer = document.getElementById('options-container');
+
+    const mapButton = document.getElementById('map-button');
+    const mapOverlay = document.getElementById('map-overlay');
+    const closeMapButton = document.getElementById('close-map-button');
+
+    // --- Game Events Data (UPDATED STRUCTURE!) ---
+    // Each choice option now has an 'effects' array
+    const events = [
+        {
+            id: 'start_game', // Unique ID for the event
+            title: 'A New Pontificate',
+            content: 'You have been elected to the Holy See. The burdens of the papacy weigh heavily upon you. The world watches.',
+            source: 'The Conclave',
+            options: [
+                {
+                    text: 'Embrace your new role with divine confidence.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: 10 },
+                        { type: 'metricChange', metric: 'authority', value: 5 },
+                        { type: 'setNextEvent', eventId: 'first_edict' } // This choice branches to 'first_edict'
+                    ]
+                },
+                {
+                    text: 'Seek immediate counsel from the College of Cardinals.',
+                    effects: [
+                        { type: 'metricChange', metric: 'cardinalFavor', value: 10 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: -5 }, // Multiple effects
+                        { type: 'setNextEvent', eventId: 'cardinal_meeting' } // This choice branches to 'cardinal_meeting'
+                    ]
+                }
+            ]
+        },
+        {
+            id: 'first_edict', // New event accessible via branching
+            title: 'The Imperial Demand',
+            content: 'Emperor Frederick demands your support for his military campaign against the rebellious northern states. He seeks papal blessing and financial aid.',
+            source: 'Imperial Envoy',
+            options: [
+                {
+                    text: 'Grant your blessing and offer 20 Gold.',
+                    effects: [
+                        { type: 'metricChange', metric: 'authority', value: 15 },
+                        { type: 'metricChange', metric: 'gold', value: -20 }, // Cost Gold
+                        { type: 'metricChange', metric: 'publicOpinion', value: -10 }, // Public opinion drops
+                        { type: 'setNextEvent', eventId: 'noble_dissatisfaction' } // Leads to another specific event
+                    ]
+                },
+                {
+                    text: 'Deny his request, citing spiritual concerns and neutrality.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: 10 },
+                        { type: 'metricChange', metric: 'authority', value: -10 }, // Authority drops with Emperor
+                        { type: 'metricChange', metric: 'cardinalFavor', value: 5 },
+                        { type: 'setNextEvent', eventId: 'papal_decree_consideration' } // Leads to another specific event
+                    ]
+                }
+            ]
+        },
+        {
+            id: 'cardinal_meeting', // New event accessible via branching
+            title: 'The College Convenes',
+            content: 'The cardinals are restless. Cardinal Giovanni expresses concerns about your lack of immediate, decisive action. "The faithful demand a strong hand!" he proclaims.',
+            source: 'Cardinal Giovanni',
+            options: [
+                {
+                    text: 'Assure them of your wisdom and long-term vision, citing patience as a virtue.',
+                    effects: [
+                        { type: 'metricChange', metric: 'cardinalFavor', value: -5 }, // Some cardinals are displeased
+                        { type: 'metricChange', metric: 'piety', value: 5 },
+                        { type: 'setNextEvent', eventId: 'papal_decree_consideration' } // Leads to a specific event
+                    ]
+                },
+                {
+                    text: 'Promise swift reforms to address their concerns, consolidating power.',
+                    effects: [
+                        { type: 'metricChange', metric: 'cardinalFavor', value: 10 },
+                        { type: 'metricChange', metric: 'authority', value: 5 } // You gain authority by acting decisively
+                    ]
+                }
+            ]
+        },
+        {
+            id: 'noble_dissatisfaction', // Follow-up event from Imperial Demand choice
+            title: 'Noble Uprising Rumors',
+            content: 'Rumors reach your ears that some northern nobles, emboldened by the Emperor\'s campaign, are questioning your authority in their lands. They believe your focus is too worldly.',
+            source: 'Your Spymaster',
+            options: [
+                {
+                    text: 'Send a Papal Legate to assert your spiritual dominance.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: 10 },
+                        { type: 'metricChange', metric: 'authority', value: -5 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: 5 }
+                    ]
+                },
+                {
+                    text: 'Ignore them; focus on Rome\'s internal affairs.',
+                    effects: [
+                        { type: 'metricChange', metric: 'authority', value: -10 },
+                        { type: 'metricChange', metric: 'gold', value: -5 } // Lost taxes due to unrest
+                    ]
+                }
+            ]
+        },
+        {
+            id: 'papal_decree_consideration', // Follow-up event from various choices
+            title: 'A New Papal Bull',
+            content: 'After much deliberation, you consider issuing a Papal Bull on a controversial theological matter regarding the Immaculate Conception. This could reshape doctrine.',
+            source: 'Your Advisor',
+            options: [
+                {
+                    text: 'Issue the Bull, affirming traditional doctrine strictly.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: 15 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: 10 },
+                        { type: 'metricChange', metric: 'cardinalFavor', value: -5 } // Some modern cardinals might disagree
+                    ]
+                },
+                {
+                    text: 'Delay the Bull, seeking broader consensus and avoiding controversy.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: -5 },
+                        { type: 'metricChange', metric: 'cardinalFavor', value: 5 },
+                        { type: 'metricChange', metric: 'authority', value: 5 }
+                    ]
+                }
+            ]
+        },
+        // Add more events here to continue the game,
+        // either linear or by adding more 'setNextEvent' effects
+        {
+            id: 'end_game_placeholder',
+            title: 'The Papacy Continues...',
+            content: 'You have navigated the initial challenges of your pontificate. More trials and triumphs await.',
+            source: 'History Itself',
+            options: [
+                {
+                    text: 'Begin Anew',
+                    effects: [
+                        { type: 'setNextEvent', eventId: 'start_game' } // Loop back to start for replayability
+                    ]
+                }
+            ]
+        }
+    ];
+
+    // --- Helper Functions ---
+
+    /**
+     * Finds an event by its ID.
+     * @param {string} eventId The ID of the event to find.
+     * @returns {object|undefined} The event object or undefined if not found.
+     */
+    function findEventById(eventId) {
+        return events.find(event => event.id === eventId);
+    }
+
+    /**
+     * Updates a single metric and applies a visual flash.
+     * @param {string} metricName The name of the metric (e.g., 'piety').
+     * @param {number} value The amount to change the metric by.
+     */
+    function updateMetric(metricName, value) {
+        const oldValue = gameMetrics[metricName];
+        gameMetrics[metricName] = Math.max(0, Math.min(100, gameMetrics[metricName] + value)); // Clamp between 0-100
+
+        // Visual flash for metric change
+        const metricElement = document.getElementById(`metric-${metricName}`);
+        if (metricElement) {
+            metricElement.textContent = gameMetrics[metricName];
+            const changeClass = value > 0 ? 'metric-change-positive' : 'metric-change-negative';
+            metricElement.classList.add(changeClass);
+            setTimeout(() => {
+                metricElement.classList.remove(changeClass);
+            }, 800); // Duration of the flash animation
+        }
+    }
+
+    /**
+     * Updates all metric displays based on current game state.
+     */
+    function updateAllMetricsDisplay() {
+        metricPiety.textContent = gameMetrics.piety;
+        metricAuthority.textContent = gameMetrics.authority;
+        metricGold.textContent = gameMetrics.gold;
+        metricPublicOpinion.textContent = gameMetrics.publicOpinion;
+        metricCardinalFavor.textContent = gameMetrics.cardinalFavor;
+    }
+
+    /**
+     * Loads and displays an event from the `events` array.
+     * @param {object} event The event object to display.
+     */
+    function loadEvent(event) {
+        // Hide document briefly for effect
+        documentArea.classList.remove('show');
+        setTimeout(() => {
+            documentTitle.textContent = event.title;
+            documentContent.textContent = event.content;
+            documentSource.textContent = `- ${event.source}`;
+
+            // Clear previous options
+            optionsContainer.innerHTML = '';
+
+            // Create new option buttons
+            event.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.classList.add('option-button');
+                button.textContent = option.text;
+                button.addEventListener('click', () => applyChoice(option));
+                optionsContainer.appendChild(button);
+            });
+
+            // Show document after content is loaded
+            documentArea.classList.add('show');
+        }, 300); // Short delay for animation
+    }
+
+    /**
+     * Applies the effects of a chosen option and proceeds to the next day/event.
+     * @param {object} chosenOption The option object that was clicked.
+     */
+    function applyChoice(chosenOption) {
+        // Reset nextEventId for linear progression unless overridden
+        nextEventId = null;
+
+        // Apply all effects defined for the chosen option
+        chosenOption.effects.forEach(effect => {
+            if (effect.type === 'metricChange') {
+                updateMetric(effect.metric, effect.value);
+            } else if (effect.type === 'setNextEvent') {
+                nextEventId = effect.eventId; // Set the ID of the next event to load
+            }
+            // Add more effect types here as you expand mechanics (e.g., 'unlockFeature', 'triggerFlag')
         });
-        item.addEventListener('mouseout', () => {
-            item.style.filter = 'none';
-        });
+
+        // Advance game day
+        gameDay++;
+        gameDayCounter.textContent = gameDay;
+
+        // Determine and load the next event
+        let nextEvent;
+        if (nextEventId) {
+            nextEvent = findEventById(nextEventId);
+            // If branched, reset currentEventIndex to -1 to prevent linear progression
+            // Or set it to the index of the branched event if you want linear from there
+            currentEventIndex = events.indexOf(nextEvent); // Set current index to the branched event
+        } else {
+            currentEventIndex++; // Move to the next event in the linear array
+            nextEvent = events[currentEventIndex];
+        }
+
+        if (nextEvent) {
+            loadEvent(nextEvent);
+        } else {
+            // No more events, handle end of game or loop back
+            console.log('End of game/event sequence reached.');
+            // For now, let's loop back to the start game event for demonstration
+            loadEvent(findEventById('end_game_placeholder'));
+            // You might want a proper 'Game Over' screen here
+        }
+    }
+
+
+    // --- Event Listeners for UI ---
+    mapButton.addEventListener('click', () => {
+        mapOverlay.classList.add('show');
     });
 
-    // You could also add tooltips here for each item for extra polish:
-    // For example, on quill-inkwell:
-    // quillInkwell.addEventListener('click', () => alert('A faithful quill for your holy decrees.'));
+    closeMapButton.addEventListener('click', () => {
+        mapOverlay.classList.remove('show');
+    });
+
+    // --- Game Initialization ---
+    function initGame() {
+        updateAllMetricsDisplay(); // Set initial metric values
+        currentEventIndex = 0; // Start with the first event in the array
+        loadEvent(events[currentEventIndex]); // Load the very first event
+    }
+
+    initGame(); // Call to start the game when the DOM is ready
 });
