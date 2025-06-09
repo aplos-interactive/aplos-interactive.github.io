@@ -1,290 +1,483 @@
-/* Google Fonts */
+/* General Reset & Body Styling */
 body {
-    font-family: 'Merriweather', serif; /* For general text */
-    background-color: #3e2723; /* Deep dark brown */
-    color: #fdfaf3; /* Creamy white text */
     margin: 0;
-    padding: 30px;
+    padding: 0;
+    /* Medieval/Parchment-like fonts */
+    font-family: 'Old Standard TT', serif; /* For general text */
+    color: #4a3b2b; /* Dark brown text */
+    overflow: hidden; /* Prevent scrolling if map is larger than viewport */
+
+    /* Medieval Map Background */
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e6/Carte_d%27Europe_politique_%28XIV%C3%A8me_si%C3%A8cle%29.jpg'); /* Placeholder: A medieval map */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTAgMGgyMDB2MjAwSDBWMHoiIGZpbGw9IiMzZTI3MjMiLz48cGF0aCBkPSJNMCAxMDBsMTAwLTEwMGwxMDAtMTAwTDEwMCAxMDBsLTYwIDYwSDYwVjYwTDAgMTYwVjEwMHoiIGZpbGw9IiM0ZTMyMmEiIGZpbGwtb3BhY2l0eT0iMC4wNSIvPjwvc3ZnPg=='); /* Subtle background pattern, lighter opacity */
-    background-size: 200px 200px;
+    align-items: center;
 }
 
-.game-container {
-    background-color: #5d4037; /* Darker brown for main container */
-    border: 5px solid #a1887f; /* Warm brown border */
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.5);
-    padding: 30px;
-    border-radius: 15px;
-    width: 95%;
-    max-width: 1400px; /* Even wider now for more panels */
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr; /* Three columns for panels */
-    gap: 25px;
-    position: relative;
-}
-
-h1 {
-    grid-column: 1 / -1;
-    font-family: 'Cinzel Decorative', cursive;
-    text-align: center;
-    color: #ffcc00; /* Gold */
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-    margin-bottom: 30px;
-    font-size: 2.8em;
-}
-
-h2 {
-    font-family: 'Cinzel Decorative', cursive;
-    color: #f9d949; /* Lighter gold */
-    border-bottom: 2px solid #a1887f;
-    padding-bottom: 8px;
-    margin-top: 0;
-    font-size: 1.6em;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-}
-
-.top-panels {
-    grid-column: 1 / 3; /* First two columns */
+#game-container {
     display: flex;
-    gap: 25px;
-}
-
-.panel {
-    background-color: #795548; /* Medium brown for panels */
-    border: 3px solid #bcaaa4; /* Lighter brown border */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
-    flex: 1;
-    display: flex; /* Use flexbox for internal layout */
     flex-direction: column;
+    width: 90%;
+    max-width: 1200px;
+    height: 90vh;
+    max-height: 800px;
+    background-color: rgba(245, 240, 220, 0.95); /* Light parchment/cream background */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    border-radius: 8px; /* Slightly more rounded for a softer feel */
+    overflow: hidden;
+    border: 2px solid #8c5b3f; /* Dark wood/brown border */
 }
 
-.cardinals-panel {
-    grid-column: 3 / 4; /* Third column */
+/* Top Menu Bar */
+#top-menu-bar {
+    background-color: #6b4d3c; /* Deep, sturdy brown */
+    color: #f8f5e9; /* Light parchment text */
+    padding: 12px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'Merriweather', serif; /* Stronger serif for titles */
+    border-bottom: 2px solid #4a3b2b;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Conclave Panel positioning */
-.conclave-panel {
-    grid-column: 1 / -1; /* Span across all columns when active */
-    background-color: #4A148C; /* Deep Purple for Conclave */
-    border-color: #FFD700; /* Gold border */
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.7);
-    color: #FFF;
-    text-align: center;
-    padding: 30px;
+#game-title {
+    margin: 0;
+    font-size: 1.6em;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
 }
 
-.conclave-panel h2 {
-    color: #FFD700;
+#top-menu-bar nav button {
+    background-color: #8c5b3f; /* Lighter brown for buttons */
+    color: #f8f5e9;
+    border: 1px solid #4a3b2b;
+    padding: 10px 18px;
+    margin-left: 12px;
+    cursor: pointer;
+    font-family: 'Old Standard TT', serif;
+    font-size: 1em;
+    border-radius: 4px;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.conclave-panel p, .conclave-panel h3 {
-    color: #FFF;
-    margin: 10px 0;
+#top-menu-bar nav button:hover {
+    background-color: #a3753b;
+    transform: translateY(-2px);
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.conclave-panel ul {
+#top-menu-bar nav button:active {
+    transform: translateY(0);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Main Interface (Left and Center Panels) */
+#main-interface {
+    display: flex;
+    flex-grow: 1;
+    background-color: #fefefe; /* Closer to pure white for main content, contrasted with left panel */
+}
+
+/* Left Panel (Status Overview) */
+#left-panel {
+    width: 320px; /* Slightly wider for more content */
+    background-color: #f1ede0; /* Light parchment background for status */
+    padding: 25px;
+    overflow-y: auto;
+    border-right: 2px solid #8c5b3f; /* Stronger separator */
+    box-shadow: inset -4px 0 8px rgba(0, 0, 0, 0.08);
+}
+
+#left-panel h2 {
+    font-family: 'Merriweather', serif;
+    font-size: 1.4em;
+    color: #5c4b37; /* Darker brown for titles */
+    margin-top: 0;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #b8a28e; /* Subtle separator */
+    padding-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#left-panel h3 {
+    font-family: 'Old Standard TT', serif;
+    font-size: 1.1em;
+    color: #5c4b37;
+    margin-top: 20px;
+    margin-bottom: 8px;
+}
+
+.panel-section {
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #d1c4b3; /* Finer dashed line */
+}
+
+.panel-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+#left-panel p, #left-panel ul li {
+    font-size: 0.98em;
+    line-height: 1.6;
+    margin-bottom: 4px;
+    color: #4a3b2b;
+}
+
+#left-panel ul {
     list-style: none;
     padding: 0;
-    margin: 15px 0;
-    max-height: 200px; /* Limit height for candidate list */
-    overflow-y: auto; /* Enable scrolling */
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 5px;
-    padding: 10px;
-}
-
-.conclave-panel li {
-    font-size: 1.1em;
-    margin-bottom: 5px;
-    color: #FFF;
-    text-align: left; /* Align candidate names left */
-    padding-left: 10px;
-}
-
-
-.message-panel, .decision-panel {
-    grid-column: 1 / -1; /* Span across all columns */
-    min-height: 100px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-}
-
-.message-panel p, .decision-panel p {
     margin: 0;
-    font-style: italic;
-    color: #e0d8c2;
-    line-height: 1.5;
 }
 
-/* Specific styling for stat values */
-.stats-panel span,
-.pope-panel span,
-.cardinals-panel span,
-.conclave-panel span { /* Apply to conclave stats too */
-    font-weight: bold;
-    color: #ffdb58; /* Brighter gold for values */
-    font-size: 1.1em;
-}
-
-.controls {
-    grid-column: 1 / -1;
-    text-align: center;
-    margin-top: 25px;
-}
-
-#nextTurnButton {
-    background-color: #8B0000; /* Dark Red */
-    color: #ffcc00; /* Gold text */
-    padding: 15px 35px;
-    border: 3px solid #ffdb58; /* Gold border */
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.2em;
-    font-family: 'Cinzel Decorative', cursive;
-    transition: background-color 0.3s ease, transform 0.1s ease;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
-
-#nextTurnButton:hover {
-    background-color: #a00000;
-    transform: translateY(-2px);
-}
-
-#nextTurnButton:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba[0, 0, 0, 0.4];
-}
-
-/* Decision panel specific styles */
-.decision-panel.hidden, .conclave-panel.hidden { /* Hide conclave panel too */
-    display: none;
-}
-
-.options-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
-}
-
-.decision-button, .action-button, .cardinal-action-button { /* Apply similar styles to action buttons */
-    background-color: #b35900; /* Burnt orange/brown */
-    color: #fdfaf3;
-    padding: 12px 20px;
-    border: 2px solid #e6b800; /* Gold border */
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    font-family: 'Merriweather', serif;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-    flex-grow: 1;
-    max-width: 48%; /* Default for decision buttons */
-}
-
-/* Specific styling for conclave influence buttons */
-#conclaveInfluenceOptions .action-button {
-    background-color: #8a2be2; /* Blue-violet */
-    border-color: #e6b800;
-}
-
-#conclaveInfluenceOptions .action-button:hover {
-    background-color: #9932cc; /* Dark Orchid */
-}
-
-.cardinal-action-button { /* Smaller for individual cardinal actions */
-    font-size: 0.8em;
-    padding: 5px 10px;
-    margin-left: 5px;
-    max-width: none; /* Override max-width from .action-button */
-    flex-grow: 0; /* Don't grow to fill space */
-}
-
-
-.decision-button:hover, .action-button:hover, .cardinal-action-button:hover {
-    background-color: #cc6600;
-    transform: translateY(-1px);
-}
-
-.decision-button:active, .action-button:active, .cardinal-action-button:active {
-    transform: translateY(0);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-/* Cardinal List Specific Styles */
-.cardinals-panel .scrollable-content {
-    flex-grow: 1;
+/* Cardinal List Specifics */
+#cardinalsList {
+    max-height: 200px; /* Limit height for scrolling if many cardinals */
     overflow-y: auto;
-    max-height: 300px;
-    border: 1px solid #a1887f;
-    padding: 10px;
-    margin-bottom: 15px;
-    background-color: rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
+    padding-right: 5px; /* For scrollbar */
 }
 
 .cardinal-entry {
-    background-color: #6d4c41;
-    border: 1px solid #a1887f;
-    border-radius: 5px;
-    padding: 10px;
+    background-color: #fcf8f0;
+    border: 1px solid #d1c4b3;
+    border-radius: 4px;
+    padding: 8px 12px;
     margin-bottom: 8px;
-    display: flex;
-    flex-direction: column;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
-    position: relative; /* For the on-mission badge */
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .cardinal-entry strong {
-    color: #ffeb3b;
-    margin-bottom: 5px;
-    font-size: 1.1em;
+    color: #6b4d3c;
+    font-size: 1.05em;
 }
 
 .cardinal-entry .attributes {
-    font-size: 0.9em;
-    color: #e0d8c2;
+    font-size: 0.85em;
+    color: #5c4b37;
+    margin-top: 5px;
+}
+
+
+/* Main Content Panel (Narrative and Interaction) */
+#main-content-panel {
+    flex-grow: 1;
+    background-color: #ffffff; /* White background for main content */
+    padding: 30px 40px;
+    overflow-y: auto;
+}
+
+.panel-header {
+    font-family: 'Merriweather', serif;
+    font-size: 2em;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+#narrative-text {
+    font-family: 'Old Standard TT', serif;
+    font-size: 1.15em;
+    line-height: 1.8;
+    margin-bottom: 35px;
+    text-align: justify;
+    color: #4a3b2b;
+}
+
+#narrative-text p {
+    margin-bottom: 1.2em;
+}
+
+/* Card Areas (Decks and Hand) */
+.card-area {
+    margin-bottom: 35px;
+    border-top: 1px dashed #d1c4b3;
+    padding-top: 25px;
+}
+
+.card-area h3 {
+    font-family: 'Merriweather', serif;
+    font-size: 1.2em;
+    color: #5c4b37;
+    margin-top: 0;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+#available-decks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 25px;
+    justify-content: center; /* Center the decks if there are few */
+}
+
+.card-deck {
+    border: 2px solid #8c5b3f; /* Stronger border for decks */
+    background-color: #fdfae7; /* Very light parchment for deck background */
+    padding: 12px;
+    border-radius: 6px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-deck:hover {
+    transform: translateY(-4px);
+    box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+.card-deck .deck-title {
+    font-weight: 700;
+    margin-bottom: 10px;
+    display: block;
+    font-size: 1em;
+    color: #6b4d3c;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-deck .card-slot.deck-top-card {
+    width: 100px;
+    height: 150px;
+    border: none;
+    background: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-deck .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: 1px solid #a3753b; /* Gold-ish border for card image */
+    border-radius: 3px;
+    display: block;
+}
+
+#player-hand-slots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    min-height: 170px;
+    align-items: flex-start;
+    justify-content: center; /* Center cards in hand */
+    padding: 10px; /* Some padding around the hand area */
+    border: 1px solid #e0d7c7; /* Light border around hand area */
+    background-color: #fbf8f0; /* Slightly different background for hand area */
+    border-radius: 5px;
+}
+
+.card-slot {
+    width: 100px;
+    height: 150px;
+    border: 2px dashed #b8a28e; /* Dashed border for empty slots */
+    border-radius: 5px;
+    background-color: #f7f0e0; /* Slightly darker parchment for empty slots */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8em;
+    color: #998877;
+    position: relative;
+    padding: 5px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.card-in-hand {
+    border: 2px solid #a3753b; /* Gold-ish border for cards in hand */
+    background-color: #fdfae7; /* Light parchment for card background */
+    cursor: pointer;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+
+.card-in-hand:hover {
+    transform: translateY(-7px);
+    box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.25);
+}
+
+.card-in-hand .card-content {
+    font-size: 0.85em;
+    padding: 5px;
+    overflow: hidden;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4a3b2b;
+}
+
+.card-in-hand .card-title {
+    font-weight: 700;
+    margin-bottom: 3px;
+    font-size: 0.95em;
+    color: #6b4d3c;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+}
+
+.card-in-hand .card-cost {
+    font-size: 0.75em;
+    color: #b81c1c; /* A strong red for costs */
+    margin-top: auto;
+    padding-bottom: 5px;
+    font-weight: 600;
+}
+
+/* Conclave Panel Styling */
+.conclave-panel {
+    background-color: rgba(255, 255, 255, 0.95); /* Semi-transparent white */
+    border: 3px solid #6b4d3c;
+    border-radius: 8px;
+    padding: 30px;
+    text-align: center;
+    position: absolute; /* Position it over the main content */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 600px;
+    z-index: 900; /* Above other content, below feedback message */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    font-family: 'Old Standard TT', serif;
+}
+
+.conclave-panel h2 {
+    font-family: 'Merriweather', serif;
+    font-size: 1.8em;
+    color: #6b4d3c;
+    margin-bottom: 15px;
+}
+
+.conclave-panel p {
+    font-size: 1.1em;
     margin-bottom: 10px;
 }
 
-.cardinal-actions {
+.conclave-panel h3 {
+    font-size: 1.3em;
+    color: #8c5b3f;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+#candidateVotes {
+    list-style: none;
+    padding: 0;
+    margin: 15px 0 25px 0;
+    text-align: left;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #e0d7c7;
+    padding: 10px;
+    background-color: #fcf8f0;
+    border-radius: 5px;
+}
+
+#candidateVotes li {
+    padding: 5px 0;
+    border-bottom: 1px dashed #eee;
+    font-size: 1em;
+    color: #4a3b2b;
+}
+
+#candidateVotes li:last-child {
+    border-bottom: none;
+}
+
+.influence-options {
     display: flex;
     flex-wrap: wrap;
-    gap: 5px;
-    justify-content: flex-end;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-.placeholder {
-    color: #ccc;
-    text-align: center;
-    padding: 20px;
-    font-style: italic;
-}
-
-/* On Mission Badge */
-.on-mission-badge {
-    background-color: #2196F3; /* Blue */
+.conclave-button {
+    background-color: #a3753b; /* Gold-ish brown */
     color: white;
-    padding: 3px 8px;
+    border: 1px solid #6b4d3c;
+    padding: 10px 18px;
+    cursor: pointer;
+    font-family: 'Merriweather', serif;
+    font-size: 0.95em;
     border-radius: 5px;
-    font-size: 0.7em;
-    font-weight: bold;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    z-index: 10;
+    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
 }
 
-/* Ensure padding around list items */
-p {
-    padding: 3px 0;
+.conclave-button:hover {
+    background-color: #be8e4e;
+    transform: translateY(-2px);
+    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.conclave-button:active {
+    transform: translateY(0);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.conclave-button:disabled {
+    background-color: #ccc;
+    color: #888;
+    cursor: not-allowed;
+    opacity: 0.7;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Feedback Message */
+#feedback-message {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 1.1em;
+    font-weight: 600;
+    z-index: 1000;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    font-family: 'Merriweather', serif;
+}
+
+#feedback-message.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+#feedback-message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.hidden {
+    display: none !important;
 }
