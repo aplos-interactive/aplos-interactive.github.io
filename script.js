@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         imperial_alliance_established: false,
         crusade_launched: false,
         papal_bull_issued: false,
+        crusade_report_received: false, // Ensures report only happens once
         // Add more flags as your game develops
     };
 
@@ -40,7 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Game Events Data (UPDATED STRUCTURE WITH FLAGS!) ---
     const events = [
         {
-            id: 'start_game',
+            id: 'start_game', // Unique ID for the event
             title: 'A New Pontificate',
             content: 'You have been elected to the Holy See. The burdens of the papacy weigh heavily upon you. The world watches.',
             source: 'The Conclave',
@@ -50,21 +51,21 @@ document.addEventListener('DOMContentLoaded', () => {
                     effects: [
                         { type: 'metricChange', metric: 'piety', value: 10 },
                         { type: 'metricChange', metric: 'authority', value: 5 },
-                        { type: 'setNextEvent', eventId: 'first_edict' }
+                        { type: 'setNextEvent', eventId: 'first_edict' } // This choice branches to 'first_edict'
                     ]
                 },
                 {
                     text: 'Seek immediate counsel from the College of Cardinals.',
                     effects: [
                         { type: 'metricChange', metric: 'cardinalFavor', value: 10 },
-                        { type: 'metricChange', metric: 'publicOpinion', value: -5 },
-                        { type: 'setNextEvent', eventId: 'cardinal_meeting' }
+                        { type: 'metricChange', metric: 'publicOpinion', value: -5 }, // Multiple effects
+                        { type: 'setNextEvent', eventId: 'cardinal_meeting' } // This choice branches to 'cardinal_meeting'
                     ]
                 }
             ]
         },
         {
-            id: 'first_edict',
+            id: 'first_edict', // New event accessible via branching
             title: 'The Imperial Demand',
             content: 'Emperor Frederick demands your support for his military campaign against the rebellious northern states. He seeks papal blessing and financial aid.',
             source: 'Imperial Envoy',
@@ -73,9 +74,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     text: 'Grant your blessing and offer 20 Gold.',
                     effects: [
                         { type: 'metricChange', metric: 'authority', value: 15 },
-                        { type: 'metricChange', metric: 'gold', value: -20 },
-                        { type: 'metricChange', metric: 'publicOpinion', value: -10 },
-                        { type: 'setNextEvent', eventId: 'noble_dissatisfaction' },
+                        { type: 'metricChange', metric: 'gold', value: -20 }, // Cost Gold
+                        { type: 'metricChange', metric: 'publicOpinion', value: -10 }, // Public opinion drops
+                        { type: 'setNextEvent', eventId: 'noble_dissatisfaction' }, // Leads to another specific event
                         { type: 'setFlag', flag: 'imperial_alliance_established', value: true } // NEW: Sets this flag
                     ]
                 },
@@ -83,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     text: 'Deny his request, citing spiritual concerns and neutrality.',
                     effects: [
                         { type: 'metricChange', metric: 'piety', value: 10 },
-                        { type: 'metricChange', metric: 'authority', value: -10 },
+                        { type: 'metricChange', metric: 'authority', value: -10 }, // Authority drops with Emperor
                         { type: 'metricChange', metric: 'cardinalFavor', value: 5 },
                         { type: 'setNextEvent', eventId: 'papal_decree_consideration' }
                     ]
@@ -91,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
         {
-            id: 'cardinal_meeting',
+            id: 'cardinal_meeting', // New event accessible via branching
             title: 'The College Convenes',
             content: 'The cardinals are restless. Cardinal Giovanni expresses concerns about your lack of immediate, decisive action. "The faithful demand a strong hand!" he proclaims.',
             source: 'Cardinal Giovanni',
@@ -99,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 {
                     text: 'Assure them of your wisdom and long-term vision, citing patience as a virtue.',
                     effects: [
-                        { type: 'metricChange', metric: 'cardinalFavor', value: -5 },
+                        { type: 'metricChange', metric: 'cardinalFavor', value: -5 }, // Some cardinals are displeased
                         { type: 'metricChange', metric: 'piety', value: 5 },
                         { type: 'setNextEvent', eventId: 'papal_decree_consideration' }
                     ]
@@ -108,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     text: 'Promise swift reforms to address their concerns, consolidating power.',
                     effects: [
                         { type: 'metricChange', metric: 'cardinalFavor', value: 10 },
-                        { type: 'metricChange', metric: 'authority', value: 5 }
+                        { type: 'metricChange', metric: 'authority', value: 5 } // You gain authority by acting decisively
                     ]
                 }
             ]
@@ -126,7 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         { type: 'metricChange', metric: 'piety', value: 20 },
                         { type: 'metricChange', metric: 'gold', value: -50 },
                         { type: 'metricChange', metric: 'publicOpinion', value: 15 },
-                        { type: 'setFlag', flag: 'crusade_launched', value: true } // NEW: Sets crusade flag
+                        { type: 'setFlag', flag: 'crusade_launched', value: true }, // NEW: Sets crusade flag
+                        { type: 'setNextEvent', eventId: 'crusade_outcome_report' } // Immediately jump to report
                     ]
                 },
                 {
@@ -192,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
             content: 'Your Holy Crusade to the East has returned. What are the tidings?',
             source: 'Crusader Captain',
             requiredFlags: ['crusade_launched'], // Only appears if crusade was launched
-            forbiddenFlags: ['crusade_report_received'], // Ensures it only happens once
+            forbiddenFlags: ['crusade_report_received'], // Ensures it only happens once per game
             options: [
                 {
                     text: 'Assess the gains in piety and territory.',
@@ -219,7 +221,7 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             id: 'end_game_placeholder',
             title: 'The Papacy Continues...',
-            content: 'You have navigated the initial challenges of your pontificate. More trials and triumphs await.',
+            content: 'You have navigated the initial challenges of your pontificate. More trials and triumphs await. You can start a new game from here.',
             source: 'History Itself',
             options: [
                 {
@@ -335,7 +337,7 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {object} chosenOption The option object that was clicked.
      */
     function applyChoice(chosenOption) {
-        // Reset nextEventId for linear progression unless overridden
+        // Reset nextEventId for linear progression unless overridden by an effect
         nextEventId = null;
 
         // Apply all effects defined for the chosen option
@@ -344,21 +346,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateMetric(effect.metric, effect.value);
             } else if (effect.type === 'setNextEvent') {
                 nextEventId = effect.eventId; // Set the ID of the next event to load
-            } else if (effect.type === 'setFlag') { // NEW: Handle setting flags
+            } else if (effect.type === 'setFlag') { // Handle setting flags
                 gameFlags[effect.flag] = effect.value;
                 console.log(`Flag '${effect.flag}' set to ${effect.value}`);
-            } else if (effect.type === 'resetGame') { // NEW: Handle game reset
+            } else if (effect.type === 'resetGame') { // Handle game reset
                 initGame(); // Re-initialize the game state
-                return; // Stop processing effects for this choice
+                return; // Stop processing effects for this choice and exit applyChoice
             }
             // Add more effect types here as you expand mechanics (e.g., 'unlockFeature', 'triggerDelayedEvent')
         });
 
-        // Advance game day (unless game was just reset)
-        if (chosenOption.effects.every(e => e.type !== 'resetGame')) {
-            gameDay++;
-            gameDayCounter.textContent = gameDay;
+        // If a game reset was triggered, we're done here
+        if (chosenOption.effects.some(e => e.type === 'resetGame')) {
+            return;
         }
+
+        // Advance game day
+        gameDay++;
+        gameDayCounter.textContent = gameDay;
 
 
         // Determine and load the next eligible event
@@ -371,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 nextEventToLoad = branchedEvent;
                 currentEventIndex = events.indexOf(branchedEvent); // Update current index to the branched event
             } else {
-                console.warn(`Branched event '${nextEventId}' is not eligible or not found. Falling back to linear sequence.`);
+                console.warn(`Branched event '${nextEventId}' is not eligible or not found. Attempting linear sequence.`);
                 // If branched event isn't eligible, try next in linear sequence
                 currentEventIndex++;
             }
@@ -380,6 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Loop through subsequent events in the array to find the next eligible one
+        // This handles both linear progression and skipping ineligible events after a branch
         while (currentEventIndex < events.length) {
             const potentialNextEvent = events[currentEventIndex];
             if (isEventEligible(potentialNextEvent)) {
@@ -426,6 +432,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         gameDay = 1;
+        gameDayCounter.textContent = gameDay; // FIX: Ensure game day is updated on reset
         currentEventIndex = 0; // Start with the first event in the array
         nextEventId = null;
 
