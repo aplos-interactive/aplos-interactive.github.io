@@ -1,284 +1,180 @@
-// --- Game State ---
+// --- Game State (Medieval Papal Theme) ---
 const Game = {
-    turn: 1,
-    piety: 500,
+    currentTurn: 1, // Represents the passage of time/actions
+    resources: 4, // Action points for playing cards each turn
     gold: 200,
-    influence: 100,
-    stability: 75,
-    heresyLevel: 0,
-    
-    // Pope object with new attributes
+    piety: 500,
+    influence: 100, // Political influence over secular rulers/factions
+    stability: 75, // Internal stability of the Papal States
+    heresyLevel: 0, // 0-100, higher means more widespread heresy
+
+    // Pope object
     pope: {
-        name: "Pope Leo X", // Placeholder name
+        name: "Leo X", // Current Pope's name
         age: 50,
-        health: 100, // New health stat (0-100)
-        theology: 50,
-        diplomacy: 50,
-        intrigue: 50,
-        administration: 50,
-        maxAge: 90 // Popes won't live forever!
+        health: 100, // 0-100, affects chance of death
+        attributes: { // Reflects the Pope's personal strengths
+            theology: 50,
+            diplomacy: 50,
+            intrigue: 50,
+            administration: 50
+        }
     },
 
-    cardinals: [], // Array to hold appointed Cardinal objects
-    
-    // Pool of potential cardinals for appointment (expanded with more detail)
-    cardinalPool: [
-        { name: "Pietro Orsini", theology: 60, diplomacy: 40, intrigue: 30, loyalty: 70, ambition: 30, province: "Lazio", missionTurns: 0 },
-        { name: "Guido Visconti", theology: 45, diplomacy: 55, intrigue: 50, loyalty: 60, ambition: 50, province: "Tuscany", missionTurns: 0 },
-        { name: "Lorenzo Medici", theology: 50, diplomacy: 35, intrigue: 65, loyalty: 50, ambition: 70, province: "Florence", missionTurns: 0 },
-        { name: "Antonio Borgia", theology: 70, diplomacy: 40, intrigue: 20, loyalty: 80, ambition: 20, province: "Castile", missionTurns: 0 },
-        { name: "Cesare Sforza", theology: 30, diplomacy: 65, intrigue: 45, loyalty: 55, ambition: 60, province: "Milan", missionTurns: 0 },
-        { name: "Benedict Beaufort", theology: 55, diplomacy: 50, intrigue: 30, loyalty: 75, ambition: 40, province: "England", missionTurns: 0 },
-        { name: "Philip Valois", theology: 40, diplomacy: 60, intrigue: 55, loyalty: 65, ambition: 55, province: "France", missionTurns: 0 },
-        { name: "Johannes Hohenzollern", theology: 62, diplomacy: 38, intrigue: 40, loyalty: 68, ambition: 45, province: "Germany", missionTurns: 0 },
-        { name: "Diego Mendoza", theology: 48, diplomacy: 58, intrigue: 62, loyalty: 52, ambition: 72, province: "Aragon", missionTurns: 0 },
-        { name: "Francesco Gonzaga", theology: 53, diplomacy: 47, intrigue: 35, loyalty: 73, ambition: 38, province: "Mantua", missionTurns: 0 },
-        { name: "Giovanni Colonna", theology: 68, diplomacy: 32, intrigue: 28, loyalty: 82, ambition: 18, province: "Rome", missionTurns: 0 },
-        { name: "Stefan Báthory", theology: 50, diplomacy: 55, intrigue: 48, loyalty: 63, ambition: 57, province: "Hungary", missionTurns: 0 },
-        { name: "Patrick O'Connor", theology: 42, diplomacy: 40, intrigue: 30, loyalty: 60, ambition: 45, province: "Ireland", missionTurns: 0 }
-    ],
-
-    // Simple representation of provinces (more detailed later)
-    provinces: [
-        { name: "Lazio", wealth: 100, piety: 70, heresy: 5, stability: 80 },
-        { name: "Tuscany", wealth: 120, piety: 60, heresy: 10, stability: 75 },
-        { name: "Umbria", wealth: 80, piety: 80, heresy: 2, stability: 90 },
-        { name: "Naples", wealth: 150, piety: 50, heresy: 15, stability: 60 },
-        { name: "Sicily", wealth: 90, piety: 40, heresy: 20, stability: 55 }
-    ],
+    // Cardinals array
+    cardinals: [], // Populated dynamically or on init
 
     // Conclave state
     conclave: {
-        isActive: false,
+        active: false,
         ballot: 0,
-        candidates: {}, // { cardinalName: { votes: int, cardinalObject: obj } }
-        winningThreshold: 0,
-        electedPope: null,
-        playerFavoredCandidate: null // Name of the cardinal the player is trying to favor
+        candidates: [], // List of cardinals who are candidates
+        votes: {}, // Stores current votes for each candidate
+        winningThreshold: 0, // Votes needed to win
+        influenceAttempts: 0 // How many times player has influenced
     },
 
-    // --- Events (More complex events added) ---
-    events: [
-        {
-            name: "Bumper Harvest!",
-            description: "A period of unusually good weather leads to plentiful crops across the Papal States. Your coffers swell!",
-            effect: () => {
-                Game.gold += 50;
-                Game.stability = Math.min(100, Game.stability + 5);
-                return "A period of unusually good weather leads to plentiful crops across the Papal States. Your coffers swell!";
-            }
-        },
-        {
-            name: "Local Rebellion in Lazio",
-            description: "A minor noble in Lazio defies your authority. Stability drops!",
-            effect: () => {
-                Game.stability = Math.max(0, Game.stability - 10);
-                Game.gold = Math.max(0, Game.gold - 20);
-                const lazio = Game.provinces.find(p => p.name === "Lazio");
-                if (lazio) lazio.stability = Math.max(0, lazio.stability - 15);
-                return "A minor noble in Lazio defies your authority. Stability drops!";
-            }
-        },
-        {
-            name: "Pilgrimage Boost",
-            description: "News of your holiness spreads, attracting more pilgrims and increasing piety.",
-            effect: () => {
-                Game.piety = Math.min(1000, Game.piety + 30);
-                return "News of your holiness spreads, attracting more pilgrims and increasing piety.";
-            }
-        },
-        {
-            name: "Rumors of Heresy",
-            description: "Whispers of heretical teachings surface in a distant diocese. Heresy spreads!",
-            effect: () => {
-                Game.piety = Math.max(0, Game.piety - 15);
-                Game.heresyLevel = Math.min(100, Game.heresyLevel + 10);
-                const randomProvince = Game.provinces[Math.floor(Math.random() * Game.provinces.length)];
-                randomProvince.heresy = Math.min(100, randomProvince.heresy + 15);
-                return `Whispers of heretical teachings surface in ${randomProvince.name}. Heresy spreads!`;
-            }
-        },
-        {
-            name: "Diplomatic Overture",
-            description: "A major European ruler sends an envoy, seeking your arbitration in a dispute.",
-            effect: () => {
-                Game.influence = Math.min(200, Game.influence + 10);
-                return "A major European ruler sends an envoy, seeking your arbitration in a dispute.";
-            }
-        },
-        {
-            name: "Cardinal Faction Forms",
-            description: "A group of cardinals begins to question your decisions, reducing their loyalty.",
-            effect: () => {
-                Game.cardinals.forEach(c => c.loyalty = Math.max(0, c.loyalty - 5));
-                return "A group of cardinals begins to question your decisions, reducing their loyalty.";
+    // --- Card Definitions (Medieval Papal Theme) ---
+    // Cards are organized by decks. Each card has a cost, effects, and conditions.
+    decks: {
+        'papal-affairs': [
+            {
+                id: 'papal_bull',
+                title: 'Issue Papal Bull',
+                text: 'Publish an important decree to solidify Church doctrine or policy.',
+                cost: 1,
+                effects: () => {
+                    Game.piety = Math.min(1000, Game.piety + 30);
+                    Game.heresyLevel = Math.max(0, Game.heresyLevel - 5);
+                    return "A new Papal Bull strengthens faith and reduces heresy!";
+                },
+                canPlay: () => true
             },
-            condition: () => Game.cardinals.length > 2
-        },
-        {
-            name: "Donation from a Devout Noble",
-            description: "A wealthy noble, impressed by your piety, sends a generous gift to the Papal coffers.",
-            effect: () => {
-                Game.gold += 75;
-                Game.piety = Math.min(1000, Game.piety + 10);
-                return "A wealthy noble, impressed by your piety, sends a generous gift to the Papal coffers.";
+            {
+                id: 'appoint_bishop',
+                title: 'Appoint Bishop',
+                text: 'Appoint a loyal bishop to a key diocese.',
+                cost: 1,
+                effects: () => {
+                    Game.influence = Math.min(200, Game.influence + 10);
+                    Game.piety = Math.min(1000, Game.piety + 10);
+                    return "A loyal bishop strengthens our control and piety in the region.";
+                },
+                canPlay: () => true
+            },
+            {
+                id: 'fund_cathedral',
+                title: 'Fund Cathedral',
+                text: 'Invest in the construction of a magnificent cathedral.',
+                cost: 2, // Gold cost
+                effects: () => {
+                    if (Game.gold < 50) return "Not enough gold to fund a cathedral!";
+                    Game.gold -= 50;
+                    Game.piety = Math.min(1000, Game.piety + 50);
+                    Game.stability = Math.min(100, Game.stability + 5);
+                    return "A grand cathedral boosts piety and local stability.";
+                },
+                canPlay: () => Game.gold >= 50 // Check gold before playing
+            },
+            {
+                id: 'call_council',
+                title: 'Call Church Council',
+                text: 'Convene a council of bishops and cardinals to address pressing issues.',
+                cost: 3,
+                effects: () => {
+                    Game.piety = Math.min(1000, Game.piety + 40);
+                    Game.heresyLevel = Math.max(0, Game.heresyLevel - 10);
+                    Game.influence = Math.min(200, Game.influence + 15);
+                    Game.stability = Math.max(0, Game.stability - 5); // Councils can cause friction
+                    return "A Church Council addresses critical issues, but stirs some debate.";
+                },
+                canPlay: () => true
+            },
+            {
+                id: 'send_inquisitor',
+                title: 'Send Inquisitor',
+                text: 'Dispatch an inquisitor to root out heresy in a rebellious region.',
+                cost: 1,
+                effects: () => {
+                    Game.heresyLevel = Math.max(0, Game.heresyLevel - 15);
+                    Game.stability = Math.max(0, Game.stability - 10); // Can cause unrest
+                    Game.piety = Math.min(1000, Game.piety + 5); // Opinion of loyalists
+                    return "The Inquisitor strikes at heresy, but stability may suffer.";
+                },
+                canPlay: () => Game.heresyLevel > 0 // Only if there's heresy to fight
             }
-        },
-        {
-            name: "Plague Outbreak",
-            description: "A devastating plague sweeps through the Papal States, disrupting trade and sowing fear.",
-            effect: () => {
-                Game.gold = Math.max(0, Game.gold - 50);
-                Game.stability = Math.max(0, Game.stability - 20);
-                Game.piety = Math.max(0, Game.piety - 10);
-                Game.provinces.forEach(p => {
-                    p.wealth = Math.max(0, p.wealth - 20);
-                    p.stability = Math.max(0, p.stability - 15);
-                });
-                return "A devastating plague sweeps through the Papal States, disrupting trade and sowing fear.";
+        ],
+        'diplomacy': [
+            {
+                id: 'negotiate_treaty',
+                title: 'Negotiate Treaty',
+                text: 'Forge a new alliance or peace treaty with a foreign power.',
+                cost: 2,
+                effects: () => {
+                    Game.influence = Math.min(200, Game.influence + 20);
+                    Game.stability = Math.min(100, Game.stability + 10);
+                    return "A new treaty strengthens the Papal States' position!";
+                },
+                canPlay: () => true
+            },
+            {
+                id: 'request_aid',
+                title: 'Request Military Aid',
+                text: 'Ask a powerful Catholic monarch for military assistance.',
+                cost: 1,
+                effects: () => {
+                    if (Game.influence < 40) return "Not enough influence to request aid!";
+                    Game.gold = Math.min(1000, Game.gold + 75); // Simulate aid in gold
+                    Game.influence = Math.max(0, Game.influence - 20); // Influence cost
+                    Game.stability = Math.min(100, Game.stability + 5);
+                    return "Foreign aid arrives, but at a cost to your influence.";
+                },
+                canPlay: () => Game.influence >= 40
             }
-        },
-        {
-            name: "Construction of a New Cathedral",
-            description: "A grand new cathedral is consecrated in a major city, boosting local piety and administration.",
-            effect: () => {
-                Game.piety = Math.min(1000, Game.piety + 20);
-                Game.stability = Math.min(100, Game.stability + 5);
-                const randomProvince = Game.provinces[Math.floor(Math.random() * Game.provinces.length)];
-                randomProvince.piety = Math.min(100, randomProvince.piety + 10);
-                randomProvince.stability = Math.min(100, randomProvince.stability + 5);
-                return `A grand new cathedral is consecrated in ${randomProvince.name}, boosting local piety and administration.`;
+        ],
+        'church-doctrine': [
+            {
+                id: 'issue_indulgence',
+                title: 'Issue Indulgence',
+                text: 'Offer spiritual benefits in exchange for monetary contributions.',
+                cost: 1,
+                effects: () => {
+                    Game.gold = Math.min(1000, Game.gold + 40);
+                    Game.piety = Math.max(0, Game.piety - 10); // Can backfire on piety long-term
+                    Game.heresyLevel = Math.min(100, Game.heresyLevel + 5); // Can increase heresy
+                    return "Indulgences fill the coffers, but may fuel discontent among the faithful.";
+                },
+                canPlay: () => true
+            },
+            {
+                id: 'publish_theological_work',
+                title: 'Publish Theological Work',
+                text: 'Commission a scholarly work to clarify complex doctrines.',
+                cost: 2,
+                effects: () => {
+                    Game.piety = Math.min(1000, Game.piety + 25);
+                    Game.heresyLevel = Math.max(0, Game.heresyLevel - 10);
+                    Game.pope.attributes.theology = Math.min(100, Game.pope.attributes.theology + 5);
+                    return "A new theological work strengthens faith and improves the Pope's standing.";
+                },
+                canPlay: () => true
             }
-        }
-    ],
+        ],
+    },
+    hand: [], // Cards currently in the player's hand
+    maxHandSize: 3,
 
-    // --- Decisions (Added Heresy decision) ---
-    decisions: [
-        {
-            id: "church_reform",
-            description: "The Church is facing growing calls for reform. What is your stance?",
-            options: [
-                {
-                    text: "Embrace radical reforms to purify the Church.",
-                    effect: () => {
-                        Game.piety = Math.min(1000, Game.piety + 50);
-                        Game.stability = Math.max(0, Game.stability - 15);
-                        Game.cardinals.forEach(c => c.loyalty = Math.max(0, c.loyalty - 10));
-                        Game.influence = Math.min(200, Game.influence + 10);
-                        Game.heresyLevel = Math.max(0, Game.heresyLevel - 10);
-                        Game.updateDisplay("Your radical reforms cause upheaval but increase your spiritual standing.");
-                    }
-                },
-                {
-                    text: "Support moderate reforms, balancing tradition and necessity.",
-                    effect: () => {
-                        Game.piety = Math.min(1000, Game.piety + 20);
-                        Game.stability = Math.min(100, Game.stability + 5);
-                        Game.cardinals.forEach(c => c.loyalty = Math.min(100, c.loyalty + 5));
-                        Game.heresyLevel = Math.max(0, Game.heresyLevel - 5);
-                        Game.updateDisplay("Moderate reforms bring some peace and modest improvements.");
-                    }
-                },
-                {
-                    text: "Resist all reforms, maintaining the status quo.",
-                    effect: () => {
-                        Game.piety = Math.max(0, Game.piety - 30);
-                        Game.stability = Math.min(100, Game.stability + 10);
-                        Game.cardinals.forEach(c => c.loyalty = Math.min(100, c.loyalty + 10));
-                        Game.influence = Math.max(0, Game.influence - 10);
-                        Game.heresyLevel = Math.min(100, Game.heresyLevel + 15);
-                        Game.updateDisplay("You resist calls for reform, pleasing some but alienating others.");
-                    }
-                }
-            ],
-            triggered: false,
-            condition: () => Game.turn >= 3 && Game.piety < 600
-        },
-        {
-            id: "royal_marriage",
-            description: "A powerful king seeks your blessing for a controversial marriage to consolidate his power. What do you do?",
-            options: [
-                {
-                    text: "Grant the dispensation.",
-                    effect: () => {
-                        Game.gold += 100;
-                        Game.influence = Math.min(200, Game.influence + 20);
-                        Game.piety = Math.max(0, Game.piety - 10);
-                        Game.cardinals.forEach(c => c.loyalty = Math.max(0, c.loyalty - 3));
-                        Game.updateDisplay("You grant the dispensation, strengthening your ties with the monarch.");
-                    }
-                },
-                {
-                    text: "Refuse the dispensation, citing religious doctrine.",
-                    effect: () => {
-                        Game.piety = Math.min(1000, Game.piety + 20);
-                        Game.influence = Math.max(0, Game.influence - 15);
-                        Game.cardinals.forEach(c => c.loyalty = Math.min(100, c.loyalty + 5));
-                        Game.updateDisplay("You refuse the marriage, upholding doctrine but risking the king's wrath.");
-                    }
-                }
-            ],
-            triggered: false,
-            condition: () => Game.turn >= 5 && Game.gold < 300
-        },
-        {
-            id: "deal_with_heresy",
-            description: "Heresy is spreading within the Church. How will you respond?",
-            options: [
-                {
-                    text: "Launch a full-scale Inquisition! (Cost: 100 Gold)",
-                    effect: () => {
-                        if (Game.gold >= 100) {
-                            Game.gold -= 100;
-                            Game.heresyLevel = Math.max(0, Game.heresyLevel - 30);
-                            Game.stability = Math.max(0, Game.stability - 10);
-                            Game.piety = Math.min(1000, Game.piety + 15);
-                            Game.cardinals.forEach(c => c.loyalty = Math.min(100, c.loyalty + 5));
-                            Game.provinces.forEach(p => p.heresy = Math.max(0, p.heresy - 20));
-                            Game.updateDisplay("The Inquisition is launched, crushing heresy but stirring unrest.");
-                        } else {
-                            Game.updateDisplay("You lack the gold to launch a full-scale Inquisition!");
-                            Game.presentDecision(this);
-                        }
-                    },
-                    canAfford: () => Game.gold >= 100
-                },
-                {
-                    text: "Send theologians to debate and persuade heretics.",
-                    effect: () => {
-                        Game.heresyLevel = Math.max(0, Game.heresyLevel - 10);
-                        Game.piety = Math.min(1000, Game.piety + 5);
-                        Game.stability = Math.min(100, Game.stability + 5);
-                        Game.cardinals.forEach(c => c.loyalty = Math.max(0, c.loyalty - 5));
-                        Game.provinces.forEach(p => p.heresy = Math.max(0, p.heresy - 10));
-                        Game.updateDisplay("Theologians are sent forth, winning some souls back to the fold.");
-                    }
-                },
-                {
-                    text: "Ignore the heresy; it will fade on its own.",
-                    effect: () => {
-                        Game.heresyLevel = Math.min(100, Game.heresyLevel + 20);
-                        Game.piety = Math.max(0, Game.piety - 20);
-                        Game.stability = Math.max(0, Game.stability - 5);
-                        Game.provinces.forEach(p => p.heresy = Math.min(100, p.heresy + 15));
-                        Game.updateDisplay("You ignore the heresy, but it continues to fester and spread.");
-                    }
-                }
-            ],
-            triggered: false,
-            condition: () => Game.heresyLevel >= 20 || Game.provinces.some(p => p.heresy >= 20)
-        }
-    ],
-    
     // --- DOM Elements ---
     elements: {
-        turn: document.getElementById('turn'),
-        piety: document.getElementById('piety'),
+        // Status Panel Elements
+        currentTurn: document.getElementById('current-turn'),
+        resourcesAvailable: document.getElementById('resources-available'),
         gold: document.getElementById('gold'),
+        piety: document.getElementById('piety'),
         influence: document.getElementById('influence'),
         stability: document.getElementById('stability'),
         heresyLevel: document.getElementById('heresyLevel'),
-        
+
         popeName: document.getElementById('popeName'),
         popeAge: document.getElementById('popeAge'),
         popeHealth: document.getElementById('popeHealth'),
@@ -289,735 +185,558 @@ const Game = {
 
         cardinalSupportOverall: document.getElementById('cardinalSupportOverall'),
         cardinalsList: document.getElementById('cardinalsList'),
-        appointCardinalButton: document.getElementById('appointCardinalButton'),
 
-        gameMessage: document.getElementById('gameMessage'),
-        nextTurnButton: document.getElementById('nextTurnButton'),
+        // Main Content Panel Elements
+        currentMainYear: document.getElementById('current-main-year'),
+        narrativeText: document.getElementById('narrative-text'),
+        availableDecks: document.getElementById('available-decks'),
+        playerHandSlots: document.getElementById('player-hand-slots'),
+        feedbackMessage: document.getElementById('feedback-message'),
 
-        decisionPanel: document.querySelector('.decision-panel'),
-        decisionDescription: document.getElementById('decisionDescription'),
-        decisionOptions: document.getElementById('decisionOptions'),
-
+        // Conclave Panel Elements
         conclavePanel: document.querySelector('.conclave-panel'),
         conclaveMessage: document.getElementById('conclaveMessage'),
         ballotNumber: document.getElementById('ballotNumber'),
-        winningThreshold: document.getElementById('winningThreshold'), // New element for threshold
+        winningThreshold: document.getElementById('winningThreshold'),
         candidateVotes: document.getElementById('candidateVotes'),
-        advanceConclaveButton: document.getElementById('advanceConclaveButton'),
-        conclaveInfluenceOptions: document.getElementById('conclaveInfluenceOptions'),
         influenceGoldButton: document.getElementById('influenceGoldButton'),
         influencePromisesButton: document.getElementById('influencePromisesButton'),
-        influenceIntrigueButton: document.getElementById('influenceIntrigueButton')
+        influenceIntrigueButton: document.getElementById('influenceIntrigueButton'),
+        favorPopeButton: document.getElementById('favorPopeButton'),
+        advanceConclaveButton: document.getElementById('advanceConclaveButton'),
+
+        // Menu buttons (for future implementation)
+        menuButtons: document.querySelectorAll('.menu-button')
     },
 
     // --- Core Functions ---
     init: function() {
-        this.updateDisplay("Welcome, Holy Father! Your reign begins.");
-        this.elements.nextTurnButton.addEventListener('click', () => this.advanceTurn());
-        this.elements.appointCardinalButton.addEventListener('click', () => this.appointCardinal());
-        this.elements.advanceConclaveButton.addEventListener('click', () => this.advanceConclave());
-        
-        // Add event listeners for new conclave influence buttons
-        this.elements.influenceGoldButton.addEventListener('click', () => this.attemptInfluenceConclave('gold'));
-        this.elements.influencePromisesButton.addEventListener('click', () => this.attemptInfluenceConclave('promises'));
-        this.elements.influenceIntrigueButton.addEventListener('click', () => this.attemptInfluenceConclave('intrigue'));
+        this.generateCardinals(8); // Start with a good number of cardinals
+        this.updateDisplay("Welcome, Your Holiness! The Papal States await your divine guidance.");
 
-        this.elements.decisionPanel.classList.add('hidden');
-        this.elements.conclavePanel.classList.add('hidden');
+        // Attach event listeners for decks (drawing cards)
+        document.querySelectorAll('.card-deck').forEach(deckDiv => {
+            deckDiv.addEventListener('click', () => {
+                const deckId = deckDiv.dataset.deckId;
+                this.drawCard(deckId);
+            });
+        });
+
+        // Conclave button listeners
+        this.elements.influenceGoldButton.addEventListener('click', () => this.influenceConclave('gold'));
+        this.elements.influencePromisesButton.addEventListener('click', () => this.influenceConclave('promises'));
+        this.elements.influenceIntrigueButton.addEventListener('click', () => this.influenceConclave('intrigue'));
+        this.elements.favorPopeButton.addEventListener('click', () => this.favorPope()); // This is a placeholder, needs definition
+        this.elements.advanceConclaveButton.addEventListener('click', () => this.runConclaveBallot());
+
+
+        // Initial hand slots
+        this.updateHandDisplay();
+
+        // Initial narrative
+        this.setNarrative(`
+            <p>The Holy See stands as a beacon of faith amidst a world of shifting allegiances and burgeoning heresies. Your Holiness, your reign begins. Guide the faithful, manage the temporal realm, and defend the Church from its enemies.</p>
+        `);
     },
 
     updateDisplay: function(message = "") {
-        // Update Papal State Stats
-        this.elements.turn.textContent = this.turn;
-        this.elements.piety.textContent = this.piety;
+        // Update general stats
+        this.elements.currentTurn.textContent = this.currentTurn;
+        this.elements.resourcesAvailable.textContent = this.resources;
         this.elements.gold.textContent = this.gold;
+        this.elements.piety.textContent = this.piety;
         this.elements.influence.textContent = this.influence;
         this.elements.stability.textContent = this.stability;
         this.elements.heresyLevel.textContent = this.heresyLevel;
 
-        // Update Pope's Attributes
+        // Update Pope info
         this.elements.popeName.textContent = this.pope.name;
         this.elements.popeAge.textContent = this.pope.age;
         this.elements.popeHealth.textContent = this.pope.health;
-        this.elements.theology.textContent = this.pope.theology;
-        this.elements.diplomacy.textContent = this.pope.diplomacy;
-        this.elements.intrigue.textContent = this.pope.intrigue;
-        this.elements.administration.textContent = this.pope.administration;
+        this.elements.theology.textContent = this.pope.attributes.theology;
+        this.elements.diplomacy.textContent = this.pope.attributes.diplomacy;
+        this.elements.intrigue.textContent = this.pope.attributes.intrigue;
+        this.elements.administration.textContent = this.pope.attributes.administration;
 
-        // Update Overall Cardinal Support
-        if (this.cardinals.length > 0) {
-            const totalLoyalty = this.cardinals.reduce((sum, cardinal) => sum + cardinal.loyalty, 0);
-            this.elements.cardinalSupportOverall.textContent = Math.round(totalLoyalty / this.cardinals.length);
-        } else {
-            this.elements.cardinalSupportOverall.textContent = 0;
-        }
-
-        // Update Cardinal List
+        // Update Cardinals list
         this.elements.cardinalsList.innerHTML = '';
         if (this.cardinals.length === 0) {
             this.elements.cardinalsList.innerHTML = '<p class="placeholder">No Cardinals appointed yet.</p>';
         } else {
-            this.cardinals.forEach((cardinal, index) => {
-                const div = document.createElement('div');
-                div.classList.add('cardinal-entry');
-                
-                let missionStatus = '';
-                let missionButtonsDisabled = '';
-                if (cardinal.missionTurns > 0) {
-                    missionStatus = `<span class="on-mission-badge">On Mission (${cardinal.missionTurns} turns)</span>`;
-                    missionButtonsDisabled = 'disabled';
-                }
-
-                div.innerHTML = `
-                    <strong>${cardinal.name}</strong> (${cardinal.province}) ${missionStatus}
-                    <div class="attributes">
-                        Loyalty: ${cardinal.loyalty}<br>
-                        Ambition: ${cardinal.ambition}<br>
-                        Theology: ${cardinal.theology}<br>
-                        Diplomacy: ${cardinal.diplomacy}<br>
-                        Intrigue: ${cardinal.intrigue}<br>
-                        Administration: ${cardinal.administration}
-                    </div>
-                    <div class="cardinal-actions">
-                        <button class="cardinal-action-button" ${missionButtonsDisabled} onclick="Game.grantCardinalFavor(${index})">Grant Favor (-20 Gold)</button>
-                        <button class="cardinal-action-button" ${missionButtonsDisabled} onclick="Game.promptCardinalMission(${index})">Send on Mission</button>
-                        <button class="cardinal-action-button" ${missionButtonsDisabled} onclick="Game.setFavoredCandidate(${index})">Favor for Pope</button>
-                    </div>
+            let totalSupport = 0;
+            this.cardinals.forEach(c => {
+                totalSupport += c.loyalty;
+                const cardinalDiv = document.createElement('div');
+                cardinalDiv.classList.add('cardinal-entry');
+                cardinalDiv.innerHTML = `
+                    <strong>${c.name}</strong> (${c.age})<br>
+                    <div class="attributes">Loyalty: ${c.loyalty}, Ambition: ${c.ambition}, Piety: ${c.piety}</div>
                 `;
-                this.elements.cardinalsList.appendChild(div);
+                this.elements.cardinalsList.appendChild(cardinalDiv);
             });
+            this.elements.cardinalSupportOverall.textContent = Math.round(totalSupport / this.cardinals.length);
         }
-        
-        // Update Game Message
-        this.elements.gameMessage.textContent = message;
+
+        // Update main year (for narrative context, using a fixed start year for now)
+        this.elements.currentMainYear.textContent = 1500 + this.currentTurn - 1; // Simple year progression
+
+        // Update Game Message (feedback)
+        if (message) {
+            this.showFeedback(message, 'success');
+        }
+
+        // Disable/enable conclave buttons based on resources/state
+        if (this.conclave.active) {
+            this.elements.influenceGoldButton.disabled = Game.gold < 50;
+            this.elements.influencePromisesButton.disabled = Game.piety < 10;
+            this.elements.influenceIntrigueButton.disabled = Game.stability < 10;
+        } else {
+            this.elements.influenceGoldButton.disabled = true;
+            this.elements.influencePromisesButton.disabled = true;
+            this.elements.influenceIntrigueButton.disabled = true;
+            this.elements.favorPopeButton.disabled = true;
+            this.elements.advanceConclaveButton.disabled = true;
+        }
     },
 
-    advanceTurn: function() {
-        // If a decision is active or conclave is active, prevent advancing turn
-        if (!this.elements.decisionPanel.classList.contains('hidden') || this.conclave.isActive) {
-            this.updateDisplay("You must resolve the current situation before advancing!");
+    setNarrative: function(text) {
+        this.elements.narrativeText.innerHTML = text;
+    },
+
+    // --- Card System Functions ---
+    drawCard: function(deckId) {
+        if (this.conclave.active) {
+            this.showFeedback("Cannot draw cards during a Conclave!", 'error');
+            return;
+        }
+        if (this.hand.length >= this.maxHandSize) {
+            this.showFeedback("Your hand is full! Play a card first.", 'error');
+            return;
+        }
+        if (!this.decks[deckId] || this.decks[deckId].length === 0) {
+            this.showFeedback(`No cards left in the ${deckId} deck!`, 'error');
             return;
         }
 
-        this.turn += 1;
-        let message = `Advancing to Turn ${this.turn}...`;
+        const drawnCard = this.decks[deckId].shift(); // Remove from top of deck
+        this.hand.push(drawnCard);
+        this.showFeedback(`Drew "${drawnCard.title}" from the ${deckId} deck.`, 'success');
+        this.updateHandDisplay();
+    },
+
+    playCard: function(cardIndex) {
+        if (this.conclave.active) {
+            this.showFeedback("Cannot play regular cards during a Conclave!", 'error');
+            return;
+        }
+        if (cardIndex < 0 || cardIndex >= this.hand.length) {
+            this.showFeedback("Invalid card selection.", 'error');
+            return;
+        }
+
+        const cardToPlay = this.hand[cardIndex];
+
+        if (this.resources < cardToPlay.cost) {
+            this.showFeedback(`Not enough resources! This card costs ${cardToPlay.cost} resources.`, 'error');
+            return;
+        }
+
+        // Check any specific play conditions for the card
+        if (cardToPlay.canPlay && !cardToPlay.canPlay()) {
+            this.showFeedback(`Cannot play "${cardToPlay.title}" at this time.`, 'error');
+            return;
+        }
+
+        this.resources -= cardToPlay.cost;
+        const feedback = cardToPlay.effects(); // Apply card effects
+        this.hand.splice(cardIndex, 1); // Remove card from hand
+
+        this.showFeedback(feedback, 'success');
+        this.updateDisplay(); // Update stats
+        this.updateHandDisplay(); // Update hand visuals
+
+        this.advanceTurn(); // Advance the turn after playing a card
+    },
+
+    updateHandDisplay: function() {
+        this.elements.playerHandSlots.innerHTML = ''; // Clear current hand display
+
+        // Create empty slots up to maxHandSize
+        for (let i = 0; i < this.maxHandSize; i++) {
+            const slot = document.createElement('div');
+            slot.classList.add('card-slot');
+            slot.classList.add('empty-hand-slot');
+            this.elements.playerHandSlots.appendChild(slot);
+        }
+
+        // Populate slots with cards from hand
+        this.hand.forEach((card, index) => {
+            const cardElement = document.createElement('div');
+            cardElement.classList.add('card-in-hand');
+            cardElement.innerHTML = `
+                <div class="card-title">${card.title}</div>
+                <div class="card-content">${card.text}</div>
+                <div class="card-cost">Cost: ${card.cost} Resources</div>
+            `;
+            cardElement.addEventListener('click', () => this.playCard(index));
+
+            // Replace an empty slot with the actual card
+            if (this.elements.playerHandSlots.children[index]) {
+                this.elements.playerHandSlots.children[index].replaceWith(cardElement);
+            }
+        });
+    },
+
+    // --- Turn Advancement ---
+    advanceTurn: function() {
+        if (this.conclave.active) {
+            // During conclave, turns advance by ballot, not this function
+            return;
+        }
+
+        this.currentTurn++;
+        this.resources = 4; // Replenish resources each turn
 
         // Pope ages and health declines
-        this.pope.age += 1;
-        this.pope.health = Math.max(0, this.pope.health - Math.floor(this.pope.age / 10) - Math.floor(Math.random() * 3));
-        
+        this.pope.age++;
+        this.pope.health = Math.max(0, this.pope.health - Math.floor(Math.random() * 5 + 1)); // Lose 1-5 health per turn
+        if (this.pope.age >= 70) { // Accelerate health decline for older popes
+            this.pope.health = Math.max(0, this.pope.health - Math.floor(Math.random() * 5 + 5)); // Lose 5-10 health
+        }
+
         // Check for Pope's death
-        if (this.pope.health <= 0 || this.pope.age >= this.pope.maxAge + Math.floor(Math.random() * 5)) {
-            this.startConclave("The Holy Father has passed away! The Conclave gathers.");
-            return;
+        if (this.pope.health <= 0) {
+            this.popeDies();
+            return; // Don't run regular monthly events if Pope dies
         }
 
-        // Basic resource changes per turn
-        this.gold += 15 + Math.floor(this.pope.administration / 10);
-        this.piety += Math.floor(Math.random() * 5) - 2 + Math.floor(this.pope.theology / 20);
-        this.influence += Math.floor(Math.random() * 3) - 1 + Math.floor(this.pope.diplomacy / 25);
-        this.stability += Math.floor(Math.random() * 2) - 1 + Math.floor(this.pope.administration / 30);
-        this.heresyLevel += Math.floor(Math.random() * 3) - 1;
+        // Random events affecting stats
+        this.handleRandomEvents();
 
-        // Cardinal influence on stats, loyalty, and mission progress
-        this.cardinals.forEach(cardinal => {
-            this.stability += Math.floor(cardinal.loyalty / 20) - 2;
-            this.piety += Math.floor(cardinal.loyalty / 30) - 1;
-            
-            // Handle mission progress
-            if (cardinal.missionTurns > 0) {
-                cardinal.missionTurns--;
-                if (cardinal.missionTurns === 0) {
-                    this.completeCardinalMission(cardinal, message); // Pass message by reference or return from it
-                }
-            } else {
-                // Only apply ambition/loyalty effects if not on mission
-                if (cardinal.ambition > 60 && Math.random() < 0.05) {
-                    const intrigueEffect = Math.floor(this.pope.intrigue / 15);
-                    cardinal.loyalty = Math.max(0, cardinal.loyalty - (Math.floor(Math.random() * 10) - intrigueEffect));
-                    message += `\nRumors of Cardinal ${cardinal.name}'s ambition are spreading. His loyalty dips${intrigueEffect > 0 ? ' but your intrigue contained it slightly.' : '.'}`;
-                }
-            }
-            this.piety += Math.floor(cardinal.theology / 50);
-        });
-
-        // Province updates
-        this.provinces.forEach(p => {
-            p.heresy = Math.min(100, Math.max(0, p.heresy + Math.floor(Math.random() * 5) - 2));
-            p.stability = Math.min(100, Math.max(0, p.stability + Math.floor(Math.random() * 3) - 1));
-            Game.heresyLevel += p.heresy > 50 ? 1 : 0;
-        });
-        Game.heresyLevel = Math.min(100, Math.max(0, Game.heresyLevel));
-
-        // Clamp values to reasonable ranges
-        this.piety = Math.max(0, Math.min(1000, this.piety));
-        this.gold = Math.max(0, this.gold);
-        this.influence = Math.max(0, Math.min(200, this.influence));
-        this.stability = Math.max(0, Math.min(100, this.stability));
-        this.heresyLevel = Math.max(0, Math.min(100, this.heresyLevel));
-
-        // Heresy impacts
-        if (this.heresyLevel > 0) {
-            this.piety = Math.max(0, this.piety - Math.floor(this.heresyLevel / 5));
-            this.stability = Math.max(0, this.stability - Math.floor(this.heresyLevel / 10));
-            message += `\nHeresy is weakening the Church.`;
-        }
-
-        // --- Event & Decision Triggering ---
-        const heresyDecision = this.decisions.find(d => d.id === "deal_with_heresy");
-        if (heresyDecision && heresyDecision.condition()) {
-            this.presentDecision(heresyDecision);
-            return;
-        }
-
-        if (Math.random() < 0.7) {
-            const possibleEvents = this.events.filter(e => !e.condition || e.condition());
-            if (possibleEvents.length > 0) {
-                const randomEventIndex = Math.floor(Math.random() * possibleEvents.length);
-                const chosenEvent = possibleEvents[randomEventIndex];
-                const eventMessage = chosenEvent.effect();
-                message += `\nEvent: ${chosenEvent.name} - ${eventMessage}`;
-            } else {
-                message += "\nNo special events this turn.";
-            }
-        }
-        
-        const availableDecisions = this.decisions.filter(d => 
-            d.id !== "deal_with_heresy" && 
-            !d.triggered &&
-            (!d.condition || d.condition())
-        );
-
-        if (availableDecisions.length > 0 && Math.random() < 0.2) {
-            const randomDecisionIndex = Math.floor(Math.random() * availableDecisions.length);
-            const chosenDecision = availableDecisions[randomDecisionIndex];
-            
-            this.presentDecision(chosenDecision);
-            if (chosenDecision.id !== "deal_with_heresy") {
-                chosenDecision.triggered = true;
-            }
-            return;
-        }
-
-        this.updateDisplay(message);
+        this.updateDisplay(`Turn ${this.currentTurn}: Resources replenished. Pope's health: ${this.pope.health}.`);
+        this.checkGameOver();
     },
 
-    // --- Cardinal Management ---
-    appointCardinal: function() {
-        const cost = 50;
-        if (this.gold < cost) {
-            this.updateDisplay("You do not have enough gold to appoint a new Cardinal!");
-            return;
+    handleRandomEvents: function() {
+        const eventChance = Math.random();
+
+        if (eventChance < 0.1) { // Heresy outbreak
+            this.heresyLevel = Math.min(100, this.heresyLevel + Math.floor(Math.random() * 10 + 5));
+            this.setNarrative(`<p>A new wave of heresy spreads through the lands! Your Holiness, action is required!</p>`);
+            this.showFeedback("Heresy Spreading!", 'error');
+        } else if (eventChance < 0.2 && this.gold > 50) { // Gold income
+            this.gold = Math.min(1000, this.gold + Math.floor(Math.random() * 30 + 10));
+            this.setNarrative(`<p>Increased tithes and trade bring more gold to the Papal Treasury.</p>`);
+            this.showFeedback("Gold Income!", 'success');
+        } else if (eventChance < 0.3 && this.stability < 90) { // Stability issue
+            this.stability = Math.max(0, this.stability - Math.floor(Math.random() * 10 + 5));
+            this.setNarrative(`<p>Feudal lords squabble, testing the stability of your lands.</p>`);
+            this.showFeedback("Stability Crisis!", 'error');
         }
-        if (this.cardinals.length >= 15) { // Cap on number of cardinals
-            this.updateDisplay("The College of Cardinals is full (max 15). You cannot appoint more.");
-            return;
-        }
-        if (this.cardinalPool.length === 0) {
-            this.updateDisplay("There are no suitable candidates left in the Cardinal Pool!");
-            return;
-        }
-
-        const newCardinalData = this.cardinalPool.shift();
-        const newCardinal = { ...newCardinalData };
-        
-        this.gold -= cost;
-        this.cardinals.push(newCardinal);
-        this.stability = Math.min(100, this.stability + 2);
-        this.updateDisplay(`You have appointed Cardinal ${newCardinal.name} from ${newCardinal.province}! Gold: -${cost}.`);
     },
 
-    grantCardinalFavor: function(cardinalIndex) {
-        const cardinal = this.cardinals[cardinalIndex];
-        const cost = 20;
-        if (!cardinal) return;
+    // --- Pope Death & Conclave ---
+    popeDies: function() {
+        this.setNarrative(`
+            <p style="color: red; font-weight: bold;">REQUIESCAT IN PACE!</p>
+            <p>His Holiness, Pope ${this.pope.name}, has passed away at the age of ${this.pope.age}. The Holy See is vacant.</p>
+            <p>The Conclave will now begin to elect the next Supreme Pontiff!</p>
+        `);
+        this.showFeedback("The Pope has Died!", 'error');
 
-        if (this.gold < cost) {
-            this.updateDisplay(`You do not have enough gold to grant a favor to Cardinal ${cardinal.name}. (Requires ${cost} Gold)`);
-            return;
-        }
+        // Disable regular game interaction
+        document.querySelectorAll('.card-deck').forEach(btn => btn.style.pointerEvents = 'none');
+        document.querySelectorAll('.card-in-hand').forEach(btn => btn.style.pointerEvents = 'none');
 
-        this.gold -= cost;
-        cardinal.loyalty = Math.min(100, cardinal.loyalty + 15);
-        this.piety = Math.max(0, this.piety - 5);
-        this.updateDisplay(`You granted a favor to Cardinal ${cardinal.name}. His loyalty increased significantly!`);
-        this.updateDisplay();
+        this.startConclave();
     },
 
-    setFavoredCandidate: function(cardinalIndex) {
-        const cardinal = this.cardinals[cardinalIndex];
-        if (!cardinal) return;
-
-        if (this.conclave.playerFavoredCandidate === cardinal.name) {
-            this.conclave.playerFavoredCandidate = null;
-            this.updateDisplay(`You are no longer secretly favoring Cardinal ${cardinal.name} for the Papacy.`);
-        } else {
-            this.conclave.playerFavoredCandidate = cardinal.name;
-            this.updateDisplay(`You are now secretly favoring Cardinal ${cardinal.name} for the Papacy.`);
-        }
-        this.updateDisplay(); // Refresh to update button states if needed
-    },
-
-    promptCardinalMission: function(cardinalIndex) {
-        const cardinal = this.cardinals[cardinalIndex];
-        if (!cardinal || cardinal.missionTurns > 0) return;
-
-        // Temporarily disable buttons and present mission choice
-        this.elements.nextTurnButton.disabled = true;
-        this.elements.appointCardinalButton.disabled = true;
-        document.querySelectorAll('.cardinal-action-button').forEach(btn => btn.disabled = true);
-
-        const missionChoices = [
-            { id: "collect_taxes", text: "Collect Taxes (Risk: Stability, Reward: Gold)", cost: 0, effect: () => this.sendCardinalOnMission(cardinalIndex, "collect_taxes") },
-            { id: "spread_piety", text: "Spread Piety (Risk: Heresy, Reward: Piety, Influence)", cost: 0, effect: () => this.sendCardinalOnMission(cardinalIndex, "spread_piety") },
-            { id: "suppress_heresy", text: "Suppress Heresy (Cost: 20 Gold, Risk: Stability, Reward: Heresy Reduction)", cost: 20, effect: () => this.sendCardinalOnMission(cardinalIndex, "suppress_heresy"), canAfford: () => Game.gold >= 20 },
-            { id: "spy_on_rivals", text: "Spy on Rivals (Risk: Loyalty, Reward: Influence)", cost: 0, effect: () => this.sendCardinalOnMission(cardinalIndex, "spy_on_rivals") }
-        ];
-
-        let missionMessage = `What mission will you send Cardinal ${cardinal.name} on?`;
-        this.presentDecision({
-            id: "cardinal_mission_choice",
-            description: missionMessage,
-            options: missionChoices.map(m => ({
-                text: m.text + (m.cost > 0 ? ` (Cost: ${m.cost} Gold)` : ''),
-                effect: m.effect,
-                canAfford: m.canAfford
-            })),
-            isTemporary: true // Flag to not mark as 'triggered'
-        });
-    },
-
-    sendCardinalOnMission: function(cardinalIndex, missionType) {
-        const cardinal = this.cardinals[cardinalIndex];
-        if (!cardinal) return;
-
-        let cost = 0;
-        let baseSuccessChance = 50;
-        let duration = 2; // Default mission duration
-
-        switch (missionType) {
-            case "collect_taxes":
-                baseSuccessChance = cardinal.administration + (cardinal.diplomacy / 2);
-                duration = 2;
-                break;
-            case "spread_piety":
-                baseSuccessChance = cardinal.theology + (cardinal.diplomacy / 2);
-                duration = 3;
-                break;
-            case "suppress_heresy":
-                cost = 20;
-                if (this.gold < cost) {
-                    this.updateDisplay("You don't have enough gold for this mission!");
-                    this.resolveDecision(); // Close mission choice
-                    return;
-                }
-                this.gold -= cost;
-                baseSuccessChance = cardinal.theology + (cardinal.intrigue / 2);
-                duration = 3;
-                break;
-            case "spy_on_rivals":
-                baseSuccessChance = cardinal.intrigue + (cardinal.diplomacy / 2);
-                duration = 1;
-                break;
-            default:
-                this.updateDisplay("Invalid mission type.");
-                this.resolveDecision();
-                return;
-        }
-
-        cardinal.missionTurns = duration;
-        cardinal.currentMissionType = missionType; // Store mission type for outcome
-        
-        this.updateDisplay(`Cardinal ${cardinal.name} has embarked on a mission to ${missionType.replace('_', ' ')} for ${duration} turns.`);
-        this.resolveDecision(); // Close the mission choice panel
-    },
-
-    completeCardinalMission: function(cardinal) {
-        let outcomeMessage = `Cardinal ${cardinal.name} has returned from his mission.`;
-        const randomRoll = Math.random() * 100;
-        let successChance = 0;
-
-        switch (cardinal.currentMissionType) {
-            case "collect_taxes":
-                successChance = cardinal.administration + (cardinal.diplomacy / 2);
-                if (randomRoll < successChance) { // Success
-                    const goldGained = 50 + Math.floor(Math.random() * 30);
-                    this.gold += goldGained;
-                    this.stability = Math.max(0, this.stability - 5); // Some unrest from tax collection
-                    outcomeMessage += ` He successfully collected ${goldGained} gold, though some local unrest is reported.`;
-                } else { // Failure
-                    this.gold = Math.max(0, this.gold - 20);
-                    this.stability = Math.max(0, this.stability - 10);
-                    cardinal.loyalty = Math.max(0, cardinal.loyalty - 10);
-                    outcomeMessage += ` His tax collection efforts failed and caused significant unrest.`;
-                }
-                break;
-            case "spread_piety":
-                successChance = cardinal.theology + (cardinal.diplomacy / 2);
-                if (randomRoll < successChance) {
-                    this.piety = Math.min(1000, this.piety + 30);
-                    this.influence = Math.min(200, this.influence + 10);
-                    // Reduce heresy in a random province
-                    const randomProvince = this.provinces[Math.floor(Math.random() * this.provinces.length)];
-                    randomProvince.heresy = Math.max(0, randomProvince.heresy - 10);
-                    outcomeMessage += ` He successfully spread the faith, increasing piety and influence, and reducing heresy in ${randomProvince.name}.`;
-                } else {
-                    this.piety = Math.max(0, this.piety - 10);
-                    this.heresyLevel = Math.min(100, this.heresyLevel + 5);
-                    outcomeMessage += ` His attempts to spread piety met with resistance, leading to a slight increase in heresy.`;
-                }
-                break;
-            case "suppress_heresy":
-                successChance = cardinal.theology + (cardinal.intrigue / 2);
-                if (randomRoll < successChance) {
-                    this.heresyLevel = Math.max(0, this.heresyLevel - 20);
-                    this.stability = Math.min(100, this.stability + 5);
-                    // Significantly reduce heresy in the cardinal's home province if applicable
-                    const homeProvince = this.provinces.find(p => p.name === cardinal.province);
-                    if (homeProvince) homeProvince.heresy = Math.max(0, homeProvince.heresy - 30);
-                    outcomeMessage += ` He successfully suppressed heretical movements, restoring order and faith.`;
-                } else {
-                    this.heresyLevel = Math.min(100, this.heresyLevel + 15);
-                    this.stability = Math.max(0, this.stability - 15);
-                    cardinal.loyalty = Math.max(0, cardinal.loyalty - 15);
-                    outcomeMessage += ` His efforts to suppress heresy backfired, causing more unrest and a rise in dissent.`;
-                }
-                break;
-            case "spy_on_rivals":
-                successChance = cardinal.intrigue + (cardinal.diplomacy / 2);
-                if (randomRoll < successChance) {
-                    this.influence = Math.min(200, this.influence + 20);
-                    cardinal.loyalty = Math.min(100, cardinal.loyalty + 5);
-                    outcomeMessage += ` He uncovered valuable intelligence on a rival power, boosting your influence.`;
-                } else {
-                    this.influence = Math.max(0, this.influence - 10);
-                    cardinal.loyalty = Math.max(0, cardinal.loyalty - 10);
-                    outcomeMessage += ` His espionage mission was discovered, leading to a diplomatic setback.`;
-                }
-                break;
-        }
-
-        cardinal.currentMissionType = null; // Clear mission type
-        this.updateDisplay(outcomeMessage);
-    },
-
-    // --- Decision System ---
-    presentDecision: function(decision) {
-        this.elements.nextTurnButton.disabled = true;
-        this.elements.appointCardinalButton.disabled = true;
-        document.querySelectorAll('.cardinal-action-button').forEach(btn => btn.disabled = true);
-
-        this.elements.decisionPanel.classList.remove('hidden');
-        this.elements.decisionDescription.textContent = decision.description;
-        this.elements.decisionOptions.innerHTML = '';
-
-        decision.options.forEach((option, index) => {
-            const button = document.createElement('button');
-            button.classList.add('decision-button');
-            button.textContent = option.text;
-            
-            if (option.canAfford && !option.canAfford()) {
-                button.disabled = true;
-                button.title = "You cannot afford this option.";
-            }
-
-            button.addEventListener('click', () => {
-                if (option.canAfford && !option.canAfford()) {
-                    this.updateDisplay("You no longer meet the requirements for this option!");
-                    return;
-                }
-                option.effect();
-                // Only mark as triggered if it's not a temporary decision (like mission choice)
-                if (!decision.isTemporary) {
-                    decision.triggered = true;
-                }
-                this.resolveDecision();
-            });
-            this.elements.decisionOptions.appendChild(button);
-        });
-    },
-
-    resolveDecision: function() {
-        this.elements.decisionPanel.classList.add('hidden');
-        this.elements.decisionOptions.innerHTML = '';
-        this.elements.nextTurnButton.disabled = false;
-        this.elements.appointCardinalButton.disabled = false;
-        document.querySelectorAll('.cardinal-action-button').forEach(btn => btn.disabled = false);
-        this.updateDisplay(`Decision made! Proceed to next turn.`);
-    },
-
-    // --- Conclave System ---
-    startConclave: function(message) {
-        this.conclave.isActive = true;
-        this.elements.nextTurnButton.disabled = true;
-        this.elements.appointCardinalButton.disabled = true;
-        document.querySelectorAll('.cardinal-action-button').forEach(btn => btn.disabled = true);
-        this.elements.decisionPanel.classList.add('hidden');
-        this.elements.conclavePanel.classList.remove('hidden');
-
-        this.elements.conclaveMessage.textContent = message;
+    startConclave: function() {
+        this.conclave.active = true;
         this.conclave.ballot = 0;
-        this.conclave.candidates = {};
-        
-        // Ensure there are cardinals to vote
-        if (this.cardinals.length === 0) {
-            this.elements.conclaveMessage.textContent = "No cardinals to elect a Pope! The Church falls into chaos.";
-            this.elements.advanceConclaveButton.disabled = true;
-            this.elements.conclaveInfluenceOptions.innerHTML = ''; // Clear influence options
+        this.conclave.candidates = this.cardinals.filter(c => c.age < 90 && c.piety >= 30); // Cardinals eligible for Pope
+        if (this.conclave.candidates.length === 0) {
+            this.setNarrative(`<p style="color: red; font-weight: bold;">No eligible candidates for Pope! The Church falls into disarray. Game Over.</p>`);
+            this.checkGameOver(true);
             return;
         }
 
-        this.conclave.winningThreshold = Math.ceil(this.cardinals.length * 2 / 3);
+        this.conclave.votes = {}; // Reset votes
+        this.conclave.candidates.forEach(c => this.conclave.votes[c.name] = 0);
+        this.conclave.winningThreshold = Math.floor(this.cardinals.length * (2/3)) + 1; // 2/3 majority + 1
+
+        this.elements.conclavePanel.classList.remove('hidden');
+        this.updateConclaveDisplay();
+        this.setNarrative(`<p>The Sacred College has gathered. The fate of the Church is in their hands. Influence the Cardinals to elect a suitable successor!</p>`);
+        this.showFeedback("Conclave has begun!", 'success');
+    },
+
+    updateConclaveDisplay: function() {
+        this.elements.conclaveMessage.textContent = `Conclave Ballot: ${this.conclave.ballot}`;
+        this.elements.ballotNumber.textContent = this.conclave.ballot;
         this.elements.winningThreshold.textContent = this.conclave.winningThreshold;
 
-        // Initialize candidates (all cardinals can be candidates, plus a few 'outsiders' if we want)
-        this.cardinals.forEach(cardinal => {
-            this.conclave.candidates[cardinal.name] = { votes: 0, cardinalObject: cardinal };
+        this.elements.candidateVotes.innerHTML = '';
+        const sortedCandidates = Object.keys(this.conclave.votes).sort((a, b) => this.conclave.votes[b] - this.conclave.votes[a]);
+
+        sortedCandidates.forEach(name => {
+            const li = document.createElement('li');
+            li.textContent = `${name}: ${this.conclave.votes[name]} votes`;
+            this.elements.candidateVotes.appendChild(li);
         });
-        
-        // If player has a favored candidate, give them an initial boost (e.g., 5-10 votes)
-        if (this.conclave.playerFavoredCandidate) {
-            const favored = this.conclave.candidates[this.conclave.playerFavoredCandidate];
-            if (favored) {
-                favored.votes += Math.floor(Math.random() * 6) + 5; // Initial boost
-                this.elements.conclaveMessage.textContent += `\nYour favored Cardinal ${this.conclave.playerFavoredCandidate} receives some early support.`;
-            }
+
+        // Enable/disable influence buttons based on available resources
+        this.elements.influenceGoldButton.disabled = Game.gold < 50;
+        this.elements.influencePromisesButton.disabled = Game.piety < 10;
+        this.elements.influenceIntrigueButton.disabled = Game.stability < 10;
+        this.elements.favorPopeButton.disabled = false; // Always allow favoring
+        this.elements.advanceConclaveButton.disabled = false; // Always allow advancing
+    },
+
+    influenceConclave: function(type) {
+        if (this.conclave.influenceAttempts >= 3) {
+            this.showFeedback("You can only influence cardinals a limited number of times per ballot!", 'error');
+            return;
         }
 
-        this.runConclaveBallot();
+        let costMet = false;
+        let successMessage = "";
+        let failureMessage = "";
+        let influenceBonus = 0;
+
+        switch (type) {
+            case 'gold':
+                if (Game.gold >= 50) {
+                    Game.gold -= 50;
+                    influenceBonus = Math.floor(Math.random() * 5 + 3) + Math.floor(Game.pope.attributes.administration / 20); // 3-7 + admin bonus
+                    successMessage = `You spent 50 Gold to influence the Cardinals.`;
+                    failureMessage = `Your Gold had little effect.`;
+                    costMet = true;
+                } else {
+                    this.showFeedback("Not enough Gold!", 'error');
+                }
+                break;
+            case 'promises':
+                if (Game.piety >= 10) {
+                    Game.piety -= 10;
+                    influenceBonus = Math.floor(Math.random() * 5 + 2) + Math.floor(Game.pope.attributes.diplomacy / 20); // 2-6 + diplomacy bonus
+                    successMessage = `You made promises, swaying some Cardinals.`;
+                    failureMessage = `Your promises were met with skepticism.`;
+                    costMet = true;
+                } else {
+                    this.showFeedback("Not enough Piety!", 'error');
+                }
+                break;
+            case 'intrigue':
+                if (Game.stability >= 10) {
+                    Game.stability -= 10;
+                    influenceBonus = Math.floor(Math.random() * 5 + 4) + Math.floor(Game.pope.attributes.intrigue / 20); // 4-8 + intrigue bonus
+                    successMessage = `Subtle intrigues shift the balance of power.`;
+                    failureMessage = `Your intrigues were ineffective.`;
+                    costMet = true;
+                } else {
+                    this.showFeedback("Not enough Stability to risk intrigue!", 'error');
+                }
+                break;
+        }
+
+        if (costMet) {
+            this.conclave.influenceAttempts++;
+            // Distribute influence bonus to a random candidate
+            if (this.conclave.candidates.length > 0) {
+                const affectedCandidate = this.conclave.candidates[Math.floor(Math.random() * this.conclave.candidates.length)];
+                this.conclave.votes[affectedCandidate.name] += influenceBonus;
+                this.showFeedback(`${successMessage} ${affectedCandidate.name} gained ${influenceBonus} votes.`, 'success');
+            } else {
+                this.showFeedback(`${failureMessage} (No eligible candidates to influence).`, 'error');
+            }
+            this.updateConclaveDisplay();
+            this.updateDisplay(); // Update main display for stat changes
+        }
+    },
+
+    favorPope: function() {
+        // This button allows the player to pick a specific cardinal to give votes to
+        // For now, let's make it a simple "give +5 votes to your highest Piety cardinal"
+        // In a real game, you'd likely open a modal to select a cardinal.
+        if (this.conclave.candidates.length === 0) {
+            this.showFeedback("No candidates to favor!", 'error');
+            return;
+        }
+        if (this.conclave.influenceAttempts >= 3) {
+            this.showFeedback("You can only favor a cardinal a limited number of times per ballot!", 'error');
+            return;
+        }
+
+        this.conclave.influenceAttempts++;
+        const favoriteCardinal = this.conclave.candidates.reduce((prev, current) => (prev.piety > current.piety ? prev : current)); // Simplistic: favor highest piety
+        this.conclave.votes[favoriteCardinal.name] += 5; // Fixed bonus
+        this.showFeedback(`You covertly favored Cardinal ${favoriteCardinal.name}, granting him 5 votes.`, 'success');
+        this.updateConclaveDisplay();
     },
 
     runConclaveBallot: function() {
         this.conclave.ballot++;
-        this.elements.ballotNumber.textContent = this.conclave.ballot;
-        this.elements.conclaveMessage.textContent = `Ballot ${this.conclave.ballot}: Cardinals cast their votes...`;
-        
-        // Reset votes for this ballot, keeping initial boosts
-        for (const name in this.conclave.candidates) {
-            if (this.conclave.candidates.hasOwnProperty(name)) {
-                // If this is the first ballot, keep the initial boost. Otherwise, reset for new ballot.
-                if (this.conclave.ballot > 1) {
-                    this.conclave.candidates[name].votes = 0;
-                }
-            }
-        }
+        this.conclave.influenceAttempts = 0; // Reset influence attempts for new ballot
 
-        // Cardinals vote (more complex logic)
-        this.cardinals.forEach(voter => {
-            // Cardinals on mission cannot vote or be voted for
-            if (voter.missionTurns > 0) return;
-
-            let eligibleCandidates = this.cardinals.filter(c => c !== voter && c.missionTurns === 0);
-            if (eligibleCandidates.length === 0) { // If only one cardinal left (the voter themselves)
-                 if (this.conclave.candidates[voter.name]) { // Ensure candidate exists
-                    this.conclave.candidates[voter.name].votes++;
-                 }
+        // Cardinals vote based on their loyalty, ambition, and current influence
+        this.cardinals.forEach(cardinal => {
+            if (!this.conclave.votes[cardinal.name]) { // Ensure cardinal is still a candidate if they were removed
                 return;
             }
 
-            let bestCandidate = null;
-            let maxScore = -Infinity; // Use negative infinity for score comparison
+            let candidateToVoteFor = null;
+            let highestScore = -1;
 
-            eligibleCandidates.forEach(candidate => {
-                let score = 0;
-
-                // Piety alignment: Cardinals prefer candidates with high theology
-                score += candidate.theology * 0.5;
-
-                // Pragmatic alignment: Cardinals prefer candidates with good administration/diplomacy
-                score += (candidate.administration + candidate.diplomacy) * 0.2;
-
-                // Ambition: Ambitious cardinals might vote for those they think they can control, or highly ambitious peers
-                if (voter.ambition > 70) {
-                    score += candidate.ambition * 0.3; // High ambition voter favors high ambition candidate
-                } else {
-                    score += (100 - candidate.ambition) * 0.1; // Low ambition voter prefers less ambitious
+            this.conclave.candidates.forEach(candidate => {
+                // Simplified voting logic:
+                // Loyalty to current Papacy (if they liked the old Pope's influence)
+                // Ambition (for themselves)
+                // Piety (for a pious Pope)
+                // Current votes for that candidate (bandwagon effect)
+                let score = (cardinal.loyalty * 0.5) + (cardinal.ambition * 0.3) + (cardinal.piety * 0.2) + (this.conclave.votes[candidate.name] * 0.1) + (Math.random() * 20); // Randomness
+                if (candidate.name === cardinal.name) { // Cardinal votes for self (if candidate)
+                    score += 20; // Strong bias
                 }
 
-                // Loyalty to the previous Pope (indirectly, player's influence)
-                // Cardinals who were loyal to the previous pope might favor candidates aligned with the past papal style
-                // For simplicity, let's say high loyalty cardinals lean towards current Pope's attributes if we want to model that
-                // Or for now, just a general 'stability' factor
-                score += voter.loyalty * 0.1;
-
-                // Randomness
-                score += Math.random() * 20;
-
-                // Player's favored candidate receives a hidden bonus for loyal cardinals
-                if (this.conclave.playerFavoredCandidate === candidate.name) {
-                    score += voter.loyalty * 0.2; // Loyalty bonus to player's choice
-                }
-
-                if (score > maxScore) {
-                    maxScore = score;
-                    bestCandidate = candidate.name;
+                if (score > highestScore) {
+                    highestScore = score;
+                    candidateToVoteFor = candidate;
                 }
             });
 
-            if (bestCandidate && this.conclave.candidates[bestCandidate]) {
-                this.conclave.candidates[bestCandidate].votes++;
+            if (candidateToVoteFor) {
+                this.conclave.votes[candidateToVoteFor.name]++;
             }
         });
 
         this.updateConclaveDisplay();
-        this.checkForPope();
-    },
 
-    updateConclaveDisplay: function() {
-        this.elements.candidateVotes.innerHTML = '';
-        // Convert to array, sort by votes, then by candidate's theology (tie-breaker)
-        let sortedCandidates = Object.entries(this.conclave.candidates)
-                                .map(([name, data]) => ({ name, votes: data.votes, cardinal: data.cardinalObject }))
-                                .sort((a, b) => {
-                                    if (b.votes !== a.votes) return b.votes - a.votes;
-                                    return b.cardinal.theology - a.cardinal.theology; // Tie-breaker
-                                });
-
-        sortedCandidates.forEach(entry => {
-            const li = document.createElement('li');
-            li.textContent = `${entry.name} (Th: ${entry.cardinal.theology}, Amb: ${entry.cardinal.ambition}): ${entry.votes} votes`;
-            if (this.conclave.playerFavoredCandidate === entry.name) {
-                li.style.fontWeight = 'bold'; // Highlight player's favored candidate
-                li.style.color = '#FFD700'; // Gold color
-            }
-            this.elements.candidateVotes.appendChild(li);
-        });
-
-        // Update influence button states based on gold/piety/stability
-        this.elements.influenceGoldButton.disabled = this.gold < 50;
-        this.elements.influencePromisesButton.disabled = this.piety < 10;
-        this.elements.influenceIntrigueButton.disabled = this.stability < 10;
+        const electedPope = this.checkForPope();
+        if (electedPope) {
+            this.endConclave(electedPope);
+        } else {
+            this.setNarrative(`<p>Ballot #${this.conclave.ballot} concludes. No Pope elected yet. The Conclave continues...</p>`);
+            this.showFeedback("Conclave continues!", 'success');
+        }
+        this.updateDisplay(); // Update general stats too
     },
 
     checkForPope: function() {
-        let newPopeCardinal = null;
-        for (const name in this.conclave.candidates) {
-            if (this.conclave.candidates.hasOwnProperty(name)) {
-                if (this.conclave.candidates[name].votes >= this.conclave.winningThreshold) {
-                    newPopeCardinal = this.conclave.candidates[name].cardinalObject;
-                    break;
-                }
+        for (const candidateName in this.conclave.votes) {
+            if (this.conclave.votes[candidateName] >= this.conclave.winningThreshold) {
+                return this.conclave.candidates.find(c => c.name === candidateName);
             }
         }
-
-        if (newPopeCardinal) {
-            this.endConclave(newPopeCardinal);
-        } else {
-            this.elements.conclaveMessage.textContent += `\nNo Pope elected yet. Cardinals remain in Conclave. ${this.cardinals.length} Cardinals participating. Required: ${this.conclave.winningThreshold}`;
-        }
+        return null;
     },
 
-    attemptInfluenceConclave: function(type) {
-        let effectMessage = "";
-        let modifier = 0; // Base votes to add
-
-        switch (type) {
-            case 'gold':
-                const goldCost = 50;
-                if (this.gold < goldCost) {
-                    this.updateDisplay("You don't have enough gold for this influence attempt!");
-                    return;
-                }
-                this.gold -= goldCost;
-                modifier = 5; // Base votes from gold
-                effectMessage = "Your gold flows into the pockets of influential cardinals.";
-                this.piety = Math.max(0, this.piety - 5); // Gold influence can be seen as less pious
-                break;
-            case 'promises':
-                const pietyCost = 10;
-                if (this.piety < pietyCost) {
-                    this.updateDisplay("You lack the piety to make convincing promises!");
-                    return;
-                }
-                this.piety -= pietyCost;
-                modifier = 4; // Base votes from promises
-                effectMessage = "You send secret envoys, promising future favors and positions.";
-                this.loyalty = Math.max(0, this.loyalty - 5); // Promises can backfire if not kept, affecting loyalty
-                break;
-            case 'intrigue':
-                const stabilityCost = 10;
-                if (this.stability < stabilityCost) {
-                    this.updateDisplay("Your state is too unstable for such risky intrigue!");
-                    return;
-                }
-                this.stability = Math.max(0, this.stability - stabilityCost);
-                modifier = 6; // Base votes from intrigue
-                effectMessage = "Whispers and veiled threats ripple through the Sacred College.";
-                this.cardinals.forEach(c => c.loyalty = Math.max(0, c.loyalty - 3)); // Intrigue might reduce overall cardinal loyalty
-                break;
-            default:
-                this.updateDisplay("Invalid influence type.");
-                return;
-        }
-
-        this.updateDisplay(effectMessage);
-
-        // Target the player's favored candidate, or the current front-runner if none favored
-        let targetCandidateName = this.conclave.playerFavoredCandidate;
-        if (!targetCandidateName) {
-            let sortedCandidates = Object.entries(this.conclave.candidates).sort((a, b) => b[1].votes - a[1].votes);
-            if (sortedCandidates.length > 0) {
-                targetCandidateName = sortedCandidates[0][0];
-            }
-        }
-
-        if (targetCandidateName && this.conclave.candidates[targetCandidateName]) {
-            // Apply influence bonus with some randomness
-            this.conclave.candidates[targetCandidateName].votes += modifier + Math.floor(Math.random() * 5); // Add 3-7 votes
-            this.updateConclaveDisplay();
-            this.checkForPope();
-        } else {
-            this.updateDisplay("No suitable candidate to influence!");
-        }
-    },
-
-    advanceConclave: function() {
-        if (!this.conclave.isActive) return;
-        this.runConclaveBallot();
-    },
-
-    endConclave: function(electedCardinal) {
-        this.conclave.isActive = false;
+    endConclave: function(newPopeCardinal) {
+        this.conclave.active = false;
         this.elements.conclavePanel.classList.add('hidden');
-        this.elements.nextTurnButton.disabled = false;
-        this.elements.appointCardinalButton.disabled = false;
-        document.querySelectorAll('.cardinal-action-button').forEach(btn => btn.disabled = false);
 
-        this.pope.name = electedCardinal.name;
-        this.pope.age = 40 + Math.floor(Math.random() * 20); // New Pope starts at a reasonable age
-        this.pope.health = 100;
-        this.pope.theology = electedCardinal.theology;
-        this.pope.diplomacy = electedCardinal.diplomacy;
-        this.pope.intrigue = electedCardinal.intrigue;
-        this.pope.administration = electedCardinal.administration;
-        
-        // Remove elected cardinal from the cardinals list
-        this.cardinals = this.cardinals.filter(c => c.name !== electedCardinal.name);
+        // Restore regular game interaction
+        document.querySelectorAll('.card-deck').forEach(btn => btn.style.pointerEvents = 'auto');
+        document.querySelectorAll('.card-in-hand').forEach(btn => btn.style.pointerEvents = 'auto');
 
-        this.conclave.playerFavoredCandidate = null; // Reset favored candidate
+        // Set the new Pope
+        this.pope = {
+            name: newPopeCardinal.name,
+            age: newPopeCardinal.age,
+            health: 100, // New Pope starts with full health
+            attributes: {
+                theology: newPopeCardinal.piety, // Map cardinal's piety to Pope's theology
+                diplomacy: newPopeCardinal.loyalty, // Map cardinal's loyalty to Pope's diplomacy (simplistic)
+                intrigue: newPopeCardinal.ambition, // Map cardinal's ambition to Pope's intrigue
+                administration: Math.floor(Math.random() * 30 + 40) // Random admin for new Pope
+            }
+        };
 
-        this.updateDisplay(`Habemus Papam! Cardinal ${electedCardinal.name} is the new Holy Father! Long live the Pope!`);
+        this.setNarrative(`
+            <p style="color: green; font-weight: bold;">HABEMUS PAPAM!</p>
+            <p>Cardinal ${newPopeCardinal.name} has been elected the new Supreme Pontiff! Long live Pope ${newPopeCardinal.name}!</p>
+            <p>A new era for the Holy See begins under his guidance.</p>
+        `);
+        this.showFeedback(`Pope ${newPopeCardinal.name} Elected!`, 'success');
+
+        this.updateDisplay();
+    },
+
+    // --- Cardinal Generation (Placeholder) ---
+    generateCardinals: function(num) {
+        const cardinalNames = [
+            "Giulio de' Medici", "Alessandro Farnese", "Reginald Pole", "Charles Borromeo",
+            "Federico Borromeo", "Francesco Barberini", "Carlo Carafa", "Giovanni Morone",
+            "Innocenzo Cybo", "Ercole Gonzaga", "Ippolito d'Este", "Cristoforo Madruzzo",
+            "Antoine Perrenot de Granvelle", "Prospero Colonna", "Pietro Bembo", "Gasparo Contarini"
+        ];
+        this.cardinals = [];
+        for (let i = 0; i < num; i++) {
+            const name = cardinalNames[Math.floor(Math.random() * cardinalNames.length)];
+            this.cardinals.push({
+                name: name,
+                age: Math.floor(Math.random() * 40) + 30, // Age between 30 and 70
+                loyalty: Math.floor(Math.random() * 60) + 40, // 40-100
+                ambition: Math.floor(Math.random() * 60) + 40, // 40-100
+                piety: Math.floor(Math.random() * 60) + 40 // 40-100
+            });
+        }
+    },
+
+    // --- Feedback System ---
+    showFeedback: function(message, type) {
+        this.elements.feedbackMessage.textContent = message;
+        this.elements.feedbackMessage.className = `feedback-message ${type}`;
+        this.elements.feedbackMessage.classList.remove('hidden');
+        setTimeout(() => {
+            this.hideFeedback();
+        }, 3000); // Hide after 3 seconds
+    },
+
+    hideFeedback: function() {
+        this.elements.feedbackMessage.classList.add('hidden');
+        this.elements.feedbackMessage.className = 'feedback-message';
+    },
+
+    // --- Game Over Conditions ---
+    checkGameOver: function(forced = false) {
+        let gameOverMessage = "";
+
+        if (forced) { // Used for specific game over conditions like no eligible Pope
+            // Message already set by the calling function
+        } else if (this.gold <= 0 && this.currentTurn > 5) { // Can't go bankrupt too early
+            gameOverMessage = "The Papal Treasury is empty! Without funds, the Holy See collapses into disarray. Game Over.";
+        } else if (this.piety <= 100) {
+            gameOverMessage = "Faith has withered across Christendom! The Church has lost its spiritual authority. Game Over.";
+        } else if (this.stability <= 10) {
+            gameOverMessage = "The Papal States have fallen into utter chaos! Rebellions and civil strife consume the realm. Game Over.";
+        } else if (this.heresyLevel >= 80) {
+            gameOverMessage = "Heresy has consumed the lands! The Church has lost control of its flock. Game Over.";
+        } else if (this.influence <= 10 && this.currentTurn > 5) {
+            gameOverMessage = "The Holy See has lost all influence among the monarchs of Europe. The Papacy is but a hollow shell. Game Over.";
+        }
+
+        if (gameOverMessage) {
+            this.setNarrative(`<p style="color: red; font-weight: bold;">${gameOverMessage}</p><p>Refresh the page to play again.</p>`);
+            this.elements.feedbackMessage.textContent = gameOverMessage;
+            this.elements.feedbackMessage.classList.remove('hidden');
+            this.elements.feedbackMessage.classList.add('error');
+
+            // Disable all interactive elements
+            document.querySelectorAll('.card-deck').forEach(btn => btn.style.pointerEvents = 'none');
+            document.querySelectorAll('.card-in-hand').forEach(btn => btn.style.pointerEvents = 'none');
+            this.elements.menuButtons.forEach(btn => btn.disabled = true);
+            this.elements.advanceConclaveButton.disabled = true; // Ensure conclave advances are stopped
+            this.elements.conclavePanel.style.pointerEvents = 'none'; // Disable interactions within conclave panel
+
+            return true; // Game is over
+        }
+        return false; // Game is not over
     }
 };
 
 // Initialize the game when the DOM is fully loaded
-document.addEventListener('DOMContentLoaded', () => Game.init());
-
-// Helper function to generate random cardinal attributes for initial pool (if needed for more dynamic pools)
-function generateRandomCardinal(provinceName) {
-    const names = ["Riccardo", "Fabio", "Giuseppe", "Matteo", "Marco", "Julian", "Leon", "Francesco", "Giovanni", "Alessandro", "Vincenzo"];
-    const surnames = ["Rossi", "Bianchi", "Ferrari", "Russo", "Conti", "Romano", "Greco", "Ricci", "Moretti", "Bruno", "Galli"];
-    const randomName = `${names[Math.floor(Math.random() * names.length)]} ${surnames[Math.floor(Math.random() * surnames.length)]}`;
-
-    return {
-        name: randomName,
-        theology: Math.floor(Math.random() * 60) + 30, // 30-90
-        diplomacy: Math.floor(Math.random() * 60) + 30,
-        intrigue: Math.floor(Math.random() * 60) + 30,
-        loyalty: Math.floor(Math.random() * 40) + 60, // Start higher loyalty
-        ambition: Math.floor(Math.random() * 80) + 10, // 10-90
-        province: provinceName || "Unknown",
-        missionTurns: 0, // Initialize mission status
-        currentMissionType: null // Initialize mission type
-    };
-}
+document.addEventListener('DOMContentLoaded', () => {
+    Game.init();
+    Game.updateDisplay(); // Initial display update
+});
