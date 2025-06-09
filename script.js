@@ -10,18 +10,20 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameDay = 1;
     let currentEventIndex = 0; // Tracks current event in the linear sequence
     let nextEventId = null; // Stores ID of the next event to load if branching occurs
-    let hasGameEnded = false; // NEW: Flag to track if the game has ended
+    let hasGameEnded = false; // Flag to track if the game has ended
 
-    // NEW: Game Flags - tracks specific conditions or outcomes of choices
+    // Game Flags - tracks specific conditions or outcomes of choices
     const gameFlags = {
         imperial_alliance_established: false,
         crusade_launched: false,
         papal_bull_issued: false,
         crusade_report_received: false, // Ensures report only happens once
+        triumph_divine_mandate_achieved: false, // Prevents re-triggering triumph
+        triumph_absolute_authority_achieved: false, // Prevents re-triggering triumph
         // Add more flags as your game develops
     };
 
-    // NEW: Game Factions - tracks favor with different powerful groups
+    // Game Factions - tracks favor with different powerful groups
     const gameFactions = {
         imperial: { favor: 50, name: 'The Holy Roman Emperor' },     // Relationship with the Emperor
         nobility: { favor: 50, name: 'European Nobility' },         // General favor with noble houses
@@ -48,10 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapOverlay = document.getElementById('map-overlay');
     const closeMapButton = document.getElementById('close-map-button');
 
-    // --- Game Events Data (UPDATED WITH ENDING EVENTS!) ---
+    // --- Game Events Data (UPDATED WITH RECURRING & RANDOM EVENTS!) ---
     const events = [
         {
-            id: 'start_game', // Unique ID for the event
+            id: 'start_game',
             title: 'A New Pontificate',
             content: 'You have been elected to the Holy See. The burdens of the papacy weigh heavily upon you. The world watches.',
             source: 'The Conclave',
@@ -266,8 +268,117 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
 
-        // NEW: Game Ending / Triumph Events
+        // NEW: Recurring Events
+        {
+            id: 'monthly_treasury_report',
+            title: 'Monthly Treasury Report',
+            content: 'A report on the papal finances for the past month. Your income varies with public opinion and overall prosperity.',
+            source: 'Papal Accountant',
+            options: [
+                {
+                    text: 'Acknowledge the report.',
+                    effects: [
+                        // Dynamic gold income based on public opinion
+                        { type: 'metricChange', metric: 'gold', value: Math.floor(gameMetrics.publicOpinion / 10) + 5 } // Example: 5 to 15 gold
+                    ]
+                }
+            ]
+        },
+        {
+            id: 'annual_pilgrimage_season',
+            title: 'Annual Pilgrimage Season',
+            content: 'The season of grand pilgrimages draws to a close. Thousands have flocked to Rome and other holy sites, bringing renewed devotion and some offerings.',
+            source: 'Head of Papal Household',
+            requiredFlags: ['papal_bull_issued'], // Maybe only if a bull has been issued to mark significant papal activity
+            options: [
+                {
+                    text: 'Bless the pilgrims and receive their offerings.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: 10 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: 5 },
+                        { type: 'metricChange', metric: 'gold', value: 10 }
+                    ]
+                }
+            ]
+        },
 
+        // NEW: Random Events (These should be defined in the randomEvents array)
+        // Leaving these in `events` for findEventById convenience, but they'll be chosen by `selectRandomEvent`
+        {
+            id: 'plague_outbreak',
+            title: 'Plague Outbreak!',
+            content: 'A virulent plague sweeps through a prominent city in your domains, causing widespread panic and death. What is your response?',
+            source: 'Courier from the North',
+            options: [
+                {
+                    text: 'Order prayers and offer spiritual guidance.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: 15 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: -15 }, // Some will blame you for inaction
+                        { type: 'metricChange', metric: 'gold', value: -5 } // Small cost for aid
+                    ]
+                },
+                {
+                    text: 'Send papal doctors and allocate funds for quarantines.',
+                    effects: [
+                        { type: 'metricChange', metric: 'publicOpinion', value: 10 },
+                        { type: 'metricChange', metric: 'gold', value: -20 },
+                        { type: 'metricChange', metric: 'piety', value: -5 } // Seen as less spiritual, more worldly
+                    ]
+                }
+            ]
+        },
+        {
+            id: 'noble_dispute_arbitration',
+            title: 'Noble Dispute Requires Arbitration',
+            content: 'Two powerful noble families are embroiled in a bitter land dispute, threatening to escalate into open warfare. They appeal to your authority to mediate.',
+            source: 'Conflicting Envoys',
+            requiredFactionFavor: { faction: 'nobility', minFavor: 50 }, // Requires some nobility favor to be approached
+            options: [
+                {
+                    text: 'Meditate and issue a Papal ruling, favoring one side slightly.',
+                    effects: [
+                        { type: 'metricChange', metric: 'authority', value: 10 },
+                        { type: 'factionChange', faction: 'nobility', value: 5 }, // Overall neutrality, slight boost
+                        { type: 'metricChange', metric: 'cardinalFavor', value: -5 } // Cardinals might see it as overreach
+                    ]
+                },
+                {
+                    text: 'Decline to intervene, citing secular matters.',
+                    effects: [
+                        { type: 'metricChange', metric: 'authority', value: -5 },
+                        { type: 'factionChange', faction: 'nobility', value: -10 } // Nobility loses faith in your leadership
+                    ]
+                }
+            ]
+        },
+        {
+            id: 'heretical_preacher_sighted',
+            title: 'Heretical Preacher Sighted!',
+            content: 'Reports indicate a charismatic preacher is gaining followers in a remote province, spreading doctrines contrary to Papal teaching. What is your response?',
+            source: 'Local Bishop',
+            requiredMetrics: { metric: 'piety', min: 40 }, // Only if piety isn't too low to care
+            options: [
+                {
+                    text: 'Dispatch an Inquisition to suppress the heresy.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: 15 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: -10 },
+                        { type: 'factionChange', faction: 'monasticOrders', value: 10 } // Monastics approve
+                    ]
+                },
+                {
+                    text: 'Send a conciliatory envoy to understand their grievances.',
+                    effects: [
+                        { type: 'metricChange', metric: 'piety', value: -5 },
+                        { type: 'metricChange', metric: 'authority', value: -5 },
+                        { type: 'metricChange', metric: 'publicOpinion', value: 5 }
+                    ]
+                }
+            ]
+        },
+
+        // Game Ending / Triumph Events (from previous iteration)
         {
             id: 'game_over_heresy',
             title: 'The Papacy Fractures! A Schism of Faith',
@@ -310,7 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
             source: 'Chronicles of Conflict',
             options: [{ text: 'Start Over', effects: [{ type: 'resetGame' }] }]
         },
-        // NEW: Triumph/Good Ending Examples
         {
             id: 'triumph_divine_mandate',
             title: 'An Age of Unwavering Faith!',
@@ -345,6 +455,27 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         }
     ];
+
+    // NEW: Random Events Array (separate for easier management of probabilities)
+    const randomEvents = [
+        {
+            id: 'plague_outbreak',
+            weight: 3, // Higher weight means more likely to occur
+            requiredMetrics: { metric: 'publicOpinion', min: 20 } // Only occurs if public opinion isn't completely gone
+        },
+        {
+            id: 'noble_dispute_arbitration',
+            weight: 2,
+            requiredFactionFavor: { faction: 'nobility', minFavor: 40 } // Requires some nobility favor to be approached
+        },
+        {
+            id: 'heretical_preacher_sighted',
+            weight: 4,
+            requiredMetrics: { metric: 'piety', min: 30 }
+        },
+        // Add more random event IDs here with their weights
+    ];
+
 
     // --- Helper Functions ---
 
@@ -395,7 +526,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        return true; // All flag and faction conditions met
+        // NEW: Check requiredMetrics
+        if (event.requiredMetrics) {
+            const metricValue = gameMetrics[event.requiredMetrics.metric];
+            if (metricValue === undefined || metricValue < event.requiredMetrics.min || (event.requiredMetrics.max !== undefined && metricValue > event.requiredMetrics.max)) {
+                return false;
+            }
+        }
+
+        return true; // All conditions met
     }
 
     /**
@@ -404,7 +543,17 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {number} value The amount to change the metric by.
      */
     function updateMetric(metricName, value) {
-        gameMetrics[metricName] = Math.max(0, Math.min(100, gameMetrics[metricName] + value)); // Clamp between 0-100
+        // Apply dynamic gold income calculation directly
+        if (metricName === 'gold' && typeof value === 'string' && value.includes('gameMetrics.publicOpinion')) {
+            // This is a basic example. For more complex dynamic calculations,
+            // you might want a dedicated 'dynamicValue' effect type.
+            const calculatedValue = Math.floor(gameMetrics.publicOpinion / 10) + 5;
+            gameMetrics[metricName] = Math.max(0, Math.min(100, gameMetrics[metricName] + calculatedValue));
+            console.log(`Gold changed by dynamic value: ${calculatedValue}`);
+        } else {
+            gameMetrics[metricName] = Math.max(0, Math.min(100, gameMetrics[metricName] + value)); // Clamp between 0-100
+        }
+
 
         // Visual flash for metric change
         const metricElement = document.getElementById(`metric-${metricName}`);
@@ -476,61 +625,115 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * NEW: Checks for game ending or special achievement conditions.
+     * NEW: Selects an eligible random event based on weights.
+     * @returns {object|null} An eligible random event, or null if none found.
+     */
+    function selectRandomEvent() {
+        const eligibleRandomEvents = randomEvents.filter(re => {
+            const eventData = findEventById(re.id);
+            return eventData && isEventEligible(eventData);
+        });
+
+        if (eligibleRandomEvents.length === 0) {
+            return null;
+        }
+
+        // Calculate total weight of eligible events
+        const totalWeight = eligibleRandomEvents.reduce((sum, re) => sum + re.weight, 0);
+
+        // Pick a random number within the total weight
+        let randomNum = Math.random() * totalWeight;
+
+        // Find the event corresponding to that random number
+        for (const re of eligibleRandomEvents) {
+            randomNum -= re.weight;
+            if (randomNum <= 0) {
+                return findEventById(re.id);
+            }
+        }
+        return null; // Should not happen if totalWeight > 0
+    }
+
+    /**
+     * Checks for game ending or special achievement conditions.
      * If a condition is met, it loads the appropriate ending event.
      * Prioritizes game over conditions over triumph conditions.
+     * @returns {boolean} True if an ending event was loaded, false otherwise.
      */
     function checkGameStatus() {
-        if (hasGameEnded) return; // If game has already ended, do nothing
+        if (hasGameEnded) return true; // If game has already ended, do nothing
 
-        // --- Game Over Conditions ---
+        // --- Game Over Conditions (priority) ---
         if (gameMetrics.piety <= 0) {
-            hasGameEnded = true;
-            loadEvent(findEventById('game_over_heresy'));
-            return;
+            hasGameEnded = true; loadEvent(findEventById('game_over_heresy')); return true;
         }
         if (gameMetrics.publicOpinion <= 0) {
-            hasGameEnded = true;
-            loadEvent(findEventById('game_over_tyranny'));
-            return;
+            hasGameEnded = true; loadEvent(findEventById('game_over_tyranny')); return true;
         }
         if (gameMetrics.gold <= 0) {
-            hasGameEnded = true;
-            loadEvent(findEventById('game_over_impoverished'));
-            return;
+            hasGameEnded = true; loadEvent(findEventById('game_over_impoverished')); return true;
         }
         if (gameMetrics.cardinalFavor <= 0) {
-            hasGameEnded = true;
-            loadEvent(findEventById('game_over_deposed_cardinals'));
-            return;
+            hasGameEnded = true; loadEvent(findEventById('game_over_deposed_cardinals')); return true;
         }
         if (gameFactions.imperial.favor <= 0) {
-            hasGameEnded = true;
-            loadEvent(findEventById('game_over_imperial_control'));
-            return;
+            hasGameEnded = true; loadEvent(findEventById('game_over_imperial_control')); return true;
         }
         if (gameFactions.nobility.favor <= 0) {
-            hasGameEnded = true;
-            loadEvent(findEventById('game_over_noble_revolt'));
-            return;
+            hasGameEnded = true; loadEvent(findEventById('game_over_noble_revolt')); return true;
         }
 
-        // --- Triumph/High Metric Conditions (Optional, can lead to special events or just positive feedback) ---
-        // These can be set to 100 or a high value like 90-95.
-        // For simplicity, I'll put examples at 95.
+        // --- Triumph/High Metric Conditions ---
+        // These can be set to 100 or a high value like 95.
         if (gameMetrics.piety >= 95 && !gameFlags.triumph_divine_mandate_achieved) {
-            hasGameEnded = true; // Mark as ended for now to show the triumph screen
-            gameFlags.triumph_divine_mandate_achieved = true; // Set flag to prevent re-triggering
-            loadEvent(findEventById('triumph_divine_mandate'));
-            return;
+            hasGameEnded = true; gameFlags.triumph_divine_mandate_achieved = true; loadEvent(findEventById('triumph_divine_mandate')); return true;
         }
         if (gameMetrics.authority >= 95 && !gameFlags.triumph_absolute_authority_achieved) {
-            hasGameEnded = true;
-            gameFlags.triumph_absolute_authority_achieved = true;
-            loadEvent(findEventById('triumph_absolute_authority'));
-            return;
+            hasGameEnded = true; gameFlags.triumph_absolute_authority_achieved = true; loadEvent(findEventById('triumph_absolute_authority')); return true;
         }
-        // Add more triumph conditions as desired
+
+        return false; // No ending event was loaded
+    }
+
+    /**
+     * NEW: Performs daily checks for recurring events and random events.
+     * This is called after game state updates and game end checks.
+     * @returns {boolean} True if a recurring or random event was loaded, false otherwise.
+     */
+    function dailyChecks() {
+        // If game has ended, don't trigger daily events
+        if (hasGameEnded) return true; // Indicate that an event was "handled" (by being ended)
+
+        // 1. Check for Recurring Events (Higher priority than random)
+        // Example: Monthly Treasury Report every 30 days
+        if (gameDay % 30 === 0 && gameDay > 0) { // Ensure it doesn't trigger on Day 0
+            const recurringEvent = findEventById('monthly_treasury_report');
+            if (recurringEvent && isEventEligible(recurringEvent)) {
+                loadEvent(recurringEvent);
+                return true;
+            }
+        }
+        // Example: Annual Pilgrimage Season every 100 days
+        if (gameDay % 100 === 0 && gameDay > 0) {
+             const recurringEvent = findEventById('annual_pilgrimage_season');
+             if (recurringEvent && isEventEligible(recurringEvent)) {
+                 loadEvent(recurringEvent);
+                 return true;
+             }
+         }
+
+
+        // 2. Roll for Random Events (Lower priority than recurring)
+        // 20% chance each day for a random event, if no recurring event triggered
+        if (Math.random() < 0.2) { // Adjust probability as desired (e.g., 0.1 for 10%)
+            const randomEvent = selectRandomEvent();
+            if (randomEvent) {
+                loadEvent(randomEvent);
+                return true;
+            }
+        }
+
+        return false; // No special event (recurring or random) was loaded
     }
 
 
@@ -568,15 +771,13 @@ document.addEventListener('DOMContentLoaded', () => {
         gameDay++;
         gameDayCounter.textContent = gameDay;
 
-        // NEW: Check game status AFTER effects are applied and day advanced
-        checkGameStatus();
-
-        // If game has ended by a status check, prevent loading next event
-        if (hasGameEnded) {
+        // NEW: Perform daily checks for game status, recurring, and random events
+        // If any of these checks loads an event (including game end), stop further normal event loading
+        if (checkGameStatus() || dailyChecks()) {
             return;
         }
 
-        // Determine and load the next eligible event
+        // Determine and load the next eligible event (Only if no special event took priority)
         let nextEventToLoad = null;
 
         if (nextEventId) {
@@ -599,8 +800,12 @@ document.addEventListener('DOMContentLoaded', () => {
         while (currentEventIndex < events.length) {
             const potentialNextEvent = events[currentEventIndex];
             // Ensure we don't accidentally load an ending event as part of linear progression
-            if (potentialNextEvent.id.startsWith('game_over_') || potentialNextEvent.id.startsWith('triumph_')) {
-                 currentEventIndex++; // Skip explicit game end events if reached linearly
+            // or other special events handled by dailyChecks
+            if (potentialNextEvent.id.startsWith('game_over_') || potentialNextEvent.id.startsWith('triumph_') ||
+                potentialNextEvent.id === 'monthly_treasury_report' ||
+                potentialNextEvent.id === 'annual_pilgrimage_season' ||
+                randomEvents.some(re => re.id === potentialNextEvent.id)) {
+                 currentEventIndex++; // Skip these special event IDs if found in linear path
                  continue;
             }
 
@@ -644,14 +849,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Reset flags
         for (const flag in gameFlags) {
-            // Special handling for triumph flags if you want them to be permanently unlocked across games
-            // For now, reset all
             gameFlags[flag] = false;
         }
         // Ensure achievement flags are reset for a new game if they were set by triumph conditions
         gameFlags.triumph_divine_mandate_achieved = false;
         gameFlags.triumph_absolute_authority_achieved = false;
-
 
         // Reset faction favors
         for (const factionKey in gameFactions) {
@@ -662,7 +864,7 @@ document.addEventListener('DOMContentLoaded', () => {
         gameDayCounter.textContent = gameDay;
         currentEventIndex = 0; // Start with the first event in the array
         nextEventId = null;
-        hasGameEnded = false; // NEW: Reset game ended flag
+        hasGameEnded = false; // Reset game ended flag
 
         updateAllMetricsDisplay(); // Set initial metric values
         loadEvent(events[currentEventIndex]); // Load the very first event
