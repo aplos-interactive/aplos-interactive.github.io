@@ -18,7 +18,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    box-sizing: border-box; /* Include padding in element's total width and height */
+    box-sizing: border-box;
 }
 
 #game-container {
@@ -65,7 +65,7 @@ body {
     padding: 15px;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--border-color);
-    overflow-y: auto; /* For potentially many cardinals/actions */
+    overflow-y: auto;
 }
 
 #resource-sidebar h2, #resource-sidebar h3 {
@@ -104,6 +104,12 @@ body {
     color: var(--button-bg);
 }
 
+#pope-attributes {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
 #cardinal-list {
     margin-top: 20px;
     padding-top: 15px;
@@ -129,6 +135,43 @@ body {
 #cardinals-display li:last-child {
     border-bottom: none;
 }
+
+#active-crises {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+#crises-display {
+    list-style: none;
+    padding: 0;
+    max-height: 100px;
+    overflow-y: auto;
+    border: 1px dashed var(--border-color);
+    padding: 5px;
+    border-radius: 3px;
+    background-color: rgba(255, 255, 255, 0.2);
+    font-size: 0.9em;
+}
+
+#crises-display li {
+    padding: 3px 0;
+    border-bottom: 1px dotted rgba(0,0,0,0.1);
+}
+#crises-display li:last-child {
+    border-bottom: none;
+}
+#crises-display li.crisis-high {
+    color: #cc0000; /* Red for high severity */
+    font-weight: bold;
+}
+#crises-display li.crisis-medium {
+    color: #e6b800; /* Orange for medium severity */
+}
+#crises-display li.crisis-low {
+    color: #3d7900; /* Green for low severity */
+}
+
 
 #actions-panel {
     margin-top: 20px;
@@ -169,9 +212,9 @@ body {
     padding: 20px;
     box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--border-color);
-    position: relative; /* For absolute positioning of panels */
+    position: relative;
     display: flex;
-    flex-direction: column; /* Allow content to stack */
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }
@@ -253,10 +296,10 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Align content to top */
+    justify-content: flex-start;
     text-align: center;
     box-sizing: border-box;
-    overflow-y: auto; /* Allow panels to scroll if content is long */
+    overflow-y: auto;
 }
 
 .game-panel h2 {
@@ -286,7 +329,7 @@ body {
 
 .close-panel-button {
     width: 200px;
-    margin-top: auto; /* Push to bottom */
+    margin-top: auto;
     margin-bottom: 10px;
 }
 
@@ -332,12 +375,12 @@ body {
     width: 90%;
     max-width: 900px;
     gap: 20px;
-    flex-grow: 1; /* Allow content to grow */
-    padding-bottom: 20px; /* Space for close button */
+    flex-grow: 1;
+    padding-bottom: 20px;
 }
 
 #cardinal-detail-view {
-    flex: 2; /* Takes 2 parts of the available space */
+    flex: 2;
     background-color: var(--dark-parchment-color);
     border: 1px solid var(--border-color);
     border-radius: 5px;
@@ -353,18 +396,18 @@ body {
 
 #cardinal-detail-view p {
     margin: 8px 0;
-    max-width: 100%; /* Override parent max-width */
+    max-width: 100%;
 }
 
 #curia-cardinal-list {
-    flex: 1; /* Takes 1 part of the available space */
+    flex: 1;
     list-style: none;
     padding: 0;
     border: 1px dashed var(--border-color);
     border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.2);
     overflow-y: auto;
-    max-height: 500px; /* Adjust as needed */
+    max-height: 500px;
 }
 
 #curia-cardinal-list li {
@@ -406,7 +449,7 @@ body {
 
 #decree-options .game-button {
     width: 200px;
-    margin-bottom: 0; /* Override default button margin */
+    margin-bottom: 0;
 }
 
 #decree-details {
@@ -425,7 +468,7 @@ body {
 }
 
 #decree-text {
-    width: calc(100% - 20px); /* Account for padding */
+    width: calc(100% - 20px);
     padding: 10px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
@@ -448,9 +491,9 @@ body {
 #interactive-map {
     width: 90%;
     max-width: 900px;
-    aspect-ratio: 16 / 9; /* Maintain aspect ratio */
+    aspect-ratio: 16 / 9;
     border: 2px solid var(--border-color);
-    background-color: #e0d0b0; /* Light beige for a map background */
+    background-color: #e0d0b0;
     display: flex;
     align-items: center;
     justify-content: center;
