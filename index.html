@@ -4,123 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Habeus Papam: The Pontiff's Burden - Grand Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=IM+Fell+English+SC&family=Libre+Baskerville:wght@400;700&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=IM+Fell+English+SC&family=MedievalSharp&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="game-room">
-        <div class="game-container">
-            <div class="desk">
-                <div class="desk-surface"></div>
-                <div class="desk-border-top"></div>
-                <div class="desk-border-bottom"></div>
-                <div class="desk-border-left"></div>
-                <div class="desk-border-right"></div>
+    <div class="game-container">
+        <div class="top-bar">
+            <div class="papal-metrics">
+                <div class="metric-item"><span class="metric-name">Piety:</span> <span id="metric-piety">50</span></div>
+                <div class="metric-item"><span class="metric-name">Authority:</span> <span id="metric-authority">50</span></div>
+                <div class="metric-item"><span class="metric-name">Gold:</span> <span id="metric-gold">100</span></div>
+                <div class="metric-item"><span class="metric-name">Public Opinion:</span> <span id="metric-publicOpinion">50</span></div>
+                <div class="metric-item"><span class="metric-name">Cardinal Favor:</span> <span id="metric-cardinalFavor">50</span></div>
+            </div>
+            <div class="game-day-counter">Day <span id="game-day-counter">1</span></div>
+            <button id="map-button" class="map-button">View Imperial Map</button>
+        </div>
 
-                <div class="panel left-panel">
-                    <div class="metrics-panel">
-                        <h2>Papal Metrics</h2>
-                        <p>Piety: <span id="metric-piety">50</span></p>
-                        <p>Authority: <span id="metric-authority">50</span></p>
-                        <p>Gold: <span id="metric-gold">100</span></p>
-                        <p>Public Opinion: <span id="metric-publicOpinion">50</span></p>
-                        <p>Cardinal Favor: <span id="metric-cardinalFavor">50</span></p>
-                    </div>
-                    <div class="tray in-tray">
-                        <p>Incoming Missives</p>
-                        <div class="paper-stack"></div>
-                    </div>
+        <div class="desk">
+            <div class="left-panel">
+                <p>Incoming Missives</p>
                 </div>
 
-                <div class="document-area" id="document-area">
-                    <div class="document-seal"></div>
-                    <h3 id="document-title"></h3>
-                    <div class="document-content-wrapper">
-                        <p class="document-content" id="document-content"></p>
+            <div class="document-area" id="document-area">
+                <div class="document-seal"></div>
+                <h3 id="document-title"></h3>
+                <div class="document-content-wrapper">
+                    <p class="document-content" id="document-content"></p>
+                </div>
+                <div class="document-source" id="document-source"></div>
+                <div class="options-container" id="options-container">
                     </div>
-                    <div class="document-source" id="document-source"></div>
-                    <div class="options-container" id="options-container">
-                        </div>
-                </div>
-
-                <div class="panel right-panel">
-                    <div class="game-day-card">
-                        <h3>Day <span id="game-day-counter">1</span></h3>
-                    </div>
-                    <button id="map-button" class="action-button map-button">View Imperial Map</button>
-                    <div class="tray out-tray">
-                        <p>Processed Decrees</p>
-                        <div class="paper-stack"></div>
-                    </div>
-                </div>
-
-                <div class="desk-item quill-inkwell">
-                    <div class="inkwell-base"></div>
-                    <div class="quill-body"></div>
-                    <div class="quill-nib"></div>
-                </div>
-                <div class="desk-item decorative-scroll">
-                    <div class="scroll-body"></div>
-                    <div class="scroll-end left"></div>
-                    <div class="scroll-end right"></div>
-                </div>
-                <div class="desk-item coin-pouch">
-                    <div class="pouch-body"></div>
-                    <div class="pouch-drawstring"></div>
-                </div>
-                <div class="desk-item chalice"></div>
             </div>
 
-            <div id="map-overlay" class="overlay map-overlay">
-                <div class="map-content">
-                    <button id="close-map-button" class="close-button">X</button>
-                    <h2>Map of Christendom</h2>
-                    <p>A strategic overview of the realm's current political and religious landscape.</p>
-                    <svg viewBox="0 0 800 500" class="detailed-map">
-                        <defs>
-                            <pattern id="parchment-texture" patternUnits="userSpaceOnUse" width="10" height="10">
-                                <path d="M0,0 L5,10 L10,0 L5,-10 Z" fill="#e8e0c8" opacity="0.1"/>
-                                <path d="M0,5 L5,0 L10,5 L5,10 Z" fill="#e8e0c8" opacity="0.05"/>
-                            </pattern>
-                        </defs>
-                        <rect x="0" y="0" width="800" height="500" fill="url(#parchment-texture)" stroke="#7e593f" stroke-width="3" style="filter: sepia(0.3) saturate(1.5) contrast(1.1);"/>
-
-                        <path d="M50 50 C 100 20, 200 30, 220 100 C 240 170, 150 200, 100 180 C 50 160, 20 100, 50 50 Z" fill="#6a9b5f" stroke="#4c7043" stroke-width="2">
-                            <title>Kingdom of Francia</title>
-                        </path>
-                        <path d="M250 80 C 300 50, 400 60, 420 150 C 440 220, 350 250, 300 230 C 250 210, 220 120, 250 80 Z" fill="#ab7668" stroke="#8a5c4e" stroke-width="2">
-                            <title>Holy Roman Empire</title>
-                        </path>
-                        <path d="M500 40 C 550 10, 650 30, 700 100 C 720 170, 600 200, 550 180 C 500 160, 470 70, 500 40 Z" fill="#7d7b93" stroke="#5d5b70" stroke-width="2">
-                            <title>Kingdom of Anglia</title>
-                        </path>
-                        <path d="M100 300 C 150 270, 250 280, 270 380 C 290 450, 180 470, 150 450 C 100 430, 70 350, 100 300 Z" fill="#b0aa90" stroke="#888572" stroke-width="2">
-                            <title>Kingdom of Iberia</title>
-                        </path>
-                        <path d="M350 250 C 400 220, 450 230, 470 330 C 490 400, 380 420, 370 400 C 350 380, 320 300, 350 250 Z" fill="#8B0000" stroke="#5a0000" stroke-width="3">
-                            <title>The Papal States</title>
-                        </path>
-                        <path d="M500 300 C 550 270, 650 280, 670 380 C 690 450, 580 470, 550 450 C 500 430, 470 350, 500 300 Z" fill="#4f3624" stroke="#2e241c" stroke-width="2">
-                            <title>The Ottoman Caliphate</title>
-                        </path>
-
-                        <path d="M150 100 C 200 120, 250 150, 350 180" fill="none" stroke="#2a4a8b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0"/>
-                        <path d="M400 100 C 450 120, 500 150, 600 180" fill="none" stroke="#2a4a8b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0"/>
-
-                        <g transform="translate(120,80)"><path d="M-4 -4 L4 4 M-4 4 L4 -4" stroke="#333" stroke-width="1.5"/><circle r="5" fill="none" stroke="#333" stroke-width="1"/></g><title>Paris</title>
-                        <g transform="translate(320,140)"><path d="M-4 -4 L4 4 M-4 4 L4 -4" stroke="#333" stroke-width="1.5"/><circle r="5" fill="none" stroke="#333" stroke-width="1"/></g><title>Rome</title>
-                        <g transform="translate(600,100)"><path d="M-4 -4 L4 4 M-4 4 L4 -4" stroke="#333" stroke-width="1.5"/><circle r="5" fill="none" stroke="#333" stroke-width="1"/></g><title>London</title>
-                        <g transform="translate(200,350)"><path d="M-4 -4 L4 4 M-4 4 L4 -4" stroke="#333" stroke-width="1.5"/><circle r="5" fill="none" stroke="#333" stroke-width="1"/></g><title>Toledo</title>
-                        <g transform="translate(400,300)"><path d="M-4 -4 L4 4 M-4 4 L4 -4" stroke="#333" stroke-width="1.5"/><circle r="5" fill="none" stroke="#333" stroke-width="1"/><circle r="2" fill="#8B0000"/></g><title>Jerusalem</title>
-
-                        <g transform="translate(700, 450) scale(0.7)">
-                            <path d="M0 -30 L5 -10 L25 -25 L10 0 L25 25 L5 10 L0 30 L-5 10 L-25 25 L-10 0 L-25 -25 L-5 -10 Z" fill="url(#diagonal-stripes-light)" stroke="#6a0000" stroke-width="2"/>
-                            <path d="M0 -30 L0 30 M-30 0 L30 0" stroke="#f0e6d2" stroke-width="2"/>
-                            <circle cx="0" cy="0" r="5" fill="#3a0000" stroke="#f0e6d2" stroke-width="1"/>
-                            <text x="0" y="-38" text-anchor="middle" font-family="Cinzel Decorative" font-size="14" fill="#333">N</text>
-                        </g>
-                    </svg>
+            <div class="right-panel">
+                <p>Processed Decrees</p>
                 </div>
+
+            <div class="desk-item quill-inkwell"></div>
+            <div class="desk-item decorative-scroll"></div>
+            <div class="desk-item coin-pouch"></div>
+            <div class="desk-item chalice"></div>
+        </div>
+
+        <div id="map-overlay" class="map-overlay">
+            <div class="map-content">
+                <button id="close-map-button" class="close-button">X</button>
+                <h2>Map of Christendom</h2>
+                <p>A strategic overview of the realm's current political and religious landscape.</p>
+                <svg viewBox="0 0 800 500" class="detailed-map">
+                    <defs>
+                        <pattern id="parchment-texture" patternUnits="userSpaceOnUse" width="10" height="10">
+                            <path d="M0,0 L5,10 L10,0 L5,-10 Z" fill="#e8e0c8" opacity="0.1"/>
+                            <path d="M0,5 L5,0 L10,5 L5,10 Z" fill="#e8e0c8" opacity="0.05"/>
+                        </pattern>
+                    </defs>
+                    <rect x="0" y="0" width="800" height="500" fill="url(#parchment-texture)" stroke="#7e593f" stroke-width="3" style="filter: sepia(0.3) saturate(1.5) contrast(1.1);"/>
+
+                    <path d="M50 50 C 100 20, 200 30, 220 100 C 240 170, 150 200, 100 180 C 50 160, 20 100, 50 50 Z" fill="#6a9b5f" stroke="#4c7043" stroke-width="2">
+                        <title>Kingdom of Francia</title>
+                    </path>
+                    <path d="M250 80 C 300 50, 400 60, 420 150 C 440 220, 350 250, 300 230 C 250 210, 220 120, 250 80 Z" fill="#ab7668" stroke="#8a5c4e" stroke-width="2">
+                        <title>Holy Roman Empire</title>
+                    </path>
+                    <path d="M500 40 C 550 10, 650 30, 700 100 C 720 170, 600 200, 550 180 C 500 160, 470 70, 500 40 Z" fill="#7d7b93" stroke="#5d5b70" stroke-width="2">
+                        <title>Kingdom of Anglia</title>
+                    </path>
+                    <path d="M100 300 C 150 270, 250 280, 270 380 C 290 450, 180 470, 150 450 C 100 430, 70 350, 100 300 Z" fill="#b0aa90" stroke="#888572" stroke-width="2">
+                        <title>Kingdom of Iberia</title>
+                    </path>
+                    <path d="M350 250 C 400 220, 450 230, 470 330 C 490 400, 380 420, 370 400 C 350 380, 320 300, 350 250 Z" fill="#8B0000" stroke="#5a0000" stroke-width="3">
+                        <title>The Papal States</title>
+                    </path>
+                    <path d="M500 300 C 550 270, 650 280, 670 380 C 690 450, 580 470, 550 450 C 500 430, 470 350, 500 300 Z" fill="#4f3624" stroke="#2e241c" stroke-width="2">
+                        <title>The Ottoman Caliphate</title>
+                    </path>
+
+                    <path d="M150 100 C 200 120, 250 150, 350 180" fill="none" stroke="#2a4a8b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0"/>
+                    <path d="M400 100 C 450 120, 500 150, 600 180" fill="none" stroke="#2a4a8b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="0"/>
+
+                    <g transform="translate(120,80)"><path d="M-4 -4 L4 4 M-4 4 L4 -4" stroke="#333" stroke-width="1.5"/><circle r="5" fill="none" stroke="#333" stroke-width="1"/></g><title>Paris</title>
+                    <g transform="translate(320,140)"><path d="M-4 -4 L4 4 M-4 4 L4 -4" stroke="#333" stroke-width="1.5"/><circle r="5" fill="none" stroke="#333" stroke-width="1"/></g><title>Rome</title>
+                    <g transform="translate(600,100)"><path d="M-4 -4 L4 4 M-4 4 L4 -4" stroke="#333" stroke-width="1.5"/><circle r="5" fill="none" stroke="#333" stroke-width="1"/></g><title>London</title>
+                    <g transform="translate(200,350)"><path d="M-4 -4 L4 4 M-4 4 L4 -4" stroke="#333" stroke-width="1.5"/><circle r="5" fill="none" stroke="#333" stroke-width="1"/></g><title>Toledo</title>
+                    <g transform="translate(400,300)"><path d="M-4 -4 L4 4 M-4 4 L4 -4" stroke="#333" stroke-width="1.5"/><circle r="5" fill="none" stroke="#333" stroke-width="1"/><circle r="2" fill="#8B0000"/></g><title>Jerusalem</title>
+
+                    <g transform="translate(700, 450) scale(0.7)">
+                        <path d="M0 -30 L5 -10 L25 -25 L10 0 L25 25 L5 10 L0 30 L-5 10 L-25 25 L-10 0 L-25 -25 L-5 -10 Z" fill="url(#diagonal-stripes-light)" stroke="#6a0000" stroke-width="2"/>
+                        <path d="M0 -30 L0 30 M-30 0 L30 0" stroke="#f0e6d2" stroke-width="2"/>
+                        <circle cx="0" cy="0" r="5" fill="#3a0000" stroke="#f0e6d2" stroke-width="1"/>
+                        <text x="0" y="-38" text-anchor="middle" font-family="Cinzel Decorative" font-size="14" fill="#333">N</text>
+                    </g>
+                </svg>
             </div>
         </div>
     </div>
