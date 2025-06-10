@@ -4,68 +4,76 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Habeus Papam</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="top-bar">
+        <div class="menu-options">
+            <span>Library</span>
+            <span>Save/Load</span>
+            <span>Options</span>
+        </div>
+    </div>
+
     <div class="game-container">
-        <h1>Habeus Papam</h1>
-
-        <div class="resources-section">
-            <h2>Your Resources</h2>
-            <div class="resource-bar-container">
-                <p>Piety:</p> <div class="resource-bar"><div id="pietyBar" class="resource-fill"></div><span id="pietyValue" class="resource-value"></span></div>
+        <div class="left-panel">
+            <div class="date-display">
+                <span id="current-year">Year: 1000 AD</span>
             </div>
-            <div class="resource-bar-container">
-                <p>Gold:</p> <div class="resource-bar"><div id="goldBar" class="resource-fill"></div><span id="goldValue" class="resource-value"></span></div>
-            </div>
-            <div class="resource-bar-container">
-                <p>Influence:</p> <div class="resource-bar"><div id="influenceBar" class="resource-fill"></div><span id="influenceValue" class="resource-value"></span></div>
-            </div>
-            <div class="resource-bar-container">
-                <p>Papal Authority:</p> <div class="resource-bar"><div id="papalAuthorityBar" class="resource-fill"></div><span id="papalAuthorityValue" class="resource-value"></span></div>
-            </div>
-            <div class="resource-bar-container">
-                <p>Stability:</p> <div class="resource-bar"><div id="stabilityBar" class="resource-fill"></div><span id="stabilityValue" class="resource-value"></span></div>
-            </div>
-            <p class="turn-counter">Turn: <span id="turnValue"></span></p>
-        </div>
-
-        <div class="advisors-section">
-            <h2>Your Advisors</h2>
-
-            <div class="advisor-card" id="advisor-bellini">
-                <h3>Cardinal Bellini</h3>
-                <p class="faction">Faction: Theologian | Ideology: Traditionalist</p>
-                <p class="description">A staunch defender of ancient doctrines.</p>
-                <button class="consult-button" data-advisor-id="bellini">Consult</button>
-            </div>
-
-            <div class="advisor-card" id="advisor-valerius">
-                <h3>Lord Valerius</h3>
-                <p class="faction">Faction: Noble | Ideology: Pragmatist</p>
-                <p class="description">A cunning strategist with vast estates.</p>
-                <button class="consult-button" data-advisor-id="valerius">Consult</button>
-            </div>
-
-            <div class="advisor-card" id="advisor-alchemist">
-                <h3>Master Alchemist</h3>
-                <p class="faction">Faction: Merchant | Ideology: Reformer</p>
-                <p class="description">Seeks new discoveries and economic opportunities.</p>
-                <button class="consult-button" data-advisor-id="alchemist">Consult</button>
-            </div>
-            
-            <button id="nextTurnButton">Advance Turn</button>
-        </div>
-
-        <div class="game-log">
-            <h2>Game Log</h2>
-            <div id="logMessages">
+            <div class="navigation-tabs">
+                <div class="tab active" id="main-tab">Main</div>
                 </div>
+            <div class="status-section">
+                <h3>STATUS</h3>
+                <div class="resource-item">Piety: <span id="piety-value">100</span></div>
+                <div class="resource-item">Gold: <span id="gold-value">100</span></div>
+                <div class="resource-item">Influence: <span id="influence-value">50</span></div>
+                <div class="resource-item">Papal Authority: <span id="papal-authority-value">50</span></div>
+                <div class="resource-item">Stability: <span id="stability-value">75</span></div>
+            </div>
+            <div class="game-log-section">
+                <h3>Game Log</h3>
+                <div class="game-log-content" id="game-log">
+                    <p>Welcome to Habeus Papam!</p>
+                </div>
+            </div>
         </div>
 
-        <div class="event-area" id="eventArea">
+        <div class="right-panel">
+            <div class="main-content-area">
+                <div class="event-card-container">
+                    <h2 id="card-title"></h2>
+                    <p id="card-description"></p>
+                    <div class="card-choices" id="card-choices">
+                        </div>
+                </div>
+
+                <div class="decks-hand-section">
+                    <div class="deck-area">
+                        <h4>Decks</h4>
+                        <div class="placeholder-card">Event Deck</div>
+                        <div class="placeholder-card">Major Event Deck</div>
+                    </div>
+                    <div class="hand-area">
+                        <h4>Hand</h4>
+                        <div class="placeholder-card">Placeholder Card 1</div>
+                        <div class="placeholder-card">Placeholder Card 2</div>
+                    </div>
+                </div>
+
+                <div class="advisor-section">
+                    <h3>Advisors</h3>
+                    <div class="advisor-buttons" id="advisor-buttons">
+                        <button class="advisor-btn" data-advisor="cardinal">Cardinal Bellini</button>
+                        <button class="advisor-btn" data-advisor="lord">Lord Valerius</button>
+                        <button class="advisor-btn" data-advisor="alchemist">Master Alchemist</button>
+                    </div>
+                </div>
+
+                <button class="advance-turn-btn" id="advance-turn-btn">Advance Turn</button>
             </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
