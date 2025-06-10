@@ -1,9 +1,8 @@
 /* General Body and Background */
 body {
-    font-family: 'Georgia', serif; /* Classic, slightly medieval feel */
-    background-color: #1a1a1a; /* Very dark background */
-    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxyZWN0IHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iIzFhMWExYSYxYTEwNzUiLz4KICAgIDxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHgyPSIzIiB5Mj0iMyIgZmlsbD0iIzMzMzMzMyIvPgogICAgPHJlY3Qgd2lkdGg9IjEiIGhlaWdodD0iMSIgeDI9IjMiIHk9IjExIiBmaWxsPSIjMzMzMzMzIi8+CiAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4Mj0iMTEiIHkyPSIzIiBmaWllbGw9IiMzMzMzMzMiLz4KICAgIDxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHgyPSIxMSIgeTI9IjExIiBmaWxsPSIjMzMzMzMzIi8+CiAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4Mj0iNSIgeTI9IjEiIGZpbGw9IiMzMzMzMzMiLz4KICAgIDxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHgyPSI5IiB5Mj0iMSIgZmlsbD0iIzMzMzMzMyIvPgogICAgPHJlY3Qgd2lkdGg9IjEiIGhlaWdodD0iMSIgeDI9IjEiIHkyPSI1IiBmaWxsPSIjMzMzMzMzIi8+CiAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4Mj0iMSIgeTI9IjkiIGZpbGw9IiMzMzMzMzMiLz4KICAgIDxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHgyPSI1IiB5Mj0iMTMiIGZpbGw9IiMzMzMzMzMiLz4KICAgIDxyZWN0IHdpZHRoPSIxIiBoZXZpZ2h0PSIxIiB4Mj0iOSIgeTI9IjEzIiBmaWxsPSIjMzMzMzMzIi8+CiAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4Mj0iMTMiIHkyPSI1IiBmaWxsPSIjMzMzMzMzIi8+CiAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4Mj0iMTMiIHkyPSI5IiBmaWxsPSIjMzMzMzMzIi8+CiAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4Mj0iNyIgeTI9IjciIGZpbGw9IiMzMzMzMzMiLz4KPC9zdmc+'); /* Subtle pattern */
-    color: #f0dcb9; /* Off-white / old paper color */
+    font-family: 'Roboto', sans-serif; /* Clean, modern font */
+    background-color: #e0e6ed; /* Light grey background */
+    color: #333;
     line-height: 1.6;
     margin: 0;
     padding: 20px;
@@ -15,219 +14,267 @@ body {
 
 /* Main Game Container */
 .game-container {
-    background-color: #3b3a37; /* Dark panel background */
-    border: 2px solid #5a4b3a; /* Darker, rustic border */
+    background-color: #ffffff; /* White background for main UI */
     border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Stronger shadow for depth */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     padding: 30px;
-    max-width: 960px; /* Slightly wider */
+    max-width: 1000px; /* Wider for more content */
     width: 100%;
     display: grid;
-    grid-template-columns: 2fr 1fr; /* Advisor column wider than log */
-    gap: 25px; /* More space between sections */
-    box-sizing: border-box; /* Include padding in width */
+    grid-template-columns: 1fr 1fr; /* Two columns for layout */
+    gap: 30px;
+    box-sizing: border-box;
 }
 
 /* Headings */
 h1 {
     grid-column: 1 / -1;
     text-align: center;
-    color: #f0d59d; /* Gold for title */
-    font-family: 'Cinzel Decorative', serif; /* Needs to be imported or fallback to similar */
+    color: #2c3e50;
+    font-family: 'Lato', sans-serif; /* Slightly different font for titles */
     font-size: 2.8em;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     margin-bottom: 30px;
-    letter-spacing: 2px;
+    font-weight: 700;
 }
 
 h2 {
-    color: #e0c28e; /* Lighter gold for section titles */
-    font-family: 'Cinzel Decorative', serif;
-    font-size: 1.8em;
+    color: #34495e;
+    font-family: 'Lato', sans-serif;
+    font-size: 1.6em;
     margin-top: 0;
     margin-bottom: 15px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    border-bottom: 2px solid #ddd; /* Clean separator */
+    padding-bottom: 8px;
 }
 
 h3 {
-    color: #f0dcb9; /* Off-white for card titles */
-    font-family: 'Georgia', serif;
+    color: #4a4a4a;
+    font-family: 'Roboto', sans-serif;
     font-size: 1.3em;
     margin-top: 0;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
-/* Resources Display */
-.resources {
-    grid-column: 1 / -1;
-    background-color: #2e2c29; /* Slightly darker than main container */
-    border: 1px solid #4a4846; /* Subtle border */
-    padding: 20px;
+/* Resources Section (with progress bars) */
+.resources-section {
+    grid-column: 1 / -1; /* Span across both columns */
+    background-color: #f8f9fa; /* Light grey/off-white */
     border-radius: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px; /* More space */
-    justify-content: space-around;
+    padding: 20px;
     margin-bottom: 25px;
-    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3); /* Inner shadow */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive columns */
+    gap: 20px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.05);
 }
 
-.resources p {
-    margin: 0;
+.resources-section h2 {
+    grid-column: 1 / -1;
+    text-align: left;
+    border-bottom: none; /* No bottom border for this h2 */
+    padding-bottom: 0;
+    margin-bottom: 10px;
+}
+
+.resource-bar-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-start;
+}
+
+.resource-bar-container p {
     font-weight: bold;
-    font-size: 1.2em; /* Slightly larger */
-    color: #f0dcb9;
+    margin: 0;
+    color: #555;
+    font-size: 0.95em;
 }
 
-.resources span {
-    color: #f0d59d; /* Gold for resource values */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+.resource-bar {
+    width: 100%;
+    height: 18px;
+    background-color: #e9ecef; /* Background of the bar */
+    border-radius: 9px;
+    overflow: hidden; /* Ensures fill stays within rounded corners */
+    position: relative;
+}
+
+.resource-fill {
+    height: 100%;
+    background-color: #4CAF50; /* Green fill */
+    width: 50%; /* Default width, will be set by JS */
+    border-radius: 9px;
+    transition: width 0.3s ease-out;
+}
+
+/* Specific colors for resource fills if desired */
+#pietyBar .resource-fill { background-color: #4CAF50; } /* Green */
+#goldBar .resource-fill { background-color: #FFC107; } /* Amber/Gold */
+#influenceBar .resource-fill { background-color: #2196F3; } /* Blue */
+#papalAuthorityBar .resource-fill { background-color: #F44336; } /* Red */
+#stabilityBar .resource-fill { background-color: #9C27B0; } /* Purple */
+
+
+.resource-value {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #333; /* Text color over bar */
+    font-weight: bold;
+    font-size: 0.9em;
+    text-shadow: 0 0 2px rgba(255,255,255,0.7); /* For readability */
+}
+
+.turn-counter {
+    grid-column: 1 / -1; /* Place turn counter below resource bars */
+    text-align: right;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin: 0;
+    padding-top: 10px;
+    border-top: 1px dashed #e0e0e0;
 }
 
 /* Advisor Section */
 .advisors-section {
     grid-column: 1 / 2; /* Left column */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .advisor-card {
-    background-color: #2a2927; /* Darker background for individual cards */
-    border: 1px solid #4a4846;
+    background-color: #f0f4f7; /* Light grey background for cards */
+    border: 1px solid #d3dce0;
     border-radius: 6px;
     padding: 18px;
-    margin-bottom: 18px;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
 .advisor-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
-.advisor-card p {
-    font-size: 0.95em;
-    color: #e0dcd1;
-    margin-bottom: 6px;
+.advisor-card .faction {
+    font-size: 0.85em;
+    color: #666;
+    margin-bottom: 5px;
 }
 
 .advisor-card .description {
     font-style: italic;
-    color: #b0a89a; /* Muted text for description */
-    margin-bottom: 12px;
+    color: #777;
+    margin-bottom: 15px;
 }
 
-/* Buttons (Consult, Next Turn, Event Choices) */
+/* Buttons */
 .consult-button,
 #nextTurnButton,
 .event-choice-button {
-    background-color: #8D7A4F; /* Darker gold/bronze */
-    color: #ffffff;
-    border: 1px solid #5A4B3A; /* Matching border */
+    background-color: #007bff; /* Primary blue button */
+    color: white;
+    border: none;
     border-radius: 4px;
     padding: 10px 18px;
     cursor: pointer;
-    font-size: 1.05em;
-    font-family: 'Trajan Pro 3', serif; /* Or similar imperial feel */
-    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    font-size: 1em;
+    font-family: 'Roboto', sans-serif;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     width: 100%; /* Ensure full width */
 }
 
 .consult-button:hover:not(:disabled),
 #nextTurnButton:hover,
 .event-choice-button:hover {
-    background-color: #A38B5D; /* Lighter gold/bronze on hover */
-    border-color: #6F5E48;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    background-color: #0056b3; /* Darker blue on hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .consult-button:disabled {
-    background-color: #555555;
-    border-color: #444444;
-    color: #bbbbbb;
+    background-color: #cccccc;
+    color: #888888;
     cursor: not-allowed;
-    text-shadow: none;
     box-shadow: none;
 }
 
 #nextTurnButton {
-    grid-column: 1 / -1;
-    margin-top: 25px;
-    padding: 15px 20px;
-    font-size: 1.2em;
-    background-color: #6A4B3A; /* Slightly different shade for main action */
-    border-color: #4A3A2A;
+    background-color: #28a745; /* Green for Next Turn */
+    margin-top: 20px;
+    padding: 12px 20px;
+    font-size: 1.1em;
 }
 
 #nextTurnButton:hover {
-    background-color: #7A5B4A;
+    background-color: #218838;
 }
-
 
 /* Game Log */
 .game-log {
     grid-column: 2 / 3; /* Right column */
-    background-color: #222222; /* Very dark, almost black background */
-    border: 1px solid #4a4846;
+    background-color: #fdfdfd; /* Very light background for log */
+    border: 1px solid #e0e0e0;
     border-radius: 5px;
     padding: 15px;
-    height: 450px; /* Taller log for more messages */
+    height: 600px; /* Adjusted height to fill space better */
     overflow-y: auto;
     display: flex;
     flex-direction: column-reverse; /* New messages appear at the top */
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5); /* Deeper inner shadow */
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.03); /* Subtle inner shadow */
 }
 
 .game-log h2 {
-    color: #e0c28e;
     margin-bottom: 10px;
     padding-bottom: 5px;
-    border-bottom: 1px solid #4a4846; /* Separator for title */
-    font-size: 1.5em;
+    border-bottom: 1px solid #e9ecef;
     text-align: center;
 }
 
 #logMessages p {
-    background-color: #2b2b2b; /* Slightly lighter background for log entries */
+    background-color: #ffffff; /* White background for log entries */
     padding: 8px;
     border-radius: 3px;
     margin-bottom: 8px;
-    font-size: 0.85em; /* Smaller text for log */
-    color: #cccccc; /* Lighter grey for log text */
+    font-size: 0.85em;
+    color: #555;
     word-wrap: break-word;
-    border-left: 3px solid #6A4B3A; /* Accent border on left */
+    border-left: 3px solid #007bff; /* Accent border on left */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Very subtle shadow for log entries */
 }
 
 #logMessages p strong {
-    color: #f0d59d; /* Gold for turn number in log */
+    color: #0056b3; /* Darker blue for turn number in log */
 }
 
 
-/* Event Area */
+/* Event Area (The "Card" itself) */
 .event-area {
     grid-column: 1 / -1; /* Span across both columns */
-    background-color: #4A3A2A; /* Richer brown background */
-    border: 2px solid #8D7A4F; /* Gold border to highlight */
-    border-radius: 10px;
-    padding: 30px;
-    margin-top: 30px;
+    background-color: #fefefe; /* White/off-white background */
+    border: 1px solid #cce5ff; /* Light blue border */
+    border-radius: 8px;
+    padding: 25px;
+    margin-top: 25px;
     text-align: center;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); /* Prominent shadow */
-    position: relative; /* For potential z-index or absolute positioning if needed */
-    z-index: 100; /* Ensure it's on top of other elements */
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* More prominent shadow for the main card */
+    position: relative;
+    z-index: 100;
 }
 
 .event-area h3 {
-    color: #f0d59d;
+    color: #007bff; /* Primary blue for event title */
     margin-bottom: 20px;
+    font-family: 'Lato', sans-serif;
     font-size: 2em;
-    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.7);
+    font-weight: 700;
 }
 
 .event-area p {
-    font-size: 1.2em;
-    color: #f0dcb9;
+    font-size: 1.1em;
+    color: #4a4a4a;
     margin-bottom: 30px;
     max-width: 700px;
     margin-left: auto;
@@ -238,20 +285,21 @@ h3 {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 20px;
+    gap: 15px;
 }
 
 .event-choice-button {
-    background-color: #6A4B3A; /* Earthy brown for event choices */
-    border-color: #4A3A2A;
-    padding: 15px 30px;
-    font-size: 1.1em;
-    min-width: 200px;
+    background-color: #6c757d; /* Grey button for choices */
+    border-color: #6c757d;
+    padding: 12px 25px;
+    font-size: 1em;
+    min-width: 180px;
+    width: auto; /* Allow buttons to size based on content */
 }
 
 .event-choice-button:hover {
-    background-color: #7A5B4A;
-    border-color: #5A4B3A;
+    background-color: #5a6268;
+    border-color: #545b62;
 }
 
 /* Responsive adjustments */
@@ -259,35 +307,15 @@ h3 {
     .game-container {
         grid-template-columns: 1fr; /* Single column layout on smaller screens */
         padding: 20px;
-        gap: 15px;
+        gap: 20px;
     }
 
-    .advisors-section, .game-log, .resources, .event-area, #nextTurnButton {
+    .resources-section, .advisors-section, .game-log, .event-area, #nextTurnButton {
         grid-column: 1 / -1;
-    }
-
-    .advisor-card, .game-log, .resources, .event-area {
-        margin-bottom: 15px;
     }
 
     .game-log {
         height: 350px; /* Adjust height for smaller screens */
-    }
-
-    h1 {
-        font-size: 2.2em;
-    }
-
-    h2 {
-        font-size: 1.6em;
-    }
-
-    .event-area h3 {
-        font-size: 1.8em;
-    }
-
-    .event-area p {
-        font-size: 1em;
     }
 }
 
@@ -298,15 +326,37 @@ h3 {
     .game-container {
         padding: 15px;
     }
-    .resources p {
-        font-size: 1em;
+    h1 {
+        font-size: 2em;
+    }
+    h2 {
+        font-size: 1.4em;
+    }
+    .resources-section {
+        grid-template-columns: 1fr; /* Stack resource bars vertically */
+    }
+    .resource-bar-container {
+        align-items: center; /* Center text above bars */
+    }
+    .resource-bar {
+        width: 80%; /* Slightly narrower bars on small screens */
+    }
+    .event-area h3 {
+        font-size: 1.6em;
+    }
+    .event-area p {
+        font-size: 0.95em;
     }
     .consult-button, #nextTurnButton, .event-choice-button {
-        font-size: 0.95em;
-        padding: 10px 15px;
+        font-size: 0.9em;
+        padding: 8px 12px;
     }
     .event-choices {
         flex-direction: column;
-        align-items: center;
+        align-items: stretch; /* Stretch buttons to full width */
+    }
+    .event-choice-button {
+        min-width: unset;
+        width: 100%;
     }
 }
