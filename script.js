@@ -11,7 +11,16 @@ const gameState = {
     flags: {
         hasSecuredNobleSupport: false,
         hasSecuredTheologicalValidation: false,
-        hasReformedChurch: false
+        hasReformedChurch: false,
+        // Existing new flags
+        hasSurvivedFirstDecade: false,
+        hasHighPietyEver: false,
+        hasMaxGoldEver: false,
+        // Flags for advisor usage (NEW/FIXED)
+        usedCardinal: false,
+        usedLord: false,
+        usedAlchemist: false,
+        hasUsedAllAdvisors: false
     },
     turnCount: 0,
     advisorCooldowns: {
@@ -19,31 +28,43 @@ const gameState = {
         lord: 0,
         alchemist: 0
     },
-    currentCard: null // Stores the card currently displayed
+    currentCard: null, // Stores the card currently displayed
+    unlockedAchievements: [], // Array to store IDs of unlocked achievements
+    gameStarted: false // New flag to track if a game is in progress
 };
 
-// --- DOM Elements ---
-const yearDisplay = document.getElementById('current-year');
-const pietyValue = document.getElementById('piety-value');
-const goldValue = document.getElementById('gold-value');
-const influenceValue = document.getElementById('influence-value');
-const papalAuthorityValue = document.getElementById('papal-authority-value');
-const stabilityValue = document.getElementById('stability-value');
-const gameLog = document.getElementById('game-log');
-const cardTitle = document.getElementById('card-title');
-const cardDescription = document.getElementById('card-description');
-const cardChoices = document.getElementById('card-choices');
-const advanceTurnBtn = document.getElementById('advance-turn-btn');
-const advisorButtons = document.querySelectorAll('.advisor-btn');
-const majorEventDeckPlaceholder = document.getElementById('major-event-deck-placeholder');
-const gameModal = document.getElementById('game-modal');
-const modalTitle = document.getElementById('modal-title');
-const modalMessage = document.getElementById('modal-message');
-const modalRestartBtn = document.getElementById('modal-restart-btn');
+// --- DOM Elements (Declared here, assigned after DOMContentLoaded) ---
+let yearDisplay;
+let pietyValue;
+let goldValue;
+let influenceValue;
+let papalAuthorityValue;
+let stabilityValue;
+let gameLog;
+let cardTitle;
+let cardDescription;
+let cardChoices;
+let advanceTurnBtn;
+let advisorButtons; // This will be a NodeList
+let majorEventDeckPlaceholder;
+let gameModal;
+let modalTitle;
+let modalMessage;
+let modalRestartBtn;
 
-// --- Game Data: Event Cards ---
-// Each card has an ID, title, description, and an array of choices.
-// Each choice has text, effects (resource changes), and a log message.
+// New DOM elements for Main Menu and Achievements
+let mainMenuBtn;
+let mainMenu;
+let startGameBtn;
+let continueGameBtn;
+let viewAchievementsBtn;
+let optionsBtn;
+let exitGameBtn;
+
+let achievementsList;
+
+
+// --- Game Data: Event Cards (Expanded) ---
 const eventCards = [
     {
         id: 'initial_decree',
@@ -69,7 +90,7 @@ const eventCards = [
     },
     {
         id: 'local_dispute',
-        title: 'Local Lord's Conflict',
+        title: 'Local Lord\'s Conflict',
         description: 'Two minor lords are locked in a territorial dispute, threatening peace in the region. They seek your arbitration.',
         choices: [
             {
@@ -132,8 +153,98 @@ const eventCards = [
                 log: 'You declined the crusade. Piety and influence suffered, but stability increased.'
             }
         ]
+    },
+    // --- NEW CARDS ---
+    {
+        id: 'plague_outbreak',
+        title: 'The Black Death Approaches',
+        description: 'A terrifying plague sweeps across Europe, devastating populations. How does the Church respond?',
+        choices: [
+            {
+                text: 'Organize mass prayers and processions, emphasizing divine intervention.',
+                effects: { piety: 25, stability: -20, gold: -10 },
+                log: 'Mass prayers were organized. Piety soared amidst the terror, but fear still gripped the populace, affecting stability.'
+            },
+            {
+                text: 'Fund medical research and quarantine efforts, even if it conflicts with some beliefs.',
+                effects: { gold: -30, stability: 15, piety: -10 },
+                log: 'You funded early medical efforts. Stability improved due to tangible actions, but some faithful questioned the focus on earthly solutions.'
+            },
+            {
+                text: 'Blame sinful populaces and call for harsh repentance.',
+                effects: { piety: 10, stability: -30, papalAuthority: 5 },
+                log: 'You blamed the people for the plague. While papal authority was asserted, widespread fear and instability followed.'
+            }
+        ]
+    },
+    {
+        id: 'new_trade_route',
+        title: 'Discovery of New Trade Routes',
+        description: 'Merchants report the discovery of new, lucrative trade routes. This promises wealth, but also new influences.',
+        choices: [
+            {
+                text: 'Encourage Papal investment in the new trade, seeking direct profit.',
+                effects: { gold: 30, influence: 10, piety: -5 },
+                log: 'The Papacy invested in new trade routes. Gold and influence increased, but some saw it as too worldly.'
+            },
+            {
+                text: 'Tax the new trade heavily to fund Church expansion and charitable works.',
+                effects: { gold: 20, piety: 10, stability: -5 },
+                log: 'You taxed the new trade to fund the Church. Piety increased, but heavy taxes caused minor stability issues.'
+            },
+            {
+                text: 'Bless the routes and promote fair trade, relying on spiritual guidance.',
+                effects: { piety: 15, stability: 10, gold: 5 },
+                log: 'You blessed the new trade, promoting fairness. Piety and stability increased, with a small gold gain.'
+            }
+        ]
+    },
+    {
+        id: 'scholarly_debate',
+        title: 'A Scholarly Debate on Doctrine',
+        description: 'Renowned scholars are engaged in a heated debate over a complex theological doctrine. Your intervention is sought.',
+        choices: [
+            {
+                text: 'Endorse the traditional interpretation, asserting dogma.',
+                effects: { papalAuthority: 20, piety: 10, influence: -5 },
+                log: 'You firmly upheld tradition. Papal authority and piety were strengthened, but some intellectual dissent emerged.'
+            },
+            {
+                text: 'Encourage open academic discourse, valuing intellectual freedom.',
+                effects: { influence: 10, stability: 5, papalAuthority: -5 },
+                log: 'You promoted scholarly freedom. Influence and stability increased, but it slightly diluted the Papacy\'s absolute doctrinal control.'
+            },
+            {
+                text: 'Condemn both sides for divisiveness and enforce silence.',
+                effects: { stability: -10, piety: -5, papalAuthority: 10 },
+                log: 'You silenced the debate. Papal authority was asserted, but it bred resentment and lowered both piety and stability.'
+            }
+        ]
+    },
+    {
+        id: 'imperial_election',
+        title: 'Imperial Election Looms',
+        description: 'The Holy Roman Emperor has died, and a new election is at hand. Various factions vie for your endorsement.',
+        choices: [
+            {
+                text: 'Endorse Prince Frederick, a devout and militarily strong candidate.',
+                effects: { influence: 25, papalAuthority: 10, stability: -5 },
+                log: 'You backed Prince Frederick. Your influence and papal authority soared, but some rivals were displeased.'
+            },
+            {
+                text: 'Support Duke Leopold, a more moderate ruler who promises non-interference in Church affairs.',
+                effects: { stability: 15, piety: 5, influence: -10 },
+                log: 'You chose Duke Leopold. Stability and piety rose, but your influence in imperial politics waned.'
+            },
+            {
+                text: 'Remain neutral, allowing the secular powers to decide amongst themselves.',
+                effects: { influence: -15, papalAuthority: -10, stability: 5 },
+                log: 'You remained neutral. Stability improved from avoiding conflict, but your influence and papal authority diminished.'
+            }
+        ]
     }
 ];
+
 
 // --- Game Data: Major Choice Paths (Triggered by flags/resources) ---
 const majorEventCards = [
@@ -149,13 +260,13 @@ const majorEventCards = [
         },
         choices: [
             {
-                text: 'Secure Noble Support: Negotiate with powerful secular rulers for their recognition.',
+                text: 'Secure Noble Support: Negotiate with powerful secular rulers for their recognition. (-50 Gold, +30 Influence, -10 Stability)',
                 effects: { gold: -50, influence: 30, stability: -10, setFlag: 'hasSecuredNobleSupport' },
                 log: 'You secured the backing of key noble houses, a crucial step for the new Empire!',
                 condition: (state) => !state.flags.hasSecuredNobleSupport // Can only do this if flag isn't set
             },
             {
-                text: 'Secure Theological Validation: Convene a grand council to formally declare the Papal claim to Empire.',
+                text: 'Secure Theological Validation: Convene a grand council to formally declare the Papal claim to Empire. (+30 Piety, +30 Papal Authority, -10 Stability)',
                 effects: { piety: 30, papalAuthority: 30, stability: -10, setFlag: 'hasSecuredTheologicalValidation' },
                 log: 'A grand council affirmed your claim to the Empire through divine right! Theological validation achieved.',
                 condition: (state) => !state.flags.hasSecuredTheologicalValidation // Can only do this if flag isn't set
@@ -166,6 +277,42 @@ const majorEventCards = [
         winCondition: {
             title: "A New Roman Empire!",
             message: "Under your divine leadership, the Holy Roman Empire is reborn, with the Papacy as its unassailable head! You have forged a new golden age. The history books will forever remember Pope [Your Name] as the unifier of Christendom and the restorer of Rome. You win!"
+        }
+    },
+    // --- NEW MAJOR PATH: The Great Schism ---
+    {
+        id: 'great_schism_path',
+        title: 'The Great Schism',
+        description: 'Years of theological and political disagreements between Rome and Constantinople have reached a breaking point. A definitive split seems inevitable unless drastic action is taken.',
+        prerequisites: {
+            piety: 80, // Needs reasonable piety
+            papalAuthority: 80, // Needs reasonable authority
+            stability: 50, // Not too unstable
+            influence: 60, // Some influence to mediate
+            turnMin: 20 // Only after 20 turns
+        },
+        choices: [
+            {
+                text: 'Assert Roman Primacy: Demand Constantinople submit to Rome\'s spiritual authority. (+40 Papal Authority, -20 Piety, -20 Influence, -10 Stability)',
+                effects: { papalAuthority: 40, piety: -20, influence: -20, stability: -10, setFlag: 'hasAssertedRomanPrimacy' },
+                log: 'You forcefully asserted Roman primacy. Papal Authority surged, but at a heavy cost to Piety, Influence, and Stability in the East.'
+            },
+            {
+                text: 'Seek Reconciliation: Offer concessions for the sake of Christian unity. (-30 Papal Authority, +20 Piety, +15 Influence, +15 Stability)',
+                effects: { papalAuthority: -30, piety: 20, influence: 15, stability: 15, setFlag: 'hasSoughtReconciliation' },
+                log: 'You sought reconciliation, making concessions. Papal Authority dipped, but Piety, Influence, and Stability saw significant gains for unity.'
+            }
+        ],
+        completionCheck: (state) => state.flags.hasAssertedRomanPrimacy || state.flags.hasSoughtReconciliation,
+        outcomeLogic: (state) => {
+            if (state.flags.hasAssertedRomanPrimacy) {
+                addLog('The Great Schism has officially occurred, with Rome asserting its dominance over the splintered East.');
+                // Potentially new cards or challenges related to Eastern Church
+                // You could add a flag like `isEasternSchismActive: true`
+            } else if (state.flags.hasSoughtReconciliation) {
+                addLog('You have managed to avert the Great Schism, for now. Christian unity is preserved!');
+                // Potentially boost specific resources in the long term or prevent negative events
+            }
         }
     }
 ];
@@ -198,7 +345,6 @@ const advisors = {
         name: 'Master Alchemist',
         description: 'Offers unconventional solutions, sometimes with unpredictable results.',
         ability: (state) => {
-            // Random positive or negative effect
             const effectChoice = Math.random();
             if (effectChoice < 0.3) {
                 state.resources.gold += 30;
@@ -215,6 +361,41 @@ const advisors = {
         cooldown: 5
     }
 };
+
+// --- Game Data: Achievements ---
+const achievements = [
+    {
+        id: 'first_decade',
+        name: 'Seasoned Pontiff',
+        description: 'Survive your first 10 years as Pope.',
+        condition: (state) => state.currentYear >= 1010 && !state.flags.hasSurvivedFirstDecade,
+        onUnlock: (state) => { state.flags.hasSurvivedFirstDecade = true; addLog('Achievement Unlocked: Seasoned Pontiff!'); }
+    },
+    {
+        id: 'golden_hand',
+        name: 'Golden Hand',
+        description: 'Reach 200 Gold.',
+        condition: (state) => state.resources.gold >= 200 && !state.flags.hasMaxGoldEver,
+        onUnlock: (state) => { state.flags.hasMaxGoldEver = true; addLog('Achievement Unlocked: Golden Hand!'); }
+    },
+    {
+        id: 'pillar_of_faith',
+        name: 'Pillar of Faith',
+        description: 'Reach 180 Piety.',
+        condition: (state) => state.resources.piety >= 180 && !state.flags.hasHighPietyEver,
+        onUnlock: (state) => { state.flags.hasHighPietyEver = true; addLog('Achievement Unlocked: Pillar of Faith!'); }
+    },
+    {
+        id: 'advisor_master',
+        name: 'Advisor Master',
+        description: 'Use all three advisors at least once.',
+        condition: (state) => {
+            // FIXED: Now relies on individual advisor usage flags
+            return state.flags.usedCardinal && state.flags.usedLord && state.flags.usedAlchemist && !state.flags.hasUsedAllAdvisors;
+        },
+        onUnlock: (state) => { state.flags.hasUsedAllAdvisors = true; addLog('Achievement Unlocked: Advisor Master!'); }
+    }
+];
 
 // --- Helper Functions ---
 
@@ -244,6 +425,29 @@ function addLog(message) {
 }
 
 /**
+ * Updates the display of unlocked achievements.
+ */
+function updateAchievementDisplay() {
+    achievementsList.innerHTML = ''; // Clear current list
+    if (gameState.unlockedAchievements.length === 0) {
+        const noAchievementsMsg = document.createElement('p');
+        noAchievementsMsg.classList.add('no-achievements');
+        noAchievementsMsg.textContent = 'No achievements yet. Keep playing!';
+        achievementsList.appendChild(noAchievementsMsg);
+        return;
+    }
+    gameState.unlockedAchievements.forEach(achId => {
+        const achievement = achievements.find(a => a.id === achId);
+        if (achievement) {
+            const achItem = document.createElement('div');
+            achItem.classList.add('achievement-item');
+            achItem.innerHTML = `<strong>${achievement.name}</strong><span>${achievement.description}</span>`;
+            achievementsList.appendChild(achItem);
+        }
+    });
+}
+
+/**
  * Checks for game over conditions.
  * @returns {boolean} True if game is over.
  */
@@ -262,6 +466,13 @@ function checkGameOver() {
     } else if (gameState.resources.influence <= 0) {
         gameOverMessage = "Secular powers no longer heed your words. You are a Pope without political sway, a figurehead ignored by kings and emperors.";
     }
+
+    // Add a check for resources getting excessively high
+    if (gameState.resources.piety >= 250 && gameState.resources.gold >= 250 && gameState.resources.papalAuthority >= 250) {
+        gameOverMessage = "Your immense power and wealth have drawn the envy of all. Kings conspire against you, and the Church itself is seen as a secular empire, leading to universal revolt against your overwhelming authority.";
+        gameOverTitle = "Overwhelmed by Power!";
+    }
+
 
     if (gameOverMessage) {
         endGame(gameOverTitle, gameOverMessage);
@@ -283,12 +494,15 @@ function endGame(title, message) {
     advanceTurnBtn.disabled = true;
     cardChoices.innerHTML = ''; // Clear card choices
     advisorButtons.forEach(btn => btn.disabled = true);
+    gameState.gameStarted = false; // Mark game as not in progress
+    updateMainMenuButtons();
 }
 
 /**
  * Resets the game to its initial state.
  */
 function resetGame() {
+    // Reset all game state variables
     gameState.currentYear = 1000;
     gameState.resources = {
         piety: 100,
@@ -300,7 +514,15 @@ function resetGame() {
     gameState.flags = {
         hasSecuredNobleSupport: false,
         hasSecuredTheologicalValidation: false,
-        hasReformedChurch: false
+        hasReformedChurch: false,
+        hasSurvivedFirstDecade: false,
+        hasHighPietyEver: false,
+        hasMaxGoldEver: false,
+        hasUsedAllAdvisors: false,
+        // FIX: Ensure new advisor flags are reset
+        usedCardinal: false,
+        usedLord: false,
+        usedAlchemist: false
     };
     gameState.turnCount = 0;
     gameState.advisorCooldowns = {
@@ -309,12 +531,28 @@ function resetGame() {
         alchemist: 0
     };
     gameState.currentCard = null;
+    // Keep achievements unlocked between games if desired. Uncomment to clear:
+    // gameState.unlockedAchievements = [];
     gameLog.innerHTML = '<p>Welcome to Habeus Papam!</p>'; // Clear and reset log
 
     gameModal.classList.add('hidden'); // Hide modal
-    advanceTurnBtn.disabled = false; // Re-enable turn button
-    advisorButtons.forEach(btn => btn.disabled = false); // Re-enable advisor buttons
-    initGame(); // Re-initialize the game (draw first card etc.)
+    initGame(true); // Re-initialize the game, showing the main menu
+}
+
+// --- Achievement Logic ---
+/**
+ * Checks all achievements and unlocks any that meet their conditions.
+ */
+function checkAchievements() {
+    achievements.forEach(ach => {
+        if (!gameState.unlockedAchievements.includes(ach.id)) {
+            if (ach.condition(gameState)) {
+                gameState.unlockedAchievements.push(ach.id);
+                if (ach.onUnlock) ach.onUnlock(gameState); // Run specific unlock logic
+                updateAchievementDisplay();
+            }
+        }
+    });
 }
 
 // --- Game Logic ---
@@ -325,11 +563,11 @@ function resetGame() {
  */
 function applyEffects(effects) {
     if (effects) {
-        for (const resource in effects) {
-            if (gameState.resources.hasOwnProperty(resource)) {
-                gameState.resources[resource] += effects[resource];
-            } else if (resource === 'setFlag') {
-                gameState.flags[effects[resource]] = true;
+        for (const key in effects) {
+            if (gameState.resources.hasOwnProperty(key)) {
+                gameState.resources[key] = Math.max(0, gameState.resources[key] + effects[key]); // Ensure resources don't go below 0
+            } else if (key === 'setFlag') {
+                gameState.flags[effects[key]] = true;
             }
         }
         updateResourceDisplay();
@@ -349,8 +587,7 @@ function displayCard(card) {
     card.choices.forEach((choice, index) => {
         // Check if the choice has a specific condition that needs to be met
         if (choice.condition && !choice.condition(gameState)) {
-            // If condition not met, skip or disable choice (here, we skip)
-            return;
+            return; // If condition not met, skip choice
         }
 
         const choiceBtn = document.createElement('button');
@@ -382,9 +619,14 @@ function handleChoice(cardId, choiceIndex) {
             endGame(card.winCondition.title, card.winCondition.message);
             return; // Game ends
         }
+        if (card.outcomeLogic) { // Handle outcomes for major paths that don't end the game
+            card.outcomeLogic(gameState);
+        }
         addLog(`Major goal accomplished: ${card.title} requirements met!`);
         // Potentially remove this major card or replace with follow-up
-        majorEventDeckPlaceholder.classList.add('hidden'); // Visual indication
+        majorEventDeckPlaceholder.classList.add('hidden'); // Visual indication that a major path was triggered
+        // Remove the triggered major card from future checks in advanceTurn
+        majorEventCards.find(mc => mc.id === card.id).hasTriggered = true;
     }
 
     // After a choice, enable advance turn button and disable choices
@@ -393,6 +635,7 @@ function handleChoice(cardId, choiceIndex) {
     cardTitle.textContent = 'Decision Made';
     cardDescription.textContent = 'Advance the turn to continue.';
 
+    checkAchievements(); // Check achievements after every choice
     // Check for game over after effects are applied
     if (checkGameOver()) {
         return;
@@ -401,17 +644,14 @@ function handleChoice(cardId, choiceIndex) {
 
 
 /**
- * Randomly draws a card from the available event cards, ensuring no duplicates recently.
- * For simplicity, we'll just pick a random one for now.
- * In a real game, you'd manage a deck with drawing/discarding.
+ * Randomly draws a card from the available event cards.
  * @returns {object} The chosen event card.
  */
 function drawEventCard() {
-    const availableCards = eventCards.filter(card => card.id !== gameState.currentCard?.id); // Don't redraw current card immediately
+    // Basic drawing: exclude the current card, for variety
+    const availableCards = eventCards.filter(card => card.id !== gameState.currentCard?.id);
     if (availableCards.length === 0) {
-        // If all cards have been drawn, perhaps shuffle discard pile back into deck
-        addLog('All normal event cards drawn. Reshuffling minor events.');
-        return eventCards[Math.floor(Math.random() * eventCards.length)];
+        return eventCards[Math.floor(Math.random() * eventCards.length)]; // Fallback
     }
     const randomIndex = Math.floor(Math.random() * availableCards.length);
     return availableCards[randomIndex];
@@ -421,31 +661,43 @@ function drawEventCard() {
  * Handles the progression of a game turn.
  */
 function advanceTurn() {
+    if (!gameState.gameStarted) {
+        addLog("Please start a new game from the main menu.");
+        return;
+    }
     gameState.turnCount++;
     gameState.currentYear++;
     yearDisplay.textContent = `Year: ${gameState.currentYear} AD`;
     addLog(`Turn ${gameState.turnCount}: Year ${gameState.currentYear} AD`);
 
     // Decrease advisor cooldowns
-    for (const advisor in gameState.advisorCooldowns) {
-        if (gameState.advisorCooldowns[advisor] > 0) {
-            gameState.advisorCooldowns[advisor]--;
+    for (const advisorId in gameState.advisorCooldowns) {
+        if (gameState.advisorCooldowns[advisorId] > 0) {
+            gameState.advisorCooldowns[advisorId]--;
         }
     }
     updateAdvisorButtonStates(); // Update button enable/disable
 
+    // Apply minor passive effects or random events here if desired
+    gameState.resources.stability = Math.max(0, gameState.resources.stability - 1); // Small stability decay
+    gameState.resources.gold = Math.max(0, gameState.resources.gold - 2); // Small gold upkeep
+    updateResourceDisplay();
+
     // Check for major path triggers
     let majorPathTriggered = false;
     for (const majorCard of majorEventCards) {
-        const prereqsMet = Object.keys(majorCard.prerequisites).every(res => {
-            return gameState.resources[res] >= majorCard.prerequisites[res];
+        // Check if card has already been triggered or its outcome logic completed
+        if (majorCard.hasTriggered) continue;
+
+        const prereqsMet = Object.keys(majorCard.prerequisites).every(key => {
+            if (key === 'turnMin') {
+                return gameState.turnCount >= majorCard.prerequisites[key];
+            }
+            return gameState.resources[key] >= majorCard.prerequisites[key];
         });
 
-        if (prereqsMet && !majorCard.hasTriggered) { // Only trigger once
-            // For this simple version, we'll just display it if triggered.
-            // In a more complex game, it might be added to a special "hand" or deck.
+        if (prereqsMet) {
             displayCard(majorCard);
-            majorCard.hasTriggered = true; // Mark as triggered so it doesn't keep appearing
             majorEventDeckPlaceholder.classList.remove('hidden'); // Visual indication
             addLog(`A major historical path has opened: "${majorCard.title}"!`);
             majorPathTriggered = true;
@@ -462,13 +714,11 @@ function advanceTurn() {
     // Disable advance turn button until a choice is made
     advanceTurnBtn.disabled = true;
 
-    // Apply minor passive effects or random events here if desired
-    // Example: small stability decay per turn
-    gameState.resources.stability = Math.max(0, gameState.resources.stability - 1);
-    updateResourceDisplay();
-
+    checkAchievements(); // Check achievements after every turn
     // Check for game over after all turn effects
-    checkGameOver();
+    if (checkGameOver()) {
+        return;
+    }
 }
 
 /**
@@ -486,35 +736,145 @@ function updateAdvisorButtonStates() {
     });
 }
 
-// --- Event Listeners ---
-advanceTurnBtn.addEventListener('click', advanceTurn);
-modalRestartBtn.addEventListener('click', resetGame);
-
-advisorButtons.forEach(button => {
-    button.addEventListener('click', (event) => {
-        const advisorId = event.target.dataset.advisor;
-        if (advisorId && !event.target.disabled) {
-            advisors[advisorId].ability(gameState);
-            gameState.advisorCooldowns[advisorId] = advisors[advisorId].cooldown; // Set cooldown
-            updateAdvisorButtonStates(); // Update button state immediately
-            updateResourceDisplay(); // Ensure resources update after advisor
-            addLog(`You consulted ${advisors[advisorId].name}.`);
-            
-            // Advisors advance a turn too
-            advanceTurn();
-        }
-    });
-});
-
-// --- Initialization ---
-function initGame() {
-    updateResourceDisplay();
-    updateAdvisorButtonStates();
-    // Display the very first card on game start
-    displayCard(eventCards.find(card => card.id === 'initial_decree'));
-    // Disable advance turn until the initial choice is made
-    advanceTurnBtn.disabled = true;
+// --- Main Menu Functions ---
+function showMainMenu() {
+    mainMenu.classList.remove('hidden');
+    // Ensure game container is hidden if it was visible
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer) gameContainer.classList.add('hidden');
+    updateMainMenuButtons();
 }
 
-// Start the game!
-initGame();
+function hideMainMenu() {
+    mainMenu.classList.add('hidden');
+    // Ensure game container is visible
+    const gameContainer = document.querySelector('.game-container');
+    if (gameContainer) gameContainer.classList.remove('hidden');
+}
+
+function updateMainMenuButtons() {
+    if (gameState.gameStarted) {
+        continueGameBtn.classList.remove('disabled');
+        continueGameBtn.disabled = false;
+    } else {
+        continueGameBtn.classList.add('disabled');
+        continueGameBtn.disabled = true;
+    }
+}
+
+/**
+ * Initialises the game state and displays the first card.
+ * @param {boolean} showMenu - If true, shows the main menu initially.
+ */
+function initGame(showMenu = true) {
+    if (showMenu) {
+        showMainMenu();
+        return; // Don't start game logic until 'Start New Game' is clicked
+    }
+
+    // If starting a new game, reset game state and hide menu
+    hideMainMenu();
+    gameState.gameStarted = true; // Mark game as in progress
+    updateResourceDisplay();
+    updateAdvisorButtonStates();
+    updateAchievementDisplay(); // Initial display of achievements (might be empty)
+
+    // Display the very first card on game start or reset
+    displayCard(eventCards.find(card => card.id === 'initial_decree'));
+    advanceTurnBtn.disabled = true; // Disable advance turn until initial choice is made
+}
+
+
+// --- Initialization Function (Executes after DOM is loaded) ---
+document.addEventListener('DOMContentLoaded', () => {
+    // Assign DOM elements AFTER the DOM is fully loaded
+    yearDisplay = document.getElementById('current-year');
+    pietyValue = document.getElementById('piety-value');
+    goldValue = document.getElementById('gold-value');
+    influenceValue = document.getElementById('influence-value');
+    papalAuthorityValue = document.getElementById('papal-authority-value');
+    stabilityValue = document.getElementById('stability-value');
+    gameLog = document.getElementById('game-log');
+    cardTitle = document.getElementById('card-title');
+    cardDescription = document.getElementById('card-description');
+    cardChoices = document.getElementById('card-choices');
+    advanceTurnBtn = document.getElementById('advance-turn-btn');
+    advisorButtons = document.querySelectorAll('.advisor-btn'); // Now correctly assigned here
+    majorEventDeckPlaceholder = document.getElementById('major-event-deck-placeholder');
+    gameModal = document.getElementById('game-modal');
+    modalTitle = document.getElementById('modal-title');
+    modalMessage = document.getElementById('modal-message');
+    modalRestartBtn = document.getElementById('modal-restart-btn');
+
+    // New DOM elements for Main Menu and Achievements
+    mainMenuBtn = document.getElementById('main-menu-btn');
+    mainMenu = document.getElementById('main-menu');
+    startGameBtn = document.getElementById('start-game-btn');
+    continueGameBtn = document.getElementById('continue-game-btn');
+    viewAchievementsBtn = document.getElementById('view-achievements-btn');
+    optionsBtn = document.getElementById('options-btn');
+    exitGameBtn = document.getElementById('exit-game-btn');
+
+    achievementsList = document.getElementById('achievements-list');
+
+
+    // --- Event Listeners (Now attached after DOM elements are defined) ---
+    if (advanceTurnBtn) advanceTurnBtn.addEventListener('click', advanceTurn);
+    if (modalRestartBtn) modalRestartBtn.addEventListener('click', resetGame);
+    if (mainMenuBtn) mainMenuBtn.addEventListener('click', showMainMenu);
+    if (startGameBtn) startGameBtn.addEventListener('click', () => {
+        if (gameState.gameStarted) {
+            resetGame();
+        } else {
+            initGame(false);
+        }
+    });
+    if (continueGameBtn) continueGameBtn.addEventListener('click', () => {
+        if (gameState.gameStarted) {
+            hideMainMenu();
+        } else {
+            addLog("No game in progress to continue. Start a New Game.");
+        }
+    });
+    if (viewAchievementsBtn) viewAchievementsBtn.addEventListener('click', () => {
+        hideMainMenu();
+        addLog("Viewing Achievements.");
+    });
+    if (optionsBtn) optionsBtn.addEventListener('click', () => {
+        addLog("Options not yet implemented.");
+    });
+    if (exitGameBtn) exitGameBtn.addEventListener('click', () => {
+        addLog("Exiting game... (in a browser, this would close the tab/window)");
+        // window.close(); // This might not work in all browsers due to security restrictions.
+    });
+
+    // Advisor buttons loop for event listeners
+    // Ensure advisorButtons is a NodeList and not empty before iterating
+    if (advisorButtons && advisorButtons.length > 0) {
+        advisorButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                const advisorId = event.target.dataset.advisor;
+                if (advisorId && !event.target.disabled) {
+                    advisors[advisorId].ability(gameState);
+                    gameState.advisorCooldowns[advisorId] = advisors[advisorId].cooldown; // Set cooldown
+
+                    // Set the specific advisor usage flag (FIXED for advisor_master achievement)
+                    if (advisorId === 'cardinal') gameState.flags.usedCardinal = true;
+                    if (advisorId === 'lord') gameState.flags.usedLord = true;
+                    if (advisorId === 'alchemist') gameState.flags.usedAlchemist = true;
+
+                    updateAdvisorButtonStates();
+                    updateResourceDisplay();
+                    addLog(`You consulted ${advisors[advisorId].name}.`);
+
+                    checkAchievements(); // Check achievements after advisor use
+
+                    advanceTurn();
+                }
+            });
+        });
+    }
+
+    // --- Initial Game Setup ---
+    initGame(true); // Call initGame to display the main menu on page load
+});
