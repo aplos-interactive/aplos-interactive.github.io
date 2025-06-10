@@ -4,21 +4,19 @@
 /* General Body and Background */
 body {
     margin: 0;
-    /* Use a slightly warmer, more historical-feeling font */
     font-family: 'Open Sans', sans-serif;
     background-color: #dcd7c7; /* A warm, off-white/light tan background */
     color: #404040; /* Darker, softer grey for general text */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    overflow: hidden; /* Prevent scrolling */
+    overflow: hidden;
 
     /* Faded historical map background */
     background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Europe_1000_AD_map.svg/1280px-Europe_1000_AD_map.svg.png'); /* Placeholder for a historical map */
-    background-size: cover; /* Cover the entire background */
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    /* Apply a translucent overlay to fade the map and give it an aged look */
     position: relative; /* Needed for pseudo-element overlay */
 }
 
@@ -36,24 +34,24 @@ body::before {
 /* Top Bar Styling */
 .top-bar {
     background-color: rgba(240, 235, 220, 0.95); /* Warmer, less stark top bar */
-    padding: 8px 20px; /* Slightly less vertical padding */
-    border-bottom: 1px solid #c0b8a3; /* Softer border */
+    padding: 8px 20px;
+    border-bottom: 1px solid #c0b8a3;
     text-align: right;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1); /* Softer shadow */
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     z-index: 10;
-    font-size: 0.9em; /* Slightly smaller text */
+    font-size: 0.9em;
 }
 
 .menu-options span {
     margin-left: 20px;
     cursor: pointer;
     color: #0d47a1; /* A deeper, more muted blue for accents */
-    font-weight: 600; /* Slightly bolder */
-    text-shadow: 0 0 1px rgba(0,0,0,0.1); /* Subtle text shadow for a printed look */
+    font-weight: 600;
+    text-shadow: 0 0 1px rgba(0,0,0,0.1);
 }
 
 .menu-options span:hover {
-    color: #1565c0; /* Slightly brighter on hover */
+    color: #1565c0;
     text-decoration: underline;
 }
 
@@ -65,10 +63,10 @@ body::before {
     width: 95%;
     margin: 20px auto;
     background-color: rgba(248, 245, 230, 0.98); /* Less transparent, warmer off-white/cream */
-    border-radius: 4px; /* Slightly less rounded corners */
-    box-shadow: 0 0 10px rgba(0,0,0,0.2); /* Softer shadow */
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
     overflow: hidden;
-    border: 1px solid #c0b8a3; /* Soft border */
+    border: 1px solid #c0b8a3;
 }
 
 /* Left Panel */
@@ -76,20 +74,20 @@ body::before {
     flex: 0 0 280px;
     background-color: rgba(240, 235, 220, 0.95); /* Warmer, slightly darker light background */
     padding: 20px;
-    border-right: 1px solid #c0b8a3; /* Softer border */
+    border-right: 1px solid #c0b8a3;
     display: flex;
     flex-direction: column;
 }
 
 .date-display {
     text-align: center;
-    font-size: 1.3em; /* Slightly larger */
-    font-family: 'Merriweather', serif; /* Use serif font for headings */
+    font-size: 1.3em;
+    font-family: 'Merriweather', serif;
     font-weight: 700;
     margin-bottom: 20px;
     padding-bottom: 10px;
     border-bottom: 1px solid #c0b8a3;
-    color: #0d47a1; /* Muted accent blue */
+    color: #0d47a1;
 }
 
 .navigation-tabs {
@@ -101,18 +99,18 @@ body::before {
 }
 
 .tab {
-    padding: 6px 12px; /* Slightly less padding */
+    padding: 6px 12px;
     cursor: pointer;
-    border-radius: 3px; /* Less rounded */
+    border-radius: 3px;
     transition: background-color 0.2s, color 0.2s;
     font-weight: 600;
-    color: #6a6a6a; /* Softer grey for inactive tabs */
+    color: #6a6a6a;
 }
 
 .tab.active {
-    background-color: #0d47a1; /* Muted accent blue for active tab */
+    background-color: #0d47a1;
     color: white;
-    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); /* Inset shadow for depth */
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .tab:not(.active):hover {
@@ -120,24 +118,24 @@ body::before {
     color: #333;
 }
 
-.status-section {
+.status-section, .achievements-section { /* Apply similar styling to achievements section */
     margin-bottom: 20px;
     padding-bottom: 15px;
     border-bottom: 1px solid #c0b8a3;
 }
 
-.status-section h3, .game-log-section h3, .advisor-section h3 {
+.status-section h3, .game-log-section h3, .advisor-section h3, .achievements-section h3 {
     margin-top: 0;
     margin-bottom: 10px;
-    color: #5a5a5a; /* Softer grey for headings */
+    color: #5a5a5a;
     text-transform: uppercase;
-    font-size: 0.85em; /* Slightly smaller */
-    letter-spacing: 1.5px; /* Increased letter spacing */
+    font-size: 0.85em;
+    letter-spacing: 1.5px;
     font-weight: 600;
 }
 
 .resource-item {
-    padding: 4px 0; /* Slightly less padding */
+    padding: 4px 0;
     font-size: 1em;
     font-weight: 500;
     display: flex;
@@ -146,8 +144,8 @@ body::before {
 }
 
 .resource-item span {
-    font-weight: 700; /* Bolder for values */
-    color: #0d47a1; /* Muted accent blue for resource values */
+    font-weight: 700;
+    color: #0d47a1;
 }
 
 .game-log-section {
@@ -158,23 +156,61 @@ body::before {
 
 .game-log-content {
     flex-grow: 1;
-    background-color: #fcfcf5; /* Slightly warmer white for log content */
+    background-color: #fcfcf5;
     border: 1px solid #c0b8a3;
     padding: 10px;
     overflow-y: auto;
     border-radius: 3px;
-    font-size: 0.85em; /* Slightly smaller font */
-    line-height: 1.5; /* Increased line height */
-    box-shadow: inset 0 0 5px rgba(0,0,0,0.05); /* Subtle inset shadow */
+    font-size: 0.85em;
+    line-height: 1.5;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
 }
 
 .game-log-content p {
-    margin-bottom: 4px; /* Less margin */
+    margin-bottom: 4px;
     padding-bottom: 4px;
-    border-bottom: 1px dotted #d0d0d0; /* Softer dotted border */
+    border-bottom: 1px dotted #d0d0d0;
 }
 .game-log-content p:last-child {
     border-bottom: none;
+}
+
+/* Achievements Section Specifics */
+.achievements-list {
+    max-height: 150px; /* Limit height */
+    overflow-y: auto; /* Scrollable if many achievements */
+    background-color: #fcfcf5;
+    border: 1px solid #c0b8a3;
+    padding: 10px;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+.achievement-item {
+    padding: 5px 0;
+    border-bottom: 1px dotted #d0d0d0;
+    margin-bottom: 5px;
+}
+
+.achievement-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.achievement-item strong {
+    color: #0d47a1; /* Accent for title */
+    font-weight: 600;
+    display: block;
+}
+
+.achievement-item span {
+    font-size: 0.85em;
+    color: #6a6a6a;
+}
+.no-achievements {
+    color: #888;
+    text-align: center;
+    font-style: italic;
 }
 
 
@@ -194,28 +230,28 @@ body::before {
 
 /* Event Card */
 .event-card-container {
-    background-color: #fcfcf5; /* Warmer white, less stark */
-    border: 1px solid #c0b8a3; /* Softer border */
+    background-color: #fcfcf5;
+    border: 1px solid #c0b8a3;
     border-radius: 4px;
-    padding: 25px; /* More padding for a 'document' feel */
+    padding: 25px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Softer shadow */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     flex-shrink: 0;
 }
 
 .event-card-container h2 {
     margin-top: 0;
-    color: #0d47a1; /* Muted accent blue for card title */
+    color: #0d47a1;
     margin-bottom: 12px;
-    font-size: 1.8em; /* Larger title */
-    font-family: 'Merriweather', serif; /* Serif font for card title */
-    text-shadow: 0 1px 1px rgba(0,0,0,0.05); /* Subtle shadow */
+    font-size: 1.8em;
+    font-family: 'Merriweather', serif;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.05);
 }
 
 .event-card-container p {
-    margin-bottom: 20px; /* More space below description */
+    margin-bottom: 20px;
     line-height: 1.6;
-    font-size: 1.05em; /* Slightly larger text */
+    font-size: 1.05em;
 }
 
 .card-choices {
@@ -225,19 +261,19 @@ body::before {
 }
 
 .card-choice-btn {
-    background-color: #e8e5d6; /* Warmer, light background for buttons */
+    background-color: #e8e5d6;
     border: 1px solid #c0b8a3;
-    padding: 14px 18px; /* More padding */
+    padding: 14px 18px;
     text-align: left;
     cursor: pointer;
     font-size: 1.05em;
     border-radius: 4px;
     transition: background-color 0.2s, border-color 0.2s, box-shadow 0.2s;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05); /* Subtle shadow */
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .card-choice-btn:hover {
-    background-color: #dcd7c7; /* Darker warm color on hover */
+    background-color: #dcd7c7;
     border-color: #a09886;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
@@ -252,7 +288,7 @@ body::before {
 
 .deck-area, .hand-area {
     flex: 1;
-    background-color: rgba(240, 235, 220, 0.95); /* Warmer, slightly darker light background */
+    background-color: rgba(240, 235, 220, 0.95);
     border: 1px solid #c0b8a3;
     border-radius: 4px;
     padding: 15px;
@@ -271,10 +307,10 @@ body::before {
 }
 
 .placeholder-card {
-    background-color: #a09886; /* A muted, paper-like dark grey */
-    color: #e8e5d6; /* Light text for contrast */
-    border: 1px solid #706a5e; /* Darker border */
-    width: 90px; /* Slightly larger cards */
+    background-color: #a09886;
+    color: #e8e5d6;
+    border: 1px solid #706a5e;
+    width: 90px;
     height: 120px;
     display: flex;
     align-items: center;
@@ -283,13 +319,13 @@ body::before {
     font-size: 0.85em;
     text-align: center;
     margin-bottom: 5px;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2); /* Stronger shadow for 'lifted' look */
-    font-family: 'Merriweather', serif; /* Serif font for card placeholder text */
-    text-transform: uppercase; /* Match the 'Vorwärts' card style */
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    font-family: 'Merriweather', serif;
+    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 .placeholder-card:first-of-type {
-    margin-top: 10px; /* Space from heading */
+    margin-top: 10px;
 }
 
 
@@ -306,9 +342,9 @@ body::before {
 }
 
 .advisor-btn {
-    background-color: #0d47a1; /* Muted accent blue */
+    background-color: #0d47a1;
     color: white;
-    border: 1px solid #083070; /* Darker border */
+    border: 1px solid #083070;
     padding: 10px 15px;
     border-radius: 4px;
     cursor: pointer;
@@ -319,12 +355,12 @@ body::before {
 }
 
 .advisor-btn:hover {
-    background-color: #1565c0; /* Slightly brighter blue on hover */
+    background-color: #1565c0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .advisor-btn:disabled {
-    background-color: #b0a996; /* Muted disabled color */
+    background-color: #b0a996;
     color: #706a5e;
     border-color: #807a6d;
     cursor: not-allowed;
@@ -333,10 +369,10 @@ body::before {
 
 /* Advance Turn Button */
 .advance-turn-btn {
-    background-color: #4a8d4a; /* Muted green for advance */
+    background-color: #4a8d4a;
     color: white;
     border: 1px solid #306030;
-    padding: 18px 30px; /* More prominent */
+    padding: 18px 30px;
     border-radius: 5px;
     cursor: pointer;
     font-size: 1.3em;
@@ -345,12 +381,12 @@ body::before {
     margin-top: auto;
     transition: background-color 0.2s, box-shadow 0.2s;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    font-family: 'Merriweather', serif; /* Serif font for action button */
+    font-family: 'Merriweather', serif;
     letter-spacing: 0.5px;
 }
 
 .advance-turn-btn:hover {
-    background-color: #3d703d; /* Darker green on hover */
+    background-color: #3d703d;
     box-shadow: 0 3px 8px rgba(0,0,0,0.3);
 }
 
@@ -362,12 +398,12 @@ body::before {
     box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
 }
 
-/* Basic Utility Classes (can be expanded) */
+/* Basic Utility Classes */
 .hidden {
     display: none !important;
 }
 
-/* Modal Styling (adjusting to new aesthetic) */
+/* Modal Styling */
 .modal {
     position: fixed;
     z-index: 100;
@@ -375,18 +411,18 @@ body::before {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Slightly darker overlay */
+    background-color: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .modal-content {
-    background-color: #fcfcf5; /* Warmer white */
+    background-color: #fcfcf5;
     padding: 30px;
-    border-radius: 8px; /* Slightly less rounded */
+    border-radius: 8px;
     text-align: center;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4); /* Stronger shadow */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
     max-width: 500px;
     width: 90%;
     border: 1px solid #c0b8a3;
@@ -423,6 +459,48 @@ body::before {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* Placeholder for the faded historical map image */
-/* IMPORTANT: Replace the URL below with your actual map image for the final game.
-   The current one is a generic Wikimedia Commons map for demonstration. */
+/* Main Menu Specific Styles */
+.menu-title {
+    font-size: 3em !important; /* Larger for main title */
+    margin-bottom: 5px !important;
+    text-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+
+.menu-subtitle {
+    font-family: 'Open Sans', sans-serif;
+    font-style: italic;
+    font-size: 1.2em;
+    color: #6a6a6a;
+    margin-bottom: 30px;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between buttons */
+}
+
+.menu-buttons button {
+    background-color: #0d47a1;
+    color: white;
+    border: 1px solid #083070;
+    padding: 15px 30px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em;
+    font-weight: 600;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.menu-buttons button:hover:not(.disabled) {
+    background-color: #1565c0;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
+
+.menu-buttons button.disabled {
+    background-color: #b0a996;
+    color: #706a5e;
+    border-color: #807a6d;
+    cursor: not-allowed;
+}
