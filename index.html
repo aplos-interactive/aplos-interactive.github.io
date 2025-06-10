@@ -3,114 +3,59 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Habeas Papam: The Papal States Simulator</title>
+    <title>Habeus Papam</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Old+Standard+TT:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="game-container">
-        <header id="top-menu-bar">
-            <h1 id="game-title">Habeas Papam</h1>
-            <nav>
-                <button class="menu-button">Library</button>
-                <button class="menu-button">Save/Load</button>
-                <button class="menu-button">Options</button>
-            </nav>
-        </header>
+    <div class="game-container">
+        <h1>Habeus Papam</h1>
 
-        <div id="main-interface">
-            <aside id="left-panel">
-                <div class="panel-section">
-                    <h2>PAPAL STATES (Turn <span id="current-turn">1</span>)</h2>
-                    <p>Resources Available: <span id="resources-available">4</span></p>
-                    <p>Piety: <span id="piety">500</span></p>
-                    <p>Gold: <span id="gold">200</span></p>
-                    <p>Influence: <span id="influence">100</span></p>
-                    <p>Stability: <span id="stability">75</span></p>
-                    <p>Heresy Level: <span id="heresyLevel">0</span></p>
-                </div>
-
-                <div class="panel-section">
-                    <h2>THE HOLY FATHER</h2>
-                    <p>Name: <span id="popeName">Pope Leo X</span></p>
-                    <p>Age: <span id="popeAge">50</span> (<span id="popeHealth">100</span> Health)</p>
-                    <h3>Attributes:</h3>
-                    <ul>
-                        <li>Theology: <span id="theology">50</span></li>
-                        <li>Diplomacy: <span id="diplomacy">50</span></li>
-                        <li>Intrigue: <span id="intrigue">50</span></li>
-                        <li>Administration: <span id="administration">50</span></li>
-                    </ul>
-                </div>
-
-                <div class="panel-section">
-                    <h2>SACRED COLLEGE (Overall Support: <span id="cardinalSupportOverall">70</span>%)</h2>
-                    <div id="cardinalsList">
-                        <p class="placeholder">No Cardinals appointed yet.</p>
-                    </div>
-                </div>
-            </aside>
-
-            <main id="main-content-panel">
-                <div class="panel-header">
-                    <span id="current-main-year">1500</span>
-                </div>
-                <div id="narrative-text">
-                    <p>The Holy See stands as a beacon of faith amidst a world of shifting allegiances and burgeoning heresies. Your Holiness, your reign begins. Guide the faithful, manage the temporal realm, and defend the Church from its enemies.</p>
-                </div>
-
-                <div id="decks-section" class="card-area">
-                    <h3>Decks - click a deck to draw a card.</h3>
-                    <div id="available-decks">
-                        <div class="card-deck" data-deck-id="papal-affairs">
-                            <span class="deck-title">Papal Affairs</span>
-                            <div class="card-slot deck-top-card">
-                                <img src="https://via.placeholder.com/100x150/dccba0/5c4b37?text=Scroll" alt="Deck Card" class="card-image">
-                            </div>
-                        </div>
-                        <div class="card-deck" data-deck-id="diplomacy">
-                            <span class="deck-title">Diplomacy</span>
-                            <div class="card-slot deck-top-card">
-                                <img src="https://via.placeholder.com/100x150/dccba0/5c4b37?text=Letter" alt="Deck Card" class="card-image">
-                            </div>
-                        </div>
-                        <div class="card-deck" data-deck-id="church-doctrine">
-                            <span class="deck-title">Church Doctrine</span>
-                            <div class="card-slot deck-top-card">
-                                <img src="https://via.placeholder.com/100x150/dccba0/5c4b37?text=Bible" alt="Deck Card" class="card-image">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="hand-section" class="card-area">
-                    <h3>Hand - click a card to play.</h3>
-                    <div id="player-hand-slots">
-                        <div class="card-slot empty-hand-slot"></div>
-                        <div class="card-slot empty-hand-slot"></div>
-                        <div class="card-slot empty-hand-slot"></div>
-                        </div>
-                </div>
-
-                <div class="conclave-panel hidden">
-                    <h2 id="conclaveMessage"></h2>
-                    <p>Ballot: <span id="ballotNumber">0</span> / Required Votes: <span id="winningThreshold">0</span></p>
-                    <h3>Candidates:</h3>
-                    <ul id="candidateVotes">
-                        </ul>
-                    <div id="conclaveInfluenceOptions" class="influence-options">
-                        <button id="influenceGoldButton" class="conclave-button">Influence with Gold (50 Gold)</button>
-                        <button id="influencePromisesButton" class="conclave-button">Influence with Promises (10 Piety)</button>
-                        <button id="influenceIntrigueButton" class="conclave-button">Influence with Intrigue (10 Stability)</button>
-                        <button id="favorPopeButton" class="conclave-button">Favor for Pope</button>
-                    </div>
-                    <button id="advanceConclaveButton" class="conclave-button">Advance Conclave</button>
-                </div>
-
-
-                <div id="feedback-message" class="hidden"></div>
-            </main>
+        <div class="resources">
+            <p>Piety: <span id="pietyValue"></span></p>
+            <p>Gold: <span id="goldValue"></span></p>
+            <p>Influence: <span id="influenceValue"></span></p>
+            <p>Papal Authority: <span id="papalAuthorityValue"></span></p>
+            <p>Stability: <span id="stabilityValue"></span></p>
+            <p>Turn: <span id="turnValue"></span></p>
         </div>
+
+        <div class="advisors-section">
+            <h2>Your Advisors</h2>
+
+            <div class="advisor-card" id="advisor-bellini">
+                <h3>Cardinal Bellini</h3>
+                <p>Faction: Theologian | Ideology: Traditionalist</p>
+                <p class="description">A staunch defender of ancient doctrines. Strong Piety, but resists change.</p>
+                <button class="consult-button" data-advisor-id="bellini">Consult</button>
+            </div>
+
+            <div class="advisor-card" id="advisor-valerius">
+                <h3>Lord Valerius</h3>
+                <p>Faction: Noble | Ideology: Pragmatist</p>
+                <p class="description">A cunning strategist with vast estates. Excellent Gold, but may challenge traditional authority.</p>
+                <button class="consult-button" data-advisor-id="valerius">Consult</button>
+            </div>
+
+            <div class="advisor-card" id="advisor-alchemist">
+                <h3>Master Alchemist</h3>
+                <p>Faction: Merchant | Ideology: Reformer</p>
+                <p class="description">Seeks new discoveries and economic opportunities. Focuses on Gold and stability through innovation.</p>
+                <button class="consult-button" data-advisor-id="alchemist">Consult</button>
+            </div>
+
+            </div>
+
+        <button id="nextTurnButton">Next Turn</button>
+
+        <div class="game-log">
+            <h2>Game Log</h2>
+            <div id="logMessages">
+                <p>Welcome to Habeus Papam! Begin your reign.</p>
+            </div>
+        </div>
+
+        <div class="event-area" id="eventArea">
+            </div>
     </div>
 
     <script src="script.js"></script>
