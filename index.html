@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Habeus Papam</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="top-bar">
         <div class="menu-options">
+            <span id="main-menu-btn">Main Menu</span>
             <span>Library</span>
             <span>Save/Load</span>
             <span>Options</span>
@@ -23,7 +24,7 @@
             </div>
             <div class="navigation-tabs">
                 <div class="tab active" id="main-tab">Main</div>
-                </div>
+            </div>
             <div class="status-section">
                 <h3>STATUS</h3>
                 <div class="resource-item">Piety: <span id="piety-value">100</span></div>
@@ -38,27 +39,32 @@
                     <p>Welcome to Habeus Papam!</p>
                 </div>
             </div>
+            <div class="achievements-section">
+                <h3>Achievements</h3>
+                <div class="achievements-list" id="achievements-list">
+                    <p class="no-achievements">No achievements yet. Keep playing!</p>
+                </div>
+            </div>
         </div>
 
         <div class="right-panel">
             <div class="main-content-area">
                 <div class="event-card-container">
-                    <h2 id="card-title"></h2>
-                    <p id="card-description"></p>
+                    <h2 id="card-title">A New Beginning</h2>
+                    <p id="card-description">As the newly elected Pope, you face a continent brimming with challenges and opportunities. What is your first decree?</p>
                     <div class="card-choices" id="card-choices">
                         </div>
                 </div>
 
                 <div class="decks-hand-section">
                     <div class="deck-area">
-                        <h4>Decks</h4>
+                        <h4>Event Deck</h4>
                         <div class="placeholder-card">Event Deck</div>
-                        <div class="placeholder-card">Major Event Deck</div>
+                        <div class="placeholder-card hidden" id="major-event-deck-placeholder">Major Event Deck</div>
                     </div>
                     <div class="hand-area">
                         <h4>Hand</h4>
-                        <div class="placeholder-card">Placeholder Card 1</div>
-                        <div class="placeholder-card">Placeholder Card 2</div>
+                        <div class="placeholder-card" id="hand-card-placeholder"></div>
                     </div>
                 </div>
 
@@ -72,6 +78,28 @@
                 </div>
 
                 <button class="advance-turn-btn" id="advance-turn-btn">Advance Turn</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="game-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 id="modal-title"></h2>
+            <p id="modal-message"></p>
+            <button id="modal-restart-btn">Restart Game</button>
+        </div>
+    </div>
+
+    <div id="main-menu" class="modal">
+        <div class="modal-content">
+            <h2 class="menu-title">Habeus Papam</h2>
+            <p class="menu-subtitle">A Papal Legacy</p>
+            <div class="menu-buttons">
+                <button id="start-game-btn">Start New Game</button>
+                <button id="continue-game-btn" class="disabled">Continue Game</button>
+                <button id="view-achievements-btn">Achievements</button>
+                <button id="options-btn">Options</button>
+                <button id="exit-game-btn">Exit</button>
             </div>
         </div>
     </div>
