@@ -1,483 +1,312 @@
-/* General Reset & Body Styling */
+/* General Body and Background */
 body {
-    margin: 0;
-    padding: 0;
-    /* Medieval/Parchment-like fonts */
-    font-family: 'Old Standard TT', serif; /* For general text */
-    color: #4a3b2b; /* Dark brown text */
-    overflow: hidden; /* Prevent scrolling if map is larger than viewport */
-
-    /* Medieval Map Background */
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/e/e6/Carte_d%27Europe_politique_%28XIV%C3%A8me_si%C3%A8cle%29.jpg'); /* Placeholder: A medieval map */
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#game-container {
-    display: flex;
-    flex-direction: column;
-    width: 90%;
-    max-width: 1200px;
-    height: 90vh;
-    max-height: 800px;
-    background-color: rgba(245, 240, 220, 0.95); /* Light parchment/cream background */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-    border-radius: 8px; /* Slightly more rounded for a softer feel */
-    overflow: hidden;
-    border: 2px solid #8c5b3f; /* Dark wood/brown border */
-}
-
-/* Top Menu Bar */
-#top-menu-bar {
-    background-color: #6b4d3c; /* Deep, sturdy brown */
-    color: #f8f5e9; /* Light parchment text */
-    padding: 12px 25px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: 'Merriweather', serif; /* Stronger serif for titles */
-    border-bottom: 2px solid #4a3b2b;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-#game-title {
-    margin: 0;
-    font-size: 1.6em;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
-}
-
-#top-menu-bar nav button {
-    background-color: #8c5b3f; /* Lighter brown for buttons */
-    color: #f8f5e9;
-    border: 1px solid #4a3b2b;
-    padding: 10px 18px;
-    margin-left: 12px;
-    cursor: pointer;
-    font-family: 'Old Standard TT', serif;
-    font-size: 1em;
-    border-radius: 4px;
-    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-#top-menu-bar nav button:hover {
-    background-color: #a3753b;
-    transform: translateY(-2px);
-    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-#top-menu-bar nav button:active {
-    transform: translateY(0);
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-/* Main Interface (Left and Center Panels) */
-#main-interface {
-    display: flex;
-    flex-grow: 1;
-    background-color: #fefefe; /* Closer to pure white for main content, contrasted with left panel */
-}
-
-/* Left Panel (Status Overview) */
-#left-panel {
-    width: 320px; /* Slightly wider for more content */
-    background-color: #f1ede0; /* Light parchment background for status */
-    padding: 25px;
-    overflow-y: auto;
-    border-right: 2px solid #8c5b3f; /* Stronger separator */
-    box-shadow: inset -4px 0 8px rgba(0, 0, 0, 0.08);
-}
-
-#left-panel h2 {
-    font-family: 'Merriweather', serif;
-    font-size: 1.4em;
-    color: #5c4b37; /* Darker brown for titles */
-    margin-top: 0;
-    margin-bottom: 12px;
-    border-bottom: 1px solid #b8a28e; /* Subtle separator */
-    padding-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-#left-panel h3 {
-    font-family: 'Old Standard TT', serif;
-    font-size: 1.1em;
-    color: #5c4b37;
-    margin-top: 20px;
-    margin-bottom: 8px;
-}
-
-.panel-section {
-    margin-bottom: 25px;
-    padding-bottom: 20px;
-    border-bottom: 1px dashed #d1c4b3; /* Finer dashed line */
-}
-
-.panel-section:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-    padding-bottom: 0;
-}
-
-#left-panel p, #left-panel ul li {
-    font-size: 0.98em;
+    font-family: 'Georgia', serif; /* Classic, slightly medieval feel */
+    background-color: #1a1a1a; /* Very dark background */
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTYiIGhlaWdodD0iMTYiIHZpZXdCb3g9IjAgMCAxNiAxNiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICAgIDxyZWN0IHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iIzFhMWExYSYxYTEwNzUiLz4KICAgIDxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHgyPSIzIiB5Mj0iMyIgZmlsbD0iIzMzMzMzMyIvPgogICAgPHJlY3Qgd2lkdGg9IjEiIGhlaWdodD0iMSIgeDI9IjMiIHk9IjExIiBmaWxsPSIjMzMzMzMzIi8+CiAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4Mj0iMTEiIHkyPSIzIiBmaWllbGw9IiMzMzMzMzMiLz4KICAgIDxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHgyPSIxMSIgeTI9IjExIiBmaWxsPSIjMzMzMzMzIi8+CiAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4Mj0iNSIgeTI9IjEiIGZpbGw9IiMzMzMzMzMiLz4KICAgIDxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHgyPSI5IiB5Mj0iMSIgZmlsbD0iIzMzMzMzMyIvPgogICAgPHJlY3Qgd2lkdGg9IjEiIGhlaWdodD0iMSIgeDI9IjEiIHkyPSI1IiBmaWxsPSIjMzMzMzMzIi8+CiAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4Mj0iMSIgeTI9IjkiIGZpbGw9IiMzMzMzMzMiLz4KICAgIDxyZWN0IHdpZHRoPSIxIiBoZWlnaHQ9IjEiIHgyPSI1IiB5Mj0iMTMiIGZpbGw9IiMzMzMzMzMiLz4KICAgIDxyZWN0IHdpZHRoPSIxIiBoZXZpZ2h0PSIxIiB4Mj0iOSIgeTI9IjEzIiBmaWxsPSIjMzMzMzMzIi8+CiAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4Mj0iMTMiIHkyPSI1IiBmaWxsPSIjMzMzMzMzIi8+CiAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4Mj0iMTMiIHkyPSI5IiBmaWxsPSIjMzMzMzMzIi8+CiAgICA8cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiB4Mj0iNyIgeTI9IjciIGZpbGw9IiMzMzMzMzMiLz4KPC9zdmc+'); /* Subtle pattern */
+    color: #f0dcb9; /* Off-white / old paper color */
     line-height: 1.6;
-    margin-bottom: 4px;
-    color: #4a3b2b;
-}
-
-#left-panel ul {
-    list-style: none;
-    padding: 0;
     margin: 0;
-}
-
-/* Cardinal List Specifics */
-#cardinalsList {
-    max-height: 200px; /* Limit height for scrolling if many cardinals */
-    overflow-y: auto;
-    padding-right: 5px; /* For scrollbar */
-}
-
-.cardinal-entry {
-    background-color: #fcf8f0;
-    border: 1px solid #d1c4b3;
-    border-radius: 4px;
-    padding: 8px 12px;
-    margin-bottom: 8px;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.cardinal-entry strong {
-    color: #6b4d3c;
-    font-size: 1.05em;
-}
-
-.cardinal-entry .attributes {
-    font-size: 0.85em;
-    color: #5c4b37;
-    margin-top: 5px;
-}
-
-
-/* Main Content Panel (Narrative and Interaction) */
-#main-content-panel {
-    flex-grow: 1;
-    background-color: #ffffff; /* White background for main content */
-    padding: 30px 40px;
-    overflow-y: auto;
-}
-
-.panel-header {
-    font-family: 'Merriweather', serif;
-    font-size: 2em;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 30px;
-    color: #333;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-#narrative-text {
-    font-family: 'Old Standard TT', serif;
-    font-size: 1.15em;
-    line-height: 1.8;
-    margin-bottom: 35px;
-    text-align: justify;
-    color: #4a3b2b;
-}
-
-#narrative-text p {
-    margin-bottom: 1.2em;
-}
-
-/* Card Areas (Decks and Hand) */
-.card-area {
-    margin-bottom: 35px;
-    border-top: 1px dashed #d1c4b3;
-    padding-top: 25px;
-}
-
-.card-area h3 {
-    font-family: 'Merriweather', serif;
-    font-size: 1.2em;
-    color: #5c4b37;
-    margin-top: 0;
-    margin-bottom: 18px;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-
-#available-decks {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 25px;
-    justify-content: center; /* Center the decks if there are few */
-}
-
-.card-deck {
-    border: 2px solid #8c5b3f; /* Stronger border for decks */
-    background-color: #fdfae7; /* Very light parchment for deck background */
-    padding: 12px;
-    border-radius: 6px;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
-}
-
-.card-deck:hover {
-    transform: translateY(-4px);
-    box-shadow: 6px 6px 15px rgba(0, 0, 0, 0.2);
-}
-
-.card-deck .deck-title {
-    font-weight: 700;
-    margin-bottom: 10px;
-    display: block;
-    font-size: 1em;
-    color: #6b4d3c;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.card-deck .card-slot.deck-top-card {
-    width: 100px;
-    height: 150px;
-    border: none;
-    background: none;
-    padding: 0;
-    margin: 0;
+    padding: 20px;
     display: flex;
     justify-content: center;
-    align-items: center;
-}
-
-.card-deck .card-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border: 1px solid #a3753b; /* Gold-ish border for card image */
-    border-radius: 3px;
-    display: block;
-}
-
-#player-hand-slots {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    min-height: 170px;
     align-items: flex-start;
-    justify-content: center; /* Center cards in hand */
-    padding: 10px; /* Some padding around the hand area */
-    border: 1px solid #e0d7c7; /* Light border around hand area */
-    background-color: #fbf8f0; /* Slightly different background for hand area */
-    border-radius: 5px;
+    min-height: 100vh;
 }
 
-.card-slot {
-    width: 100px;
-    height: 150px;
-    border: 2px dashed #b8a28e; /* Dashed border for empty slots */
-    border-radius: 5px;
-    background-color: #f7f0e0; /* Slightly darker parchment for empty slots */
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: 0.8em;
-    color: #998877;
-    position: relative;
-    padding: 5px;
-    box-sizing: border-box;
-    text-align: center;
-}
-
-.card-in-hand {
-    border: 2px solid #a3753b; /* Gold-ish border for cards in hand */
-    background-color: #fdfae7; /* Light parchment for card background */
-    cursor: pointer;
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.15);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-}
-
-.card-in-hand:hover {
-    transform: translateY(-7px);
-    box-shadow: 5px 5px 12px rgba(0, 0, 0, 0.25);
-}
-
-.card-in-hand .card-content {
-    font-size: 0.85em;
-    padding: 5px;
-    overflow: hidden;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #4a3b2b;
-}
-
-.card-in-hand .card-title {
-    font-weight: 700;
-    margin-bottom: 3px;
-    font-size: 0.95em;
-    color: #6b4d3c;
-    text-transform: uppercase;
-    letter-spacing: 0.2px;
-}
-
-.card-in-hand .card-cost {
-    font-size: 0.75em;
-    color: #b81c1c; /* A strong red for costs */
-    margin-top: auto;
-    padding-bottom: 5px;
-    font-weight: 600;
-}
-
-/* Conclave Panel Styling */
-.conclave-panel {
-    background-color: rgba(255, 255, 255, 0.95); /* Semi-transparent white */
-    border: 3px solid #6b4d3c;
+/* Main Game Container */
+.game-container {
+    background-color: #3b3a37; /* Dark panel background */
+    border: 2px solid #5a4b3a; /* Darker, rustic border */
     border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5); /* Stronger shadow for depth */
     padding: 30px;
+    max-width: 960px; /* Slightly wider */
+    width: 100%;
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Advisor column wider than log */
+    gap: 25px; /* More space between sections */
+    box-sizing: border-box; /* Include padding in width */
+}
+
+/* Headings */
+h1 {
+    grid-column: 1 / -1;
     text-align: center;
-    position: absolute; /* Position it over the main content */
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    max-width: 600px;
-    z-index: 900; /* Above other content, below feedback message */
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    font-family: 'Old Standard TT', serif;
+    color: #f0d59d; /* Gold for title */
+    font-family: 'Cinzel Decorative', serif; /* Needs to be imported or fallback to similar */
+    font-size: 2.8em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    margin-bottom: 30px;
+    letter-spacing: 2px;
 }
 
-.conclave-panel h2 {
-    font-family: 'Merriweather', serif;
+h2 {
+    color: #e0c28e; /* Lighter gold for section titles */
+    font-family: 'Cinzel Decorative', serif;
     font-size: 1.8em;
-    color: #6b4d3c;
+    margin-top: 0;
     margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.conclave-panel p {
-    font-size: 1.1em;
-    margin-bottom: 10px;
-}
-
-.conclave-panel h3 {
+h3 {
+    color: #f0dcb9; /* Off-white for card titles */
+    font-family: 'Georgia', serif;
     font-size: 1.3em;
-    color: #8c5b3f;
-    margin-top: 20px;
-    margin-bottom: 10px;
+    margin-top: 0;
+    margin-bottom: 8px;
 }
 
-#candidateVotes {
-    list-style: none;
-    padding: 0;
-    margin: 15px 0 25px 0;
-    text-align: left;
-    max-height: 200px;
-    overflow-y: auto;
-    border: 1px solid #e0d7c7;
-    padding: 10px;
-    background-color: #fcf8f0;
+/* Resources Display */
+.resources {
+    grid-column: 1 / -1;
+    background-color: #2e2c29; /* Slightly darker than main container */
+    border: 1px solid #4a4846; /* Subtle border */
+    padding: 20px;
     border-radius: 5px;
-}
-
-#candidateVotes li {
-    padding: 5px 0;
-    border-bottom: 1px dashed #eee;
-    font-size: 1em;
-    color: #4a3b2b;
-}
-
-#candidateVotes li:last-child {
-    border-bottom: none;
-}
-
-.influence-options {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 30px; /* More space */
+    justify-content: space-around;
+    margin-bottom: 25px;
+    box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.3); /* Inner shadow */
 }
 
-.conclave-button {
-    background-color: #a3753b; /* Gold-ish brown */
-    color: white;
-    border: 1px solid #6b4d3c;
+.resources p {
+    margin: 0;
+    font-weight: bold;
+    font-size: 1.2em; /* Slightly larger */
+    color: #f0dcb9;
+}
+
+.resources span {
+    color: #f0d59d; /* Gold for resource values */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Advisor Section */
+.advisors-section {
+    grid-column: 1 / 2; /* Left column */
+}
+
+.advisor-card {
+    background-color: #2a2927; /* Darker background for individual cards */
+    border: 1px solid #4a4846;
+    border-radius: 6px;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.advisor-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.6);
+}
+
+.advisor-card p {
+    font-size: 0.95em;
+    color: #e0dcd1;
+    margin-bottom: 6px;
+}
+
+.advisor-card .description {
+    font-style: italic;
+    color: #b0a89a; /* Muted text for description */
+    margin-bottom: 12px;
+}
+
+/* Buttons (Consult, Next Turn, Event Choices) */
+.consult-button,
+#nextTurnButton,
+.event-choice-button {
+    background-color: #8D7A4F; /* Darker gold/bronze */
+    color: #ffffff;
+    border: 1px solid #5A4B3A; /* Matching border */
+    border-radius: 4px;
     padding: 10px 18px;
     cursor: pointer;
-    font-family: 'Merriweather', serif;
-    font-size: 0.95em;
-    border-radius: 5px;
-    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.15);
+    font-size: 1.05em;
+    font-family: 'Trajan Pro 3', serif; /* Or similar imperial feel */
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    width: 100%; /* Ensure full width */
 }
 
-.conclave-button:hover {
-    background-color: #be8e4e;
-    transform: translateY(-2px);
-    box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.2);
+.consult-button:hover:not(:disabled),
+#nextTurnButton:hover,
+.event-choice-button:hover {
+    background-color: #A38B5D; /* Lighter gold/bronze on hover */
+    border-color: #6F5E48;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
 }
 
-.conclave-button:active {
-    transform: translateY(0);
-    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.conclave-button:disabled {
-    background-color: #ccc;
-    color: #888;
+.consult-button:disabled {
+    background-color: #555555;
+    border-color: #444444;
+    color: #bbbbbb;
     cursor: not-allowed;
-    opacity: 0.7;
+    text-shadow: none;
     box-shadow: none;
-    transform: none;
 }
 
-/* Feedback Message */
-#feedback-message {
-    position: fixed;
-    bottom: 25px;
-    left: 50%;
-    transform: translateX(-50%);
-    padding: 12px 25px;
-    border-radius: 6px;
+#nextTurnButton {
+    grid-column: 1 / -1;
+    margin-top: 25px;
+    padding: 15px 20px;
+    font-size: 1.2em;
+    background-color: #6A4B3A; /* Slightly different shade for main action */
+    border-color: #4A3A2A;
+}
+
+#nextTurnButton:hover {
+    background-color: #7A5B4A;
+}
+
+
+/* Game Log */
+.game-log {
+    grid-column: 2 / 3; /* Right column */
+    background-color: #222222; /* Very dark, almost black background */
+    border: 1px solid #4a4846;
+    border-radius: 5px;
+    padding: 15px;
+    height: 450px; /* Taller log for more messages */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column-reverse; /* New messages appear at the top */
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5); /* Deeper inner shadow */
+}
+
+.game-log h2 {
+    color: #e0c28e;
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #4a4846; /* Separator for title */
+    font-size: 1.5em;
+    text-align: center;
+}
+
+#logMessages p {
+    background-color: #2b2b2b; /* Slightly lighter background for log entries */
+    padding: 8px;
+    border-radius: 3px;
+    margin-bottom: 8px;
+    font-size: 0.85em; /* Smaller text for log */
+    color: #cccccc; /* Lighter grey for log text */
+    word-wrap: break-word;
+    border-left: 3px solid #6A4B3A; /* Accent border on left */
+}
+
+#logMessages p strong {
+    color: #f0d59d; /* Gold for turn number in log */
+}
+
+
+/* Event Area */
+.event-area {
+    grid-column: 1 / -1; /* Span across both columns */
+    background-color: #4A3A2A; /* Richer brown background */
+    border: 2px solid #8D7A4F; /* Gold border to highlight */
+    border-radius: 10px;
+    padding: 30px;
+    margin-top: 30px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6); /* Prominent shadow */
+    position: relative; /* For potential z-index or absolute positioning if needed */
+    z-index: 100; /* Ensure it's on top of other elements */
+}
+
+.event-area h3 {
+    color: #f0d59d;
+    margin-bottom: 20px;
+    font-size: 2em;
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.7);
+}
+
+.event-area p {
+    font-size: 1.2em;
+    color: #f0dcb9;
+    margin-bottom: 30px;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.event-choices {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+}
+
+.event-choice-button {
+    background-color: #6A4B3A; /* Earthy brown for event choices */
+    border-color: #4A3A2A;
+    padding: 15px 30px;
     font-size: 1.1em;
-    font-weight: 600;
-    z-index: 1000;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-    font-family: 'Merriweather', serif;
+    min-width: 200px;
 }
 
-#feedback-message.success {
-    background-color: #d4edda;
-    color: #155724;
-    border: 1px solid #c3e6cb;
+.event-choice-button:hover {
+    background-color: #7A5B4A;
+    border-color: #5A4B3A;
 }
 
-#feedback-message.error {
-    background-color: #f8d7da;
-    color: #721c24;
-    border: 1px solid #f5c6cb;
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .game-container {
+        grid-template-columns: 1fr; /* Single column layout on smaller screens */
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .advisors-section, .game-log, .resources, .event-area, #nextTurnButton {
+        grid-column: 1 / -1;
+    }
+
+    .advisor-card, .game-log, .resources, .event-area {
+        margin-bottom: 15px;
+    }
+
+    .game-log {
+        height: 350px; /* Adjust height for smaller screens */
+    }
+
+    h1 {
+        font-size: 2.2em;
+    }
+
+    h2 {
+        font-size: 1.6em;
+    }
+
+    .event-area h3 {
+        font-size: 1.8em;
+    }
+
+    .event-area p {
+        font-size: 1em;
+    }
 }
 
-.hidden {
-    display: none !important;
+@media (max-width: 600px) {
+    body {
+        padding: 10px;
+    }
+    .game-container {
+        padding: 15px;
+    }
+    .resources p {
+        font-size: 1em;
+    }
+    .consult-button, #nextTurnButton, .event-choice-button {
+        font-size: 0.95em;
+        padding: 10px 15px;
+    }
+    .event-choices {
+        flex-direction: column;
+        align-items: center;
+    }
 }
