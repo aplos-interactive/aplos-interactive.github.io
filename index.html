@@ -4,19 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Habeus Papam</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="game-container">
         <h1>Habeus Papam</h1>
 
-        <div class="resources">
-            <p>Piety: <span id="pietyValue"></span></p>
-            <p>Gold: <span id="goldValue"></span></p>
-            <p>Influence: <span id="influenceValue"></span></p>
-            <p>Papal Authority: <span id="papalAuthorityValue"></span></p>
-            <p>Stability: <span id="stabilityValue"></span></p>
-            <p>Turn: <span id="turnValue"></span></p>
+        <div class="resources-section">
+            <h2>Your Resources</h2>
+            <div class="resource-bar-container">
+                <p>Piety:</p> <div class="resource-bar"><div id="pietyBar" class="resource-fill"></div><span id="pietyValue" class="resource-value"></span></div>
+            </div>
+            <div class="resource-bar-container">
+                <p>Gold:</p> <div class="resource-bar"><div id="goldBar" class="resource-fill"></div><span id="goldValue" class="resource-value"></span></div>
+            </div>
+            <div class="resource-bar-container">
+                <p>Influence:</p> <div class="resource-bar"><div id="influenceBar" class="resource-fill"></div><span id="influenceValue" class="resource-value"></span></div>
+            </div>
+            <div class="resource-bar-container">
+                <p>Papal Authority:</p> <div class="resource-bar"><div id="papalAuthorityBar" class="resource-fill"></div><span id="papalAuthorityValue" class="resource-value"></span></div>
+            </div>
+            <div class="resource-bar-container">
+                <p>Stability:</p> <div class="resource-bar"><div id="stabilityBar" class="resource-fill"></div><span id="stabilityValue" class="resource-value"></span></div>
+            </div>
+            <p class="turn-counter">Turn: <span id="turnValue"></span></p>
         </div>
 
         <div class="advisors-section">
@@ -24,34 +36,32 @@
 
             <div class="advisor-card" id="advisor-bellini">
                 <h3>Cardinal Bellini</h3>
-                <p>Faction: Theologian | Ideology: Traditionalist</p>
-                <p class="description">A staunch defender of ancient doctrines. Strong Piety, but resists change.</p>
+                <p class="faction">Faction: Theologian | Ideology: Traditionalist</p>
+                <p class="description">A staunch defender of ancient doctrines.</p>
                 <button class="consult-button" data-advisor-id="bellini">Consult</button>
             </div>
 
             <div class="advisor-card" id="advisor-valerius">
                 <h3>Lord Valerius</h3>
-                <p>Faction: Noble | Ideology: Pragmatist</p>
-                <p class="description">A cunning strategist with vast estates. Excellent Gold, but may challenge traditional authority.</p>
+                <p class="faction">Faction: Noble | Ideology: Pragmatist</p>
+                <p class="description">A cunning strategist with vast estates.</p>
                 <button class="consult-button" data-advisor-id="valerius">Consult</button>
             </div>
 
             <div class="advisor-card" id="advisor-alchemist">
                 <h3>Master Alchemist</h3>
-                <p>Faction: Merchant | Ideology: Reformer</p>
-                <p class="description">Seeks new discoveries and economic opportunities. Focuses on Gold and stability through innovation.</p>
+                <p class="faction">Faction: Merchant | Ideology: Reformer</p>
+                <p class="description">Seeks new discoveries and economic opportunities.</p>
                 <button class="consult-button" data-advisor-id="alchemist">Consult</button>
             </div>
-
-            </div>
-
-        <button id="nextTurnButton">Next Turn</button>
+            
+            <button id="nextTurnButton">Advance Turn</button>
+        </div>
 
         <div class="game-log">
             <h2>Game Log</h2>
             <div id="logMessages">
-                <p>Welcome to Habeus Papam! Begin your reign.</p>
-            </div>
+                </div>
         </div>
 
         <div class="event-area" id="eventArea">
