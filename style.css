@@ -1,322 +1,455 @@
+/* General Body and Game Container */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #2c3e50; /* Dark blue-grey background */
-    color: #ecf0f1; /* Light text color */
+    font-family: 'Georgia', serif; /* Classic, readable serif font */
+    background-color: #3b2f21; /* Darker, aged brown background */
+    color: #4a3e31; /* Deep sepia/dark brown text color */
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow: hidden; /* Prevent scrolling if content overflows */
+    overflow: hidden; /* Prevent scrolling */
+    font-size: 14px;
 }
 
 #game-container {
     display: flex;
     flex-direction: column;
-    width: 95%; /* Adjust as needed */
-    max-width: 1200px; /* Max width for larger screens */
-    height: 95vh;
-    border: 2px solid #f39c12; /* Papal gold border */
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    background-color: #34495e; /* Slightly lighter blue-grey for container */
-    border-radius: 8px; /* Slightly rounded corners */
-    overflow: hidden; /* Clip inner content */
+    width: 98%;
+    max-width: 1400px;
+    height: 98vh;
+    border: 3px solid #7c6145; /* Thicker, rustic border */
+    box-shadow: none; /* No modern box-shadow */
+    background-color: #f7e0c4; /* Light, aged parchment color */
+    border-radius: 0; /* Sharp corners, no modern rounding */
+    overflow: hidden;
+    position: relative;
+}
+
+/* Background Map */
+#background-map {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('images/europe.jpg'); /* Adjust path as needed */
+    background-size: cover;
+    background-position: center;
+    filter: grayscale(100%) brightness(50%) contrast(150%) sepia(80%) hue-rotate(15deg); /* Sepia tone, darker, more contrast */
+    z-index: 0;
+    opacity: 0.3; /* Subtle background */
+}
+
+/* Ensure all interactive content is above the map */
+#top-bar, #main-panels, .modal, #notification-container {
+    position: relative;
+    z-index: 1;
 }
 
 /* Top Bar Styling */
 #top-bar {
     display: flex;
-    justify-content: flex-end; /* Align buttons to the right */
-    padding: 10px;
-    background-color: #2ecc71; /* Green for top bar */
-    border-bottom: 2px solid #27ae60;
-    gap: 10px; /* Space between buttons */
-}
-
-#top-bar button {
-    background-color: #f39c12; /* Gold buttons */
-    color: white;
-    border: none;
+    justify-content: space-between;
+    align-items: center;
     padding: 8px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: background-color 0.2s ease;
+    background-color: #6a5a40; /* Earthy brown for top bar */
+    border-bottom: 2px solid #4a3e31; /* Darker border */
+    box-shadow: none;
 }
 
-#top-bar button:hover {
-    background-color: #e67e22; /* Darker gold on hover */
+#game-title {
+    font-family: 'Times New Roman', serif; /* Classic font for title */
+    font-size: 2em; /* Slightly larger title */
+    color: #ffd700; /* Classic gold color */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+    font-weight: bold;
+    letter-spacing: 0.05em;
+}
+
+#top-buttons button {
+    background-color: #4a3e31; /* Dark brown for buttons */
+    color: #f7e0c4; /* Light parchment text */
+    border: 1px solid #7c6145; /* Rustic border */
+    padding: 6px 12px;
+    border-radius: 0; /* Sharp corners */
+    cursor: pointer;
+    font-size: 0.85em;
+    font-family: 'Georgia', serif;
+    transition: background-color 0.2s ease, color 0.2s ease; /* Simple transition */
+}
+
+#top-buttons button:hover {
+    background-color: #5a4b3d; /* Slightly lighter brown on hover */
+    color: #ffffff; /* White text on hover for contrast */
+}
+
+#top-buttons button:active {
+    background-color: #3b2f21; /* Even darker on click */
 }
 
 /* Main Panels Layout */
 #main-panels {
     display: flex;
-    flex-grow: 1; /* Allows panels to take available height */
+    flex-grow: 1;
+    overflow: hidden;
 }
 
-#left-panel, #right-panel {
-    padding: 20px;
+#left-panel, #center-panel, #right-panel {
+    padding: 15px;
     box-sizing: border-box;
-    overflow-y: auto; /* Enable scrolling for content if it overflows */
+    background-color: #f7e0c4; /* Consistent parchment background */
+    border-right: 1px solid #7c6145; /* Rustic separator */
+    overflow-y: auto;
 }
 
 #left-panel {
-    flex: 1; /* Takes 1 part of the available space */
-    background-color: #34495e;
-    border-right: 1px solid #2c3e50;
+    flex: 1.2;
+    min-width: 250px;
+}
+
+#center-panel {
+    flex: 2;
+    min-width: 400px;
     display: flex;
-    flex-direction: column; /* Allows sections to stack vertically */
+    flex-direction: column;
+    gap: 15px;
 }
 
 #right-panel {
-    flex: 2; /* Takes 2 parts of the available space, making it wider */
-    background-color: #2c3e50;
-    display: flex;
-    flex-direction: column; /* Allows sections to stack vertically */
+    flex: 0.8;
+    min-width: 200px;
+    border-right: none;
 }
 
 /* Panel Sections */
 .panel-section {
-    margin-bottom: 15px; /* Reduced margin for tighter fit */
+    margin-bottom: 15px;
     padding-bottom: 10px;
-    border-bottom: 1px dashed rgba(236, 240, 241, 0.2);
+    border-bottom: 1px dashed #7c6145; /* Dashed line for more antique feel */
 }
 
 .panel-section:last-child {
     border-bottom: none;
+    margin-bottom: 0;
 }
 
 h2, h3 {
-    color: #f1c40f; /* Yellow for headings */
+    font-family: 'Times New Roman', serif;
+    color: #4a3e31; /* Dark brown for headings */
+    text-transform: uppercase;
     margin-top: 0;
     margin-bottom: 10px;
+    font-size: 1.2em;
+    letter-spacing: 0.05em;
+    text-align: center; /* Center all headings */
+    border-bottom: 1px solid #b38b6d; /* Muted gold/brown underline */
+    padding-bottom: 5px;
+    margin-bottom: 15px;
 }
 
-ul {
-    list-style: none;
-    padding: 0;
+/* Resource Display */
+#resources-display ul {
+    font-size: 0.95em; /* Slightly larger for readability */
 }
 
-li {
-    margin-bottom: 3px;
-    line-height: 1.4;
+#resources-display ul li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    gap: 10px;
+    color: #4a3e31; /* Dark text for resources */
 }
+
+#resources-display ul li span {
+    width: 40px;
+    text-align: right;
+    font-weight: bold;
+    color: #5a4b3d; /* Slightly lighter for numbers */
+}
+
+.resource-bar {
+    flex-grow: 1;
+    height: 10px;
+    background-color: #d1b499; /* Lighter, muted background for empty bar */
+    border-radius: 2px; /* Slight curve, not fully rounded */
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #b38b6d; /* Muted border */
+}
+
+.bar-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.5s ease-out;
+    border-radius: 2px;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* Resource specific colors - more muted, earthy tones */
+.piety-fill { background-color: #8b0000; } /* Deep red */
+.gold-fill { background-color: #b8860b; } /* Dark goldenrod */
+.influence-fill { background-color: #4682b4; } /* Steel blue */
+.papal-authority-fill { background-color: #a0522d; } /* Sienna brown */
+.stability-fill { background-color: #2e8b57; } /* Sea green */
 
 /* Game Log Specifics */
 #game-log-entries {
-    font-size: 0.85em;
-    height: 180px; /* Fixed height for log */
-    overflow-y: auto; /* Scrollable log */
-    border: 1px solid rgba(236, 240, 241, 0.1);
+    font-size: 0.8em;
+    height: 200px;
+    overflow-y: auto;
+    border: 1px solid #7c6145;
     padding: 8px;
-    background-color: rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
+    background-color: #e9d7bf; /* Slightly darker parchment for log */
+    border-radius: 0;
+    color: #4a3e31;
 }
 
 #game-log-entries p {
     margin: 0 0 5px 0;
+    color: #4a3e31;
 }
 
-/* Event Card Styling */
-#event-card {
-    background-color: #4a657e; /* Slightly lighter than panel background */
-    border: 1px solid #f39c12;
+/* Event Card / Major Event Display */
+.card-display {
+    background-color: #e9d7bf; /* Parchment for cards */
+    border: 2px solid #7c6145;
     padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    flex-shrink: 0; /* Prevents it from shrinking */
+    border-radius: 0;
+    box-shadow: none;
+    flex-shrink: 0;
 }
 
-#event-title {
-    color: #f1c40f;
-    text-align: center;
-    margin-bottom: 15px;
+#event-title, #active-major-event-header {
+    color: #4a3e31;
+    font-size: 1.6em; /* Slightly larger title */
+    border-bottom: 1px solid #b38b6d;
+    padding-bottom: 8px;
 }
 
-#event-description {
-    font-size: 1.1em;
+#event-description, #active-major-event-description {
+    font-size: 1em;
     line-height: 1.6;
     margin-bottom: 20px;
     text-align: justify;
+    color: #4a3e31;
 }
 
-#event-choices {
+#event-choices, #active-major-event-choices {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
 .choice-button {
-    background-color: #3498db; /* Blue for choices */
-    color: white;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 5px;
+    background-color: #6a5a40; /* Earthy brown for choices */
+    color: #f7e0c4;
+    border: 1px solid #4a3e31;
+    padding: 10px 15px;
+    border-radius: 0;
     cursor: pointer;
-    font-size: 1em;
-    transition: background-color 0.2s ease;
+    font-size: 0.95em;
+    font-family: 'Georgia', serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .choice-button:hover:not([disabled]) {
-    background-color: #2980b9; /* Darker blue on hover */
+    background-color: #7c6145; /* Slightly lighter on hover */
+    color: #ffffff;
 }
 
 .choice-button[disabled] {
-    background-color: #535c68; /* Darker grey for disabled buttons */
+    background-color: #b3a28b; /* Lighter, faded brown when disabled */
+    color: #8b7156;
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.8;
+    text-decoration: none; /* No strikethrough */
 }
 
 .decline-button {
-    background-color: #e74c3c; /* Red for decline options */
+    background-color: #a0522d; /* Sienna red for decline options */
+    border-color: #6a3d21;
 }
 
 .decline-button:hover:not([disabled]) {
-    background-color: #c0392b;
+    background-color: #b36b45;
 }
 
 /* Advisor Section */
-#advisor-section {
-    margin-top: 20px;
-    flex-grow: 1; /* Allows it to take remaining space */
-}
-
 #advisor-buttons {
     display: flex;
-    flex-wrap: wrap; /* Allow buttons to wrap */
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-top: 10px;
+    justify-content: center;
 }
 
 .advisor-button {
-    background-color: #9b59b6; /* Purple for advisors */
-    color: white;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: background-color 0.2s ease;
-}
-
-.advisor-button:hover:not([disabled]) {
-    background-color: #8e44ad; /* Darker purple on hover */
-}
-
-.advisor-button.on-cooldown {
-    background-color: #7f8c8d; /* Grey when on cooldown */
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-/* Deck Visualization */
-#deck-visualization {
-    margin-top: 20px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    font-size: 0.9em;
-}
-
-.deck-info {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: #4a3e31; /* Dark brown for advisors */
+    color: #f7e0c4;
+    border: 1px solid #7c6145;
     padding: 8px 12px;
-    border-radius: 5px;
-}
-
-/* Major Event Active Display */
-#major-event-active-display {
-    background-color: #a0421e; /* Darker red-orange for active major event */
-    border: 1px solid #e67e22;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-    flex-shrink: 0;
-}
-
-#major-event-active-display h3 {
-    color: white;
+    border-radius: 0;
+    cursor: pointer;
+    font-size: 0.85em;
+    font-family: 'Georgia', serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    flex: 1 1 calc(50% - 4px);
+    max-width: calc(50% - 4px);
     text-align: center;
 }
 
-#major-event-active-display #active-major-event-choices {
+.advisor-button:hover:not([disabled]) {
+    background-color: #5a4b3d;
+    color: #ffffff;
+}
+
+.advisor-button.on-cooldown {
+    background-color: #b3a28b; /* Lighter, faded brown when on cooldown */
+    color: #8b7156;
+    cursor: not-allowed;
+    opacity: 0.8;
+    border-color: #9a846d;
+}
+
+/* Deck Visualization */
+#deck-section {
+    text-align: center;
+    color: #4a3e31;
+}
+
+#deck-section .deck-info {
+    display: inline-block;
+    background-color: #e9d7bf;
+    padding: 6px 10px;
+    border-radius: 0;
+    margin: 0 5px;
+    font-size: 0.9em;
+    border: 1px solid #b38b6d;
+    color: #4a3e31;
+}
+
+/* Major Event Progress Bar */
+#major-event-progress-bar {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    position: relative;
+    height: 15px;
+    background-color: #d1b499;
+    border-radius: 2px;
+    border: 1px solid #b38b6d;
+}
+
+.progress-fill {
+    background-color: #b84a0c; /* Deep orange/brown for progress */
+}
+
+.bar-text {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    line-height: 15px;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #f7e0c4; /* Light text for progress */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+}
+
+/* Objectives Display */
+#objectives-display ul li {
     display: flex;
-    flex-direction: column;
-    gap: 10px;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95em;
+    color: #4a3e31;
+    margin-bottom: 8px;
 }
 
-.resolve-button {
-    background-color: #27ae60; /* Greenish for resolve buttons */
+.objective-status {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid #7c6145;
+    flex-shrink: 0;
 }
 
-.resolve-button:hover:not([disabled]) {
-    background-color: #2ecc71;
+.objective-status.complete {
+    background-color: #2e8b57; /* Sea green for complete */
+    border-color: #1e6b3e;
+}
+
+.objective-status.incomplete {
+    background-color: #a0522d; /* Sienna brown for incomplete */
+    border-color: #7b3e21;
 }
 
 /* Modal Styles */
 .modal {
-    display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 10; /* Sit on top */
+    display: none;
+    position: fixed;
+    z-index: 100;
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0, 0, 0, 0.7); /* Black w/ more opacity */
+    width: 100%;
+    height: 100%;
+    background-color: rgba(59, 47, 33, 0.9); /* Darker, slightly transparent overlay */
     justify-content: center;
     align-items: center;
 }
 
 .modal-content {
-    background-color: #34495e;
+    background-color: #e9d7bf; /* Parchment for modal content */
     margin: auto;
-    padding: 30px;
-    border: 2px solid #f39c12;
-    border-radius: 10px;
-    width: 80%;
-    max-width: 600px; /* Increased max-width for modals */
+    padding: 25px;
+    border: 3px solid #7c6145;
+    border-radius: 0;
+    width: 90%;
+    max-width: 700px;
     text-align: center;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-    position: relative; /* For close button positioning */
-    max-height: 90vh; /* Max height for scrollable content */
+    box-shadow: none;
+    position: relative;
+    max-height: 90vh;
     overflow-y: auto;
+    color: #4a3e31;
 }
 
 .modal-content h2 {
-    color: #f1c40f;
-    margin-bottom: 20px;
-    border-bottom: 1px solid rgba(241, 196, 15, 0.3);
+    color: #4a3e31;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #b38b6d;
     padding-bottom: 10px;
+    font-size: 1.8em;
 }
 
 .modal-content button {
-    background-color: #2ecc71;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    margin: 8px;
-    border-radius: 5px;
+    background-color: #6a5a40; /* Earthy brown for modal buttons */
+    color: #f7e0c4;
+    border: 1px solid #4a3e31;
+    padding: 10px 20px;
+    margin: 6px;
+    border-radius: 0;
     cursor: pointer;
-    font-size: 1.1em;
-    transition: background-color 0.2s ease;
+    font-size: 1em;
+    font-family: 'Georgia', serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .modal-content button:hover {
-    background-color: #27ae60;
+    background-color: #7c6145;
+    color: #ffffff;
 }
 
 .close-modal-btn {
     position: absolute;
     top: 10px;
-    right: 10px;
+    right: 15px;
     background: none;
     border: none;
-    font-size: 2em;
-    color: #ecf0f1;
+    font-size: 2.2em;
+    color: #4a3e31; /* Dark text for close button */
     cursor: pointer;
     line-height: 1;
     padding: 0;
@@ -325,80 +458,131 @@ li {
 }
 
 .close-modal-btn:hover {
-    color: #f39c12;
+    color: #8b0000; /* Deep red on hover for close */
 }
-
 
 /* Game Over Modal Specifics */
 #game-over-modal .modal-content {
-    background-color: #c0392b; /* Reddish for game over */
-    border-color: #e74c3c;
+    background-color: #a0522d; /* Sienna brown for game over */
+    border-color: #6a3d21;
 }
 
 #game-over-modal h2 {
-    color: white;
+    color: #f7e0c4; /* Light text for game over title */
 }
 
 #game-over-modal #restart-game-btn {
-    background-color: #2ecc71; /* Green restart button */
+    background-color: #2e8b57; /* Sea green for restart */
+    border-color: #1e6b3e;
 }
 
 #game-over-modal #restart-game-btn:hover {
-    background-color: #27ae60;
+    background-color: #3cb371;
 }
 
 /* Achievements Modal Specifics */
 #achievements-modal-list {
     text-align: left;
-    margin-top: 20px;
-    margin-bottom: 20px;
-    padding: 0 20px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    padding: 0 15px;
 }
 
 #achievements-modal-list li {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: #d1b499; /* Slightly darker parchment for items */
     padding: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    border-left: 5px solid #f1c40f; /* Gold border for unlocked */
+    margin-bottom: 8px;
+    border-radius: 0;
+    border-left: 3px solid #b8860b; /* Goldenrod border for unlocked */
     display: flex;
     flex-direction: column;
+    color: #4a3e31;
 }
 
 #achievements-modal-list li.locked {
-    border-left-color: #7f8c8d; /* Grey for locked */
-    opacity: 0.6;
+    border-left-color: #8b7156; /* Muted brown for locked */
+    opacity: 0.8;
 }
 
 #achievements-modal-list li h4 {
-    margin: 0 0 5px 0;
-    color: #f1c40f;
+    margin: 0 0 4px 0;
+    color: #4a3e31;
+    font-size: 1.1em;
 }
 
 #achievements-modal-list li.locked h4 {
-    color: #bdc3c7;
+    color: #8b7156;
 }
-
 
 #achievements-modal-list li p {
     margin: 0;
-    font-size: 0.9em;
-    color: #bdc3c7;
+    font-size: 0.85em;
+    color: #4a3e31;
 }
 
 /* Small button for View All Achievements */
 .small-button {
-    background-color: #1abc9c; /* Teal */
-    color: white;
-    border: none;
+    background-color: #4a3e31;
+    color: #f7e0c4;
+    border: 1px solid #7c6145;
     padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.8em;
+    border-radius: 0;
+    font-size: 0.75em;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-top: 10px;
+    font-family: 'Georgia', serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    margin-top: 8px;
 }
 
 .small-button:hover {
-    background-color: #16a085;
+    background-color: #5a4b3d;
+    color: #ffffff;
+}
+
+/* Notification System */
+#notification-container {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    z-index: 99;
+    pointer-events: none;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification {
+    background-color: #6a5a40; /* Earthy brown for notifications */
+    color: #f7e0c4;
+    padding: 10px 15px;
+    border-radius: 5px; /* Keep some rounded corners for notifications as they are transient */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3); /* Subtle shadow for notifications */
+    opacity: 0;
+    transform: translateX(100%);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+    font-size: 0.9em;
+    word-wrap: break-word;
+    border: 1px solid #4a3e31;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification.achievement {
+    background-color: #b8860b; /* Goldenrod for achievements */
+}
+
+.notification.resource-gain {
+    background-color: #2e8b57; /* Sea green for gain */
+}
+
+.notification.resource-loss {
+    background-color: #8b0000; /* Deep red for loss */
+}
+
+.notification.info {
+    background-color: #4682b4; /* Steel blue for info */
 }
