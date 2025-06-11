@@ -6,15 +6,12 @@
     <title>Habeus Papam</title>
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-</head>
+    </head>
 <body>
     <div class="top-bar">
         <div class="menu-options">
             <span id="main-menu-btn">Main Menu</span>
-            <span>Library</span>
-            <span>Save/Load</span>
-            <span>Options</span>
-        </div>
+            <span id="library-btn">Library</span> <span id="save-load-btn">Save/Load</span> <span id="options-top-btn">Options</span> <span id="exit-top-btn">Exit</span> </div>
     </div>
 
     <div class="game-container">
@@ -59,12 +56,13 @@
                 <div class="decks-hand-section">
                     <div class="deck-area">
                         <h4>Event Deck</h4>
-                        <div class="placeholder-card">Event Deck</div>
-                        <div class="placeholder-card hidden" id="major-event-deck-placeholder">Major Event Deck</div>
+                        <div class="placeholder-card" id="event-deck-placeholder">Event Deck (<span id="event-deck-count">0</span>)</div>
+                        <h4>Discard Pile</h4>
+                        <div class="placeholder-card" id="discard-pile-placeholder">Discard Pile (<span id="discard-pile-count">0</span>)</div>
                     </div>
                     <div class="hand-area">
-                        <h4>Hand</h4>
-                        <div class="placeholder-card" id="hand-card-placeholder"></div>
+                        <h4>Hand (Major Events)</h4>
+                        <div class="placeholder-card" id="major-event-hand-placeholder">No Major Event in Hand</div>
                     </div>
                 </div>
 
@@ -103,6 +101,59 @@
             </div>
         </div>
     </div>
+
+    <div id="library-modal" class="modal hidden">
+        <div class="modal-content large-modal">
+            <span class="close-button" id="library-close-btn">&times;</span>
+            <h2 class="menu-title">Library</h2>
+            <div class="library-tabs">
+                <button class="library-tab-btn active" data-tab="event-cards-library">Event Cards</button>
+                <button class="library-tab-btn" data-tab="major-events-library">Major Events</button>
+                <button class="library-tab-btn" data-tab="achievements-library">Achievements</button>
+            </div>
+            <div class="library-content">
+                <div id="event-cards-library" class="library-page active">
+                    <h3>Event Cards</h3>
+                    <div class="card-grid" id="event-cards-grid">
+                        </div>
+                </div>
+                <div id="major-events-library" class="library-page hidden">
+                    <h3>Major Events</h3>
+                    <div class="card-grid" id="major-events-grid">
+                        </div>
+                </div>
+                 <div id="achievements-library" class="library-page hidden">
+                    <h3>Achievements</h3>
+                    <div class="achievements-list" id="library-achievements-list">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="save-load-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" id="save-load-close-btn">&times;</span>
+            <h2 class="menu-title">Save/Load Game</h2>
+            <div class="save-load-options">
+                <button id="save-game-btn">Save Game</button>
+                <button id="load-game-btn">Load Game</button>
+                <p id="save-load-message" class="message"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="options-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" id="options-close-btn">&times;</span>
+            <h2 class="menu-title">Options</h2>
+            <div class="options-content">
+                <p>Game Volume: <input type="range" min="0" max="100" value="50"></p>
+                <p>More options coming soon!</p>
+            </div>
+        </div>
+    </div>
+
 
     <script src="script.js"></script>
 </body>
