@@ -12,11 +12,9 @@ const gameState = {
         hasSecuredNobleSupport: false,
         hasSecuredTheologicalValidation: false,
         hasReformedChurch: false,
-        // Existing new flags
         hasSurvivedFirstDecade: false,
         hasHighPietyEver: false,
         hasMaxGoldEver: false,
-        // Flags for advisor usage (NEW/FIXED)
         usedCardinal: false,
         usedLord: false,
         usedAlchemist: false,
@@ -28,9 +26,14 @@ const gameState = {
         lord: 0,
         alchemist: 0
     },
-    currentCard: null, // Stores the card currently displayed
-    unlockedAchievements: [], // Array to store IDs of unlocked achievements
-    gameStarted: false // New flag to track if a game is in progress
+    currentCard: null,
+    unlockedAchievements: [],
+    gameStarted: false,
+    // --- NEW DECK MANAGEMENT ---
+    mainDeck: [],
+    discardPile: [],
+    majorDeck: [],
+    majorHand: null // Stores the major event card if it's drawn
 };
 
 // --- DOM Elements (Declared here, assigned after DOMContentLoaded) ---
@@ -45,27 +48,56 @@ let cardTitle;
 let cardDescription;
 let cardChoices;
 let advanceTurnBtn;
-let advisorButtons; // This will be a NodeList
-let majorEventDeckPlaceholder;
+let advisorButtons;
+let eventDeckPlaceholder; // Updated ID
+let eventDeckCountDisplay; // New
+let discardPilePlaceholder; // New
+let discardPileCountDisplay; // New
+let majorEventHandPlaceholder; // Updated ID
 let gameModal;
 let modalTitle;
 let modalMessage;
 let modalRestartBtn;
 
-// New DOM elements for Main Menu and Achievements
+// Main Menu elements
 let mainMenuBtn;
 let mainMenu;
 let startGameBtn;
 let continueGameBtn;
-let viewAchievementsBtn;
-let optionsBtn;
-let exitGameBtn;
+let viewAchievementsBtn; // Main Menu button
+let optionsBtn; // Main Menu button
+let exitGameBtn; // Main Menu button
 
-let achievementsList;
+let achievementsList; // Left Panel achievement display
 
+// New Modal Elements
+let libraryBtn; // Top bar library button
+let saveLoadBtn; // Top bar save/load button
+let optionsTopBtn; // Top bar options button
+let exitTopBtn; // Top bar exit button
+
+let libraryModal;
+let libraryCloseBtn;
+let libraryTabButtons; // NodeList of tab buttons
+let eventCardsLibraryPage;
+let majorEventsLibraryPage;
+let achievementsLibraryPage;
+let eventCardsGrid;
+let majorEventsGrid;
+let libraryAchievementsList;
+
+let saveLoadModal;
+let saveLoadCloseBtn;
+let saveGameBtn;
+let loadGameBtn;
+let saveLoadMessage;
+
+let optionsModal;
+let optionsCloseBtn;
 
 // --- Game Data: Event Cards (Expanded) ---
-const eventCards = [
+// Using full list from previous turn
+const allEventCards = [
     {
         id: 'initial_decree',
         title: 'A New Beginning',
@@ -77,7 +109,7 @@ const eventCards = [
                 log: 'You initiated monastic reforms, increasing piety and stability, but costing some gold.'
             },
             {
-                text: 'Seek alliances with powerful kings to secure the Church\'s political standing.',
+                text: 'Seek alliances with powerful kings to secure the Church\'s political political standing.',
                 effects: { influence: 15, papalAuthority: 5, piety: -5 },
                 log: 'You forged new alliances, boosting influence and papal authority at the cost of some piety.'
             },
@@ -154,7 +186,6 @@ const eventCards = [
             }
         ]
     },
-    // --- NEW CARDS ---
     {
         id: 'plague_outbreak',
         title: 'The Black Death Approaches',
@@ -247,7 +278,8 @@ const eventCards = [
 
 
 // --- Game Data: Major Choice Paths (Triggered by flags/resources) ---
-const majorEventCards = [
+// Note: hasTriggered property will be added dynamically when a major card is drawn
+const allMajorCards = [
     {
         id: 'new_roman_empire_quest',
         title: 'The Roman Dream Revived',
@@ -263,33 +295,31 @@ const majorEventCards = [
                 text: 'Secure Noble Support: Negotiate with powerful secular rulers for their recognition. (-50 Gold, +30 Influence, -10 Stability)',
                 effects: { gold: -50, influence: 30, stability: -10, setFlag: 'hasSecuredNobleSupport' },
                 log: 'You secured the backing of key noble houses, a crucial step for the new Empire!',
-                condition: (state) => !state.flags.hasSecuredNobleSupport // Can only do this if flag isn't set
+                condition: (state) => !state.flags.hasSecuredNobleSupport
             },
             {
                 text: 'Secure Theological Validation: Convene a grand council to formally declare the Papal claim to Empire. (+30 Piety, +30 Papal Authority, -10 Stability)',
                 effects: { piety: 30, papalAuthority: 30, stability: -10, setFlag: 'hasSecuredTheologicalValidation' },
                 log: 'A grand council affirmed your claim to the Empire through divine right! Theological validation achieved.',
-                condition: (state) => !state.flags.hasSecuredTheologicalValidation // Can only do this if flag isn't set
+                condition: (state) => !state.flags.hasSecuredTheologicalValidation
             }
         ],
-        // Logic to check for completion after choices are made
         completionCheck: (state) => state.flags.hasSecuredNobleSupport && state.flags.hasSecuredTheologicalValidation,
         winCondition: {
             title: "A New Roman Empire!",
             message: "Under your divine leadership, the Holy Roman Empire is reborn, with the Papacy as its unassailable head! You have forged a new golden age. The history books will forever remember Pope [Your Name] as the unifier of Christendom and the restorer of Rome. You win!"
         }
     },
-    // --- NEW MAJOR PATH: The Great Schism ---
     {
         id: 'great_schism_path',
         title: 'The Great Schism',
         description: 'Years of theological and political disagreements between Rome and Constantinople have reached a breaking point. A definitive split seems inevitable unless drastic action is taken.',
         prerequisites: {
-            piety: 80, // Needs reasonable piety
-            papalAuthority: 80, // Needs reasonable authority
-            stability: 50, // Not too unstable
-            influence: 60, // Some influence to mediate
-            turnMin: 20 // Only after 20 turns
+            piety: 80,
+            papalAuthority: 80,
+            stability: 50,
+            influence: 60,
+            turnMin: 20
         },
         choices: [
             {
@@ -307,11 +337,8 @@ const majorEventCards = [
         outcomeLogic: (state) => {
             if (state.flags.hasAssertedRomanPrimacy) {
                 addLog('The Great Schism has officially occurred, with Rome asserting its dominance over the splintered East.');
-                // Potentially new cards or challenges related to Eastern Church
-                // You could add a flag like `isEasternSchismActive: true`
             } else if (state.flags.hasSoughtReconciliation) {
                 addLog('You have managed to avert the Great Schism, for now. Christian unity is preserved!');
-                // Potentially boost specific resources in the long term or prevent negative events
             }
         }
     }
@@ -328,7 +355,7 @@ const advisors = {
             state.resources.gold -= 5;
             addLog('You consulted Cardinal Bellini. Piety increased significantly, Papal Authority slightly, but at some cost.');
         },
-        cooldown: 3 // Turns before reusable
+        cooldown: 3
     },
     lord: {
         name: 'Lord Valerius',
@@ -389,15 +416,23 @@ const achievements = [
         id: 'advisor_master',
         name: 'Advisor Master',
         description: 'Use all three advisors at least once.',
-        condition: (state) => {
-            // FIXED: Now relies on individual advisor usage flags
-            return state.flags.usedCardinal && state.flags.usedLord && state.flags.usedAlchemist && !state.flags.hasUsedAllAdvisors;
-        },
+        condition: (state) => state.flags.usedCardinal && state.flags.usedLord && state.flags.usedAlchemist && !state.flags.hasUsedAllAdvisors,
         onUnlock: (state) => { state.flags.hasUsedAllAdvisors = true; addLog('Achievement Unlocked: Advisor Master!'); }
     }
 ];
 
 // --- Helper Functions ---
+
+/**
+ * Shuffles an array in place (Fisher-Yates algorithm).
+ * @param {Array} array - The array to shuffle.
+ */
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+}
 
 /**
  * Updates the display of all resource values.
@@ -417,8 +452,7 @@ function updateResourceDisplay() {
 function addLog(message) {
     const newLogEntry = document.createElement('p');
     newLogEntry.textContent = `- ${message}`;
-    gameLog.prepend(newLogEntry); // Add to the top for chronological order
-    // Optional: Limit log entries to prevent excessive build-up
+    gameLog.prepend(newLogEntry);
     if (gameLog.children.length > 50) {
         gameLog.removeChild(gameLog.lastChild);
     }
@@ -426,26 +460,43 @@ function addLog(message) {
 
 /**
  * Updates the display of unlocked achievements.
+ * @param {HTMLElement} listElement - The DOM element to populate the achievements into.
  */
-function updateAchievementDisplay() {
-    achievementsList.innerHTML = ''; // Clear current list
-    if (gameState.unlockedAchievements.length === 0) {
+function updateAchievementDisplay(listElement) {
+    listElement.innerHTML = '';
+    const achievementsToShow = gameState.unlockedAchievements.map(achId => achievements.find(a => a.id === achId)).filter(Boolean);
+
+    if (achievementsToShow.length === 0) {
         const noAchievementsMsg = document.createElement('p');
         noAchievementsMsg.classList.add('no-achievements');
         noAchievementsMsg.textContent = 'No achievements yet. Keep playing!';
-        achievementsList.appendChild(noAchievementsMsg);
+        listElement.appendChild(noAchievementsMsg);
         return;
     }
-    gameState.unlockedAchievements.forEach(achId => {
-        const achievement = achievements.find(a => a.id === achId);
-        if (achievement) {
-            const achItem = document.createElement('div');
-            achItem.classList.add('achievement-item');
-            achItem.innerHTML = `<strong>${achievement.name}</strong><span>${achievement.description}</span>`;
-            achievementsList.appendChild(achItem);
-        }
+    achievementsToShow.forEach(achievement => {
+        const achItem = document.createElement('div');
+        achItem.classList.add('achievement-item');
+        achItem.innerHTML = `<strong>${achievement.name}</strong><span>${achievement.description}</span>`;
+        listElement.appendChild(achItem);
     });
 }
+
+/**
+ * Updates the visual display of the decks and hand.
+ */
+function updateDeckDisplay() {
+    eventDeckCountDisplay.textContent = gameState.mainDeck.length;
+    discardPileCountDisplay.textContent = gameState.discardPile.length;
+
+    if (gameState.majorHand) {
+        majorEventHandPlaceholder.textContent = `Major Event: ${gameState.majorHand.title}`;
+        majorEventHandPlaceholder.classList.add('active-major-card'); // Optional: Add visual cue
+    } else {
+        majorEventHandPlaceholder.textContent = 'No Major Event in Hand';
+        majorEventHandPlaceholder.classList.remove('active-major-card');
+    }
+}
+
 
 /**
  * Checks for game over conditions.
@@ -467,12 +518,10 @@ function checkGameOver() {
         gameOverMessage = "Secular powers no longer heed your words. You are a Pope without political sway, a figurehead ignored by kings and emperors.";
     }
 
-    // Add a check for resources getting excessively high
     if (gameState.resources.piety >= 250 && gameState.resources.gold >= 250 && gameState.resources.papalAuthority >= 250) {
         gameOverMessage = "Your immense power and wealth have drawn the envy of all. Kings conspire against you, and the Church itself is seen as a secular empire, leading to universal revolt against your overwhelming authority.";
         gameOverTitle = "Overwhelmed by Power!";
     }
-
 
     if (gameOverMessage) {
         endGame(gameOverTitle, gameOverMessage);
@@ -490,19 +539,18 @@ function endGame(title, message) {
     modalTitle.textContent = title;
     modalMessage.textContent = message;
     gameModal.classList.remove('hidden');
-    // Disable game interaction
     advanceTurnBtn.disabled = true;
-    cardChoices.innerHTML = ''; // Clear card choices
+    cardChoices.innerHTML = '';
     advisorButtons.forEach(btn => btn.disabled = true);
-    gameState.gameStarted = false; // Mark game as not in progress
+    gameState.gameStarted = false;
     updateMainMenuButtons();
+    addLog(`Game Over: ${title}`);
 }
 
 /**
  * Resets the game to its initial state.
  */
 function resetGame() {
-    // Reset all game state variables
     gameState.currentYear = 1000;
     gameState.resources = {
         piety: 100,
@@ -518,11 +566,10 @@ function resetGame() {
         hasSurvivedFirstDecade: false,
         hasHighPietyEver: false,
         hasMaxGoldEver: false,
-        hasUsedAllAdvisors: false,
-        // FIX: Ensure new advisor flags are reset
         usedCardinal: false,
         usedLord: false,
-        usedAlchemist: false
+        usedAlchemist: false,
+        hasUsedAllAdvisors: false
     };
     gameState.turnCount = 0;
     gameState.advisorCooldowns = {
@@ -531,12 +578,21 @@ function resetGame() {
         alchemist: 0
     };
     gameState.currentCard = null;
-    // Keep achievements unlocked between games if desired. Uncomment to clear:
+    // Keep achievements unlocked between games if desired.
     // gameState.unlockedAchievements = [];
-    gameLog.innerHTML = '<p>Welcome to Habeus Papam!</p>'; // Clear and reset log
+    gameLog.innerHTML = '<p>Welcome to Habeus Papam!</p>';
 
-    gameModal.classList.add('hidden'); // Hide modal
-    initGame(true); // Re-initialize the game, showing the main menu
+    // --- DECK RESET ---
+    gameState.mainDeck = [];
+    gameState.discardPile = [];
+    gameState.majorDeck = [];
+    gameState.majorHand = null;
+
+    // Re-populate and shuffle decks
+    setupDecks();
+
+    gameModal.classList.add('hidden');
+    initGame(true); // Re-initialize, showing the main menu
 }
 
 // --- Achievement Logic ---
@@ -548,8 +604,9 @@ function checkAchievements() {
         if (!gameState.unlockedAchievements.includes(ach.id)) {
             if (ach.condition(gameState)) {
                 gameState.unlockedAchievements.push(ach.id);
-                if (ach.onUnlock) ach.onUnlock(gameState); // Run specific unlock logic
-                updateAchievementDisplay();
+                if (ach.onUnlock) ach.onUnlock(gameState);
+                updateAchievementDisplay(achievementsList); // Update left panel display
+                updateAchievementDisplay(libraryAchievementsList); // Update library display
             }
         }
     });
@@ -565,7 +622,7 @@ function applyEffects(effects) {
     if (effects) {
         for (const key in effects) {
             if (gameState.resources.hasOwnProperty(key)) {
-                gameState.resources[key] = Math.max(0, gameState.resources[key] + effects[key]); // Ensure resources don't go below 0
+                gameState.resources[key] = Math.max(0, gameState.resources[key] + effects[key]);
             } else if (key === 'setFlag') {
                 gameState.flags[effects[key]] = true;
             }
@@ -579,15 +636,14 @@ function applyEffects(effects) {
  * @param {object} card - The card object to display.
  */
 function displayCard(card) {
-    gameState.currentCard = card; // Store the current card
+    gameState.currentCard = card;
     cardTitle.textContent = card.title;
     cardDescription.textContent = card.description;
-    cardChoices.innerHTML = ''; // Clear previous choices
+    cardChoices.innerHTML = '';
 
     card.choices.forEach((choice, index) => {
-        // Check if the choice has a specific condition that needs to be met
         if (choice.condition && !choice.condition(gameState)) {
-            return; // If condition not met, skip choice
+            return;
         }
 
         const choiceBtn = document.createElement('button');
@@ -604,57 +660,64 @@ function displayCard(card) {
  * @param {number} choiceIndex - The index of the chosen option.
  */
 function handleChoice(cardId, choiceIndex) {
-    const card = eventCards.find(c => c.id === cardId) || majorEventCards.find(c => c.id === cardId);
-    if (!card) return; // Should not happen
+    const card = allEventCards.find(c => c.id === cardId) || allMajorCards.find(c => c.id === cardId);
+    if (!card) return;
 
     const choice = card.choices[choiceIndex];
-    if (!choice) return; // Should not happen
+    if (!choice) return;
 
     addLog(choice.log);
     applyEffects(choice.effects);
 
-    // Specific logic for major choice path completion
-    if (card.completionCheck && card.completionCheck(gameState)) {
-        if (card.winCondition) {
-            endGame(card.winCondition.title, card.winCondition.message);
-            return; // Game ends
+    // If it was a major card, handle its completion and remove from hand
+    if (gameState.majorHand && gameState.majorHand.id === card.id) {
+        if (card.completionCheck && card.completionCheck(gameState)) {
+            if (card.winCondition) {
+                endGame(card.winCondition.title, card.winCondition.message);
+                return;
+            }
+            if (card.outcomeLogic) {
+                card.outcomeLogic(gameState);
+            }
+            addLog(`Major goal accomplished: ${card.title} requirements met!`);
+            // Mark major card as triggered/resolved so it doesn't appear again
+            allMajorCards.find(mc => mc.id === card.id).hasTriggered = true;
         }
-        if (card.outcomeLogic) { // Handle outcomes for major paths that don't end the game
-            card.outcomeLogic(gameState);
-        }
-        addLog(`Major goal accomplished: ${card.title} requirements met!`);
-        // Potentially remove this major card or replace with follow-up
-        majorEventDeckPlaceholder.classList.add('hidden'); // Visual indication that a major path was triggered
-        // Remove the triggered major card from future checks in advanceTurn
-        majorEventCards.find(mc => mc.id === card.id).hasTriggered = true;
+        gameState.majorHand = null; // Remove from hand after choice
+        updateDeckDisplay(); // Update visual immediately
+    } else {
+        // If it's a regular card, move it to the discard pile
+        gameState.discardPile.push(gameState.currentCard);
     }
 
-    // After a choice, enable advance turn button and disable choices
     advanceTurnBtn.disabled = false;
-    cardChoices.innerHTML = ''; // Clear choices
+    cardChoices.innerHTML = '';
     cardTitle.textContent = 'Decision Made';
     cardDescription.textContent = 'Advance the turn to continue.';
 
-    checkAchievements(); // Check achievements after every choice
-    // Check for game over after effects are applied
+    checkAchievements();
     if (checkGameOver()) {
         return;
     }
 }
 
-
 /**
- * Randomly draws a card from the available event cards.
- * @returns {object} The chosen event card.
+ * Draws a card from the main deck or reshuffles if empty.
+ * @returns {object|null} The drawn card, or null if no cards.
  */
 function drawEventCard() {
-    // Basic drawing: exclude the current card, for variety
-    const availableCards = eventCards.filter(card => card.id !== gameState.currentCard?.id);
-    if (availableCards.length === 0) {
-        return eventCards[Math.floor(Math.random() * eventCards.length)]; // Fallback
+    if (gameState.mainDeck.length === 0) {
+        if (gameState.discardPile.length > 0) {
+            addLog("Main event deck empty. Reshuffling discard pile.");
+            gameState.mainDeck = [...gameState.discardPile];
+            gameState.discardPile = [];
+            shuffleArray(gameState.mainDeck);
+        } else {
+            addLog("No more event cards to draw!");
+            return null; // No cards left at all
+        }
     }
-    const randomIndex = Math.floor(Math.random() * availableCards.length);
-    return availableCards[randomIndex];
+    return gameState.mainDeck.pop(); // Draw from the top
 }
 
 /**
@@ -676,46 +739,63 @@ function advanceTurn() {
             gameState.advisorCooldowns[advisorId]--;
         }
     }
-    updateAdvisorButtonStates(); // Update button enable/disable
+    updateAdvisorButtonStates();
 
-    // Apply minor passive effects or random events here if desired
-    gameState.resources.stability = Math.max(0, gameState.resources.stability - 1); // Small stability decay
-    gameState.resources.gold = Math.max(0, gameState.resources.gold - 2); // Small gold upkeep
+    // Apply minor passive effects or random events here
+    gameState.resources.stability = Math.max(0, gameState.resources.stability - 1);
+    gameState.resources.gold = Math.max(0, gameState.resources.gold - 2);
     updateResourceDisplay();
 
-    // Check for major path triggers
-    let majorPathTriggered = false;
-    for (const majorCard of majorEventCards) {
-        // Check if card has already been triggered or its outcome logic completed
-        if (majorCard.hasTriggered) continue;
+    // --- DECK LOGIC FOR DRAWING CARDS ---
+    let cardToDisplay = null;
 
-        const prereqsMet = Object.keys(majorCard.prerequisites).every(key => {
-            if (key === 'turnMin') {
-                return gameState.turnCount >= majorCard.prerequisites[key];
-            }
-            return gameState.resources[key] >= majorCard.prerequisites[key];
+    // 1. Check if a major card is in hand and needs to be resolved
+    if (gameState.majorHand) {
+        cardToDisplay = gameState.majorHand;
+        addLog(`Continuing Major Event: ${cardToDisplay.title}`);
+    } else {
+        // 2. Check for new major path triggers from majorDeck
+        const eligibleMajorCards = gameState.majorDeck.filter(majorCard => {
+            // Check if card has already been triggered or its outcome logic completed
+            if (majorCard.hasTriggered) return false;
+
+            const prereqsMet = Object.keys(majorCard.prerequisites).every(key => {
+                if (key === 'turnMin') {
+                    return gameState.turnCount >= majorCard.prerequisites[key];
+                }
+                return gameState.resources[key] >= majorCard.prerequisites[key];
+            });
+            return prereqsMet;
         });
 
-        if (prereqsMet) {
-            displayCard(majorCard);
-            majorEventDeckPlaceholder.classList.remove('hidden'); // Visual indication
-            addLog(`A major historical path has opened: "${majorCard.title}"!`);
-            majorPathTriggered = true;
-            break; // Only trigger one major path per turn for simplicity
+        if (eligibleMajorCards.length > 0) {
+            // Draw one major card and move it to majorHand
+            cardToDisplay = eligibleMajorCards[Math.floor(Math.random() * eligibleMajorCards.length)];
+            gameState.majorHand = cardToDisplay;
+            // Remove from majorDeck (as it's now in hand)
+            gameState.majorDeck = gameState.majorDeck.filter(card => card.id !== cardToDisplay.id);
+            addLog(`A major historical path has opened: "${cardToDisplay.title}"!`);
+        } else {
+            // 3. If no major card triggered or in hand, draw from mainDeck
+            cardToDisplay = drawEventCard();
         }
     }
 
-    if (!majorPathTriggered) {
-        // If no major path, draw a regular event card
-        const newCard = drawEventCard();
-        displayCard(newCard);
+    if (cardToDisplay) {
+        displayCard(cardToDisplay);
+    } else {
+        addLog("No more cards to draw. Game might be stagnant or awaiting specific conditions.");
+        // Potentially handle this as a soft "end game" or victory condition if all major paths are done
+        cardTitle.textContent = "Peace reigns (for now)";
+        cardDescription.textContent = "The decks are empty. You have guided the Papacy through many trials. What comes next?";
+        cardChoices.innerHTML = ''; // No choices for empty deck
+        advanceTurnBtn.disabled = true; // No more turns if no cards
     }
 
-    // Disable advance turn button until a choice is made
-    advanceTurnBtn.disabled = true;
+    updateDeckDisplay(); // Update deck counts after draw
+    advanceTurnBtn.disabled = true; // Disable until a choice is made
 
-    checkAchievements(); // Check achievements after every turn
-    // Check for game over after all turn effects
+    checkAchievements();
     if (checkGameOver()) {
         return;
     }
@@ -736,20 +816,39 @@ function updateAdvisorButtonStates() {
     });
 }
 
-// --- Main Menu Functions ---
+// --- Main Menu & Modal Functions ---
+function showModal(modalElement) {
+    // Hide all other modals first, except for the main menu if we're going to that.
+    // This assumes only one modal should be visible at a time besides the main game.
+    [gameModal, mainMenu, libraryModal, saveLoadModal, optionsModal].forEach(modal => {
+        if (modal && modal !== modalElement) { // Don't hide the modal we're about to show
+            modal.classList.add('hidden');
+        }
+    });
+    modalElement.classList.remove('hidden');
+    // For general modals, hide the game container
+    if (modalElement !== mainMenu) { // If it's not the main menu, hide game UI
+        const gameContainer = document.querySelector('.game-container');
+        if (gameContainer) gameContainer.classList.add('hidden');
+    }
+}
+
+function hideModal(modalElement) {
+    modalElement.classList.add('hidden');
+    // If no other modals are active, show the game container
+    const anyModalActive = ![gameModal, mainMenu, libraryModal, saveLoadModal, optionsModal].every(modal => modal.classList.contains('hidden'));
+    if (!anyModalActive && gameState.gameStarted) { // Only show game if no other modal is visible AND game is active
+        const gameContainer = document.querySelector('.game-container');
+        if (gameContainer) gameContainer.classList.remove('hidden');
+    }
+}
+
 function showMainMenu() {
-    mainMenu.classList.remove('hidden');
-    // Ensure game container is hidden if it was visible
-    const gameContainer = document.querySelector('.game-container');
-    if (gameContainer) gameContainer.classList.add('hidden');
-    updateMainMenuButtons();
+    showModal(mainMenu);
 }
 
 function hideMainMenu() {
-    mainMenu.classList.add('hidden');
-    // Ensure game container is visible
-    const gameContainer = document.querySelector('.game-container');
-    if (gameContainer) gameContainer.classList.remove('hidden');
+    hideModal(mainMenu);
 }
 
 function updateMainMenuButtons() {
@@ -762,6 +861,139 @@ function updateMainMenuButtons() {
     }
 }
 
+// --- Library Modal Specific Functions ---
+function populateLibraryCards(targetGrid, cards, isMajor = false) {
+    targetGrid.innerHTML = '';
+    cards.forEach(card => {
+        const cardItem = document.createElement('div');
+        cardItem.classList.add('library-card-item');
+        let description = card.description;
+        // Optionally, make effects visible in library description
+        if (card.choices && card.choices.length > 0) {
+             description += '<br><br><strong>Choices:</strong>';
+             card.choices.forEach(choice => {
+                 description += `<br>- ${choice.text}`;
+                 // You could add effects breakdown here too
+             });
+        }
+        cardItem.innerHTML = `<strong>${card.title}</strong><p>${description}</p>`;
+        targetGrid.appendChild(cardItem);
+    });
+}
+
+function activateLibraryTab(tabId) {
+    document.querySelectorAll('.library-page').forEach(page => page.classList.add('hidden'));
+    document.getElementById(tabId).classList.remove('hidden');
+
+    document.querySelectorAll('.library-tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.library-tab-btn[data-tab="${tabId}"]`).classList.add('active');
+
+    if (tabId === 'achievements-library') {
+        updateAchievementDisplay(libraryAchievementsList);
+    }
+}
+
+
+// --- Save/Load Game Functions ---
+const LOCAL_STORAGE_KEY = 'habeusPapamSave';
+
+function saveGame() {
+    try {
+        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(gameState));
+        showSaveLoadMessage('Game saved successfully!', 'success');
+        addLog('Game saved.');
+    } catch (e) {
+        showSaveLoadMessage('Failed to save game: ' + e.message, 'error');
+        console.error('Save failed:', e);
+    }
+}
+
+function loadGame() {
+    try {
+        const savedState = localStorage.getItem(LOCAL_STORAGE_KEY);
+        if (savedState) {
+            const loadedState = JSON.parse(savedState);
+            // Deep merge or reassign properties to ensure all are present and correct
+            Object.assign(gameState, loadedState);
+            // Ensure nested objects are also deeply merged if they were not fully loaded
+            if (loadedState.resources) Object.assign(gameState.resources, loadedState.resources);
+            if (loadedState.flags) Object.assign(gameState.flags, loadedState.flags);
+            if (loadedState.advisorCooldowns) Object.assign(gameState.advisorCooldowns, loadedState.advisorCooldowns);
+
+            // Re-setup decks if they were not serialized correctly (e.g., functions not saved)
+            // For simplicity, we just rebuild them based on the loaded state and the original data
+            setupDecks(true); // Call with true to indicate loading
+            // Ensure major cards are marked as triggered if their flags indicate so
+            allMajorCards.forEach(mc => {
+                if (mc.completionCheck && mc.completionCheck(gameState)) {
+                    mc.hasTriggered = true;
+                }
+            });
+
+
+            updateResourceDisplay();
+            updateAdvisorButtonStates();
+            updateDeckDisplay();
+            updateAchievementDisplay(achievementsList); // Update both displays
+            updateAchievementDisplay(libraryAchievementsList);
+
+            yearDisplay.textContent = `Year: ${gameState.currentYear} AD`;
+            gameLog.innerHTML = '<p>Game loaded successfully!</p>' + gameLog.innerHTML; // Add load message to log
+            addLog('Game loaded successfully.');
+
+            // Re-display current card if game is active
+            if (gameState.gameStarted && gameState.currentCard) {
+                displayCard(gameState.currentCard);
+                advanceTurnBtn.disabled = false; // Allow advancing after load
+            } else {
+                 // If no current card or game not started (e.g., loaded from main menu),
+                 // set up initial state or first card
+                 initGame(false); // Start game UI
+            }
+
+            hideModal(saveLoadModal);
+            showSaveLoadMessage('Game loaded successfully!', 'success');
+            addLog('Game loaded.');
+            updateMainMenuButtons(); // Ensure continue button is enabled
+        } else {
+            showSaveLoadMessage('No saved game found.', 'info');
+        }
+    } catch (e) {
+        showSaveLoadMessage('Failed to load game: ' + e.message, 'error');
+        console.error('Load failed:', e);
+    }
+}
+
+function showSaveLoadMessage(message, type = 'info') {
+    saveLoadMessage.textContent = message;
+    saveLoadMessage.className = 'message ' + type; // Add class for styling (e.g., .message.error)
+}
+
+
+/**
+ * Sets up the initial game decks (main and major).
+ * @param {boolean} isLoading - True if called during a game load, affects initial card draw.
+ */
+function setupDecks(isLoading = false) {
+    // Clone all event cards for the main deck
+    gameState.mainDeck = [...allEventCards.filter(card => card.id !== 'initial_decree')]; // Exclude initial card
+    shuffleArray(gameState.mainDeck);
+    gameState.discardPile = []; // Clear discard pile
+
+    // Clone all major cards for the major deck
+    // Filter out cards that have already been triggered (e.g., if loaded game)
+    gameState.majorDeck = [...allMajorCards.filter(card => !card.hasTriggered)];
+    shuffleArray(gameState.majorDeck); // Shuffle major deck too
+    gameState.majorHand = null;
+
+    // Set the initial card only if not loading and it's a new game start
+    if (!isLoading) {
+        gameState.currentCard = allEventCards.find(card => card.id === 'initial_decree');
+    }
+    updateDeckDisplay();
+}
+
+
 /**
  * Initialises the game state and displays the first card.
  * @param {boolean} showMenu - If true, shows the main menu initially.
@@ -769,25 +1001,29 @@ function updateMainMenuButtons() {
 function initGame(showMenu = true) {
     if (showMenu) {
         showMainMenu();
-        return; // Don't start game logic until 'Start New Game' is clicked
+        return;
     }
 
-    // If starting a new game, reset game state and hide menu
     hideMainMenu();
-    gameState.gameStarted = true; // Mark game as in progress
+    gameState.gameStarted = true;
     updateResourceDisplay();
     updateAdvisorButtonStates();
-    updateAchievementDisplay(); // Initial display of achievements (might be empty)
+    updateAchievementDisplay(achievementsList); // Update left panel display
 
-    // Display the very first card on game start or reset
-    displayCard(eventCards.find(card => card.id === 'initial_decree'));
-    advanceTurnBtn.disabled = true; // Disable advance turn until initial choice is made
+    // Set up decks only if starting a NEW game, not continuing or loading
+    if (gameState.turnCount === 0 && !gameState.currentCard) { // This implies a fresh start
+        setupDecks();
+    }
+
+    displayCard(gameState.currentCard); // Display initial card or loaded card
+    advanceTurnBtn.disabled = true; // Disable until initial choice is made
+    updateDeckDisplay(); // Ensure deck counts are correct after init
 }
 
 
 // --- Initialization Function (Executes after DOM is loaded) ---
 document.addEventListener('DOMContentLoaded', () => {
-    // Assign DOM elements AFTER the DOM is fully loaded
+    // Assign DOM elements
     yearDisplay = document.getElementById('current-year');
     pietyValue = document.getElementById('piety-value');
     goldValue = document.getElementById('gold-value');
@@ -799,14 +1035,19 @@ document.addEventListener('DOMContentLoaded', () => {
     cardDescription = document.getElementById('card-description');
     cardChoices = document.getElementById('card-choices');
     advanceTurnBtn = document.getElementById('advance-turn-btn');
-    advisorButtons = document.querySelectorAll('.advisor-btn'); // Now correctly assigned here
-    majorEventDeckPlaceholder = document.getElementById('major-event-deck-placeholder');
+    advisorButtons = document.querySelectorAll('.advisor-btn');
+
+    eventDeckPlaceholder = document.getElementById('event-deck-placeholder'); // Updated ID
+    eventDeckCountDisplay = document.getElementById('event-deck-count'); // New
+    discardPilePlaceholder = document.getElementById('discard-pile-placeholder'); // New
+    discardPileCountDisplay = document.getElementById('discard-pile-count'); // New
+    majorEventHandPlaceholder = document.getElementById('major-event-hand-placeholder'); // Updated ID
+
     gameModal = document.getElementById('game-modal');
     modalTitle = document.getElementById('modal-title');
     modalMessage = document.getElementById('modal-message');
     modalRestartBtn = document.getElementById('modal-restart-btn');
 
-    // New DOM elements for Main Menu and Achievements
     mainMenuBtn = document.getElementById('main-menu-btn');
     mainMenu = document.getElementById('main-menu');
     startGameBtn = document.getElementById('start-game-btn');
@@ -817,17 +1058,41 @@ document.addEventListener('DOMContentLoaded', () => {
 
     achievementsList = document.getElementById('achievements-list');
 
+    // New Modal Elements Assignment
+    libraryBtn = document.getElementById('library-btn');
+    saveLoadBtn = document.getElementById('save-load-btn');
+    optionsTopBtn = document.getElementById('options-top-btn');
+    exitTopBtn = document.getElementById('exit-top-btn');
 
-    // --- Event Listeners (Now attached after DOM elements are defined) ---
+    libraryModal = document.getElementById('library-modal');
+    libraryCloseBtn = document.getElementById('library-close-btn');
+    libraryTabButtons = document.querySelectorAll('.library-tab-btn');
+    eventCardsLibraryPage = document.getElementById('event-cards-library');
+    majorEventsLibraryPage = document.getElementById('major-events-library');
+    achievementsLibraryPage = document.getElementById('achievements-library');
+    eventCardsGrid = document.getElementById('event-cards-grid');
+    majorEventsGrid = document.getElementById('major-events-grid');
+    libraryAchievementsList = document.getElementById('library-achievements-list');
+
+
+    saveLoadModal = document.getElementById('save-load-modal');
+    saveLoadCloseBtn = document.getElementById('save-load-close-btn');
+    saveGameBtn = document.getElementById('save-game-btn');
+    loadGameBtn = document.getElementById('load-game-btn');
+    saveLoadMessage = document.getElementById('save-load-message');
+
+    optionsModal = document.getElementById('options-modal');
+    optionsCloseBtn = document.getElementById('options-close-btn');
+
+
+    // --- Event Listeners ---
     if (advanceTurnBtn) advanceTurnBtn.addEventListener('click', advanceTurn);
     if (modalRestartBtn) modalRestartBtn.addEventListener('click', resetGame);
+
+    // Main Menu Event Listeners
     if (mainMenuBtn) mainMenuBtn.addEventListener('click', showMainMenu);
     if (startGameBtn) startGameBtn.addEventListener('click', () => {
-        if (gameState.gameStarted) {
-            resetGame();
-        } else {
-            initGame(false);
-        }
+        resetGame(); // Always reset on new game start
     });
     if (continueGameBtn) continueGameBtn.addEventListener('click', () => {
         if (gameState.gameStarted) {
@@ -837,38 +1102,67 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
     if (viewAchievementsBtn) viewAchievementsBtn.addEventListener('click', () => {
-        hideMainMenu();
-        addLog("Viewing Achievements.");
+        showModal(libraryModal);
+        activateLibraryTab('achievements-library'); // Show achievements tab by default
     });
     if (optionsBtn) optionsBtn.addEventListener('click', () => {
-        addLog("Options not yet implemented.");
+        showModal(optionsModal);
     });
     if (exitGameBtn) exitGameBtn.addEventListener('click', () => {
-        addLog("Exiting game... (in a browser, this would close the tab/window)");
-        // window.close(); // This might not work in all browsers due to security restrictions.
+        if (confirm("Are you sure you want to exit? Your unsaved progress will be lost.")) {
+             window.close();
+        }
     });
 
-    // Advisor buttons loop for event listeners
-    // Ensure advisorButtons is a NodeList and not empty before iterating
+    // Top Bar Menu Option Listeners
+    if (libraryBtn) libraryBtn.addEventListener('click', () => {
+        showModal(libraryModal);
+        populateLibraryCards(eventCardsGrid, allEventCards);
+        populateLibraryCards(majorEventsGrid, allMajorCards, true);
+        activateLibraryTab('event-cards-library'); // Default to event cards tab
+    });
+    if (saveLoadBtn) saveLoadBtn.addEventListener('click', () => showModal(saveLoadModal));
+    if (optionsTopBtn) optionsTopBtn.addEventListener('click', () => showModal(optionsModal));
+    if (exitTopBtn) exitTopBtn.addEventListener('click', () => {
+        if (confirm("Are you sure you want to exit? Your unsaved progress will be lost.")) {
+            window.close();
+        }
+    });
+
+    // Modal Close Buttons
+    if (libraryCloseBtn) libraryCloseBtn.addEventListener('click', () => hideModal(libraryModal));
+    if (saveLoadCloseBtn) saveLoadCloseBtn.addEventListener('click', () => hideModal(saveLoadModal));
+    if (optionsCloseBtn) optionsCloseBtn.addEventListener('click', () => hideModal(optionsModal));
+
+    // Library Tab Buttons
+    if (libraryTabButtons && libraryTabButtons.length > 0) {
+        libraryTabButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                const tabId = event.target.dataset.tab;
+                activateLibraryTab(tabId);
+            });
+        });
+    }
+
+    // Save/Load Buttons
+    if (saveGameBtn) saveGameBtn.addEventListener('click', saveGame);
+    if (loadGameBtn) loadGameBtn.addEventListener('click', loadGame);
+
+    // Advisor buttons loop
     if (advisorButtons && advisorButtons.length > 0) {
         advisorButtons.forEach(button => {
             button.addEventListener('click', (event) => {
                 const advisorId = event.target.dataset.advisor;
                 if (advisorId && !event.target.disabled) {
                     advisors[advisorId].ability(gameState);
-                    gameState.advisorCooldowns[advisorId] = advisors[advisorId].cooldown; // Set cooldown
-
-                    // Set the specific advisor usage flag (FIXED for advisor_master achievement)
+                    gameState.advisorCooldowns[advisorId] = advisors[advisorId].cooldown;
                     if (advisorId === 'cardinal') gameState.flags.usedCardinal = true;
                     if (advisorId === 'lord') gameState.flags.usedLord = true;
                     if (advisorId === 'alchemist') gameState.flags.usedAlchemist = true;
-
                     updateAdvisorButtonStates();
                     updateResourceDisplay();
                     addLog(`You consulted ${advisors[advisorId].name}.`);
-
-                    checkAchievements(); // Check achievements after advisor use
-
+                    checkAchievements();
                     advanceTurn();
                 }
             });
