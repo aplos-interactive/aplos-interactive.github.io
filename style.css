@@ -13,7 +13,7 @@ body {
     overflow: hidden;
 
     /* Faded historical map background */
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Europe_1000_AD_map.svg/1280px-Europe_1000_AD_map.svg.png'); /* Placeholder for a historical map - Changed to direct URL */
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Europe_1000_AD_map.svg/1280px-Europe_1000_AD_map.svg.png'); /* Placeholder for a historical map */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -118,13 +118,13 @@ body::before {
     color: #333;
 }
 
-.status-section, .achievements-section { /* Apply similar styling to achievements section */
+.status-section, .achievements-section { /* NEW: Apply similar styling to achievements section */
     margin-bottom: 20px;
     padding-bottom: 15px;
     border-bottom: 1px solid #c0b8a3;
 }
 
-.status-section h3, .game-log-section h3, .advisor-section h3, .achievements-section h3 {
+.status-section h3, .game-log-section h3, .advisor-section h3, .achievements-section h3 { /* NEW: Advisor and achievements h3 */
     margin-top: 0;
     margin-bottom: 10px;
     color: #5a5a5a;
@@ -175,7 +175,7 @@ body::before {
     border-bottom: none;
 }
 
-/* Achievements Section Specifics */
+/* NEW: Achievements Section Specifics */
 .achievements-list {
     max-height: 150px; /* Limit height */
     overflow-y: auto; /* Scrollable if many achievements */
@@ -278,7 +278,7 @@ body::before {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-/* Decks and Hand Section */
+/* NEW: Decks and Hand Section */
 .decks-hand-section {
     display: flex;
     gap: 20px;
@@ -313,7 +313,7 @@ body::before {
     width: 90px;
     height: 120px;
     display: flex;
-    flex-direction: column; /* Allow content to stack */
+    flex-direction: column; /* NEW: Allow content to stack */
     align-items: center;
     justify-content: center;
     border-radius: 3px;
@@ -326,15 +326,15 @@ body::before {
     letter-spacing: 0.5px;
     line-height: 1.2;
 }
-.placeholder-card span {
-    font-size: 1.2em; /* Make count stand out */
+.placeholder-card span { /* NEW: Style for the card count */
+    font-size: 1.2em;
     font-weight: bold;
     margin-top: 5px;
     display: block;
 }
 
 
-/* Advisor Section */
+/* NEW: Advisor Section */
 .advisor-section {
     margin-bottom: 20px;
     flex-shrink: 0;
@@ -431,12 +431,6 @@ body::before {
     max-width: 500px;
     width: 90%;
     border: 1px solid #c0b8a3;
-    position: relative; /* For close button positioning */
-}
-
-.modal-content.large-modal {
-    max-width: 800px; /* Wider modal for library */
-    padding: 20px;
 }
 
 .modal-content h2 {
@@ -469,26 +463,6 @@ body::before {
     background-color: #1565c0;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-
-/* Close Button for Modals */
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 2em;
-    font-weight: bold;
-    color: #888;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-.close-button:hover,
-.close-button:focus {
-    color: #333;
-    text-decoration: none;
-    cursor: pointer;
-}
-
 
 /* Main Menu Specific Styles */
 .menu-title {
@@ -534,106 +508,4 @@ body::before {
     color: #706a5e;
     border-color: #807a6d;
     cursor: not-allowed;
-}
-
-/* Save/Load Specific Styles */
-.save-load-options button {
-    background-color: #4a8d4a;
-    color: white;
-    border: 1px solid #306030;
-    padding: 12px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1.1em;
-    margin: 10px;
-    transition: background-color 0.2s;
-}
-
-.save-load-options button:hover {
-    background-color: #3d703d;
-}
-
-.save-load-options .message {
-    margin-top: 15px;
-    font-style: italic;
-    color: #555;
-    font-size: 0.95em;
-}
-
-/* Library Modal Specific Styles */
-.library-tabs {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #c0b8a3;
-    padding-bottom: 10px;
-}
-
-.library-tab-btn {
-    background-color: #e8e5d6;
-    border: 1px solid #c0b8a3;
-    padding: 8px 15px;
-    cursor: pointer;
-    font-size: 0.95em;
-    border-radius: 3px;
-    margin: 0 5px;
-    transition: background-color 0.2s, color 0.2s;
-}
-
-.library-tab-btn.active {
-    background-color: #0d47a1;
-    color: white;
-    border-color: #083070;
-}
-
-.library-tab-btn:not(.active):hover {
-    background-color: #dcd7c7;
-}
-
-.library-content {
-    max-height: 400px; /* Limit height for scrollability */
-    overflow-y: auto;
-    text-align: left;
-    padding-right: 10px; /* Space for scrollbar */
-}
-
-.library-content h3 {
-    text-align: center;
-    color: #5a5a5a;
-    margin-top: 10px;
-    margin-bottom: 15px;
-    font-size: 1.3em;
-}
-
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* Responsive grid */
-    gap: 15px;
-    padding: 10px;
-}
-
-.library-card-item {
-    background-color: #fff;
-    border: 1px solid #c0b8a3;
-    border-radius: 5px;
-    padding: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    font-size: 0.9em;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.library-card-item strong {
-    color: #0d47a1;
-    font-size: 1.1em;
-    display: block;
-    margin-bottom: 5px;
-}
-
-.library-card-item p {
-    font-size: 0.85em;
-    line-height: 1.4;
-    color: #5a5a5a;
-    margin-bottom: 0; /* Remove default paragraph margin */
 }
