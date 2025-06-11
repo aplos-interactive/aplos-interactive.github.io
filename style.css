@@ -13,8 +13,7 @@ body {
     overflow: hidden;
 
     /* Faded historical map background */
-    background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Europe_1000_AD_map.svg/1280px-Europe_1000_AD_map.svg.png'); /* Placeholder for a historical map */
-    background-size: cover;
+    background-image: url("images/europe.jpg");
     background-position: center;
     background-repeat: no-repeat;
     position: relative; /* Needed for pseudo-element overlay */
