@@ -3,110 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Habeus Papam</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Aplos Interactive</title>
 </head>
 <body>
-    <div id="game-container">
-        <div id="top-bar">
-            <button id="main-menu-btn">Main Menu</button>
-            <button id="save-game-btn">Save Game</button>
-            <button id="load-game-btn">Load Game</button>
-            <button id="options-btn">Options</button>
-            <button id="exit-btn">Exit</button>
-        </div>
-
-        <div id="main-panels">
-            <div id="left-panel">
-                <div class="panel-section" id="year-display">
-                    <h2>Year: <span id="current-year">1000 AD</span></h2>
-                </div>
-                <div class="panel-section" id="resources-display">
-                    <h3>Resources:</h3>
-                    <ul>
-                        <li>Piety: <span id="resource-piety">500</span></li>
-                        <li>Gold: <span id="resource-gold">200</span></li>
-                        <li>Influence: <span id="resource-influence">150</span></li>
-                        <li>Papal Authority: <span id="resource-papal-authority">100</span></li>
-                        <li>Stability: <span id="resource-stability">75</span></li>
-                    </ul>
-                </div>
-                <div class="panel-section" id="game-log-display">
-                    <h3>Game Log:</h3>
-                    <div id="game-log-entries">
-                        </div>
-                </div>
-                <div class="panel-section" id="achievements-display-panel">
-                    <h3>Achievements:</h3>
-                    <ul id="achievement-list-panel">
-                        </ul>
-                    <button id="view-all-achievements-btn" class="small-button">View All</button>
-                </div>
+    <header>
+         <div class="container">
+            <div class="logo">
+                <a href="#">Aplos Interactive</a>
             </div>
-
-            <div id="right-panel">
-                <div id="event-card">
-                    <h2 id="event-title">Welcome to Habeus Papam!</h2>
-                    <p id="event-description">As the newly elected Pope, your reign begins in 1000 AD. Guide the Papacy through tumultuous times. Click "Start Game" to begin your pontificate.</p>
-                    <div id="event-choices">
-                        <button class="choice-button" id="start-game-button">Start Game</button>
-                        </div>
-                </div>
-
-                <div id="major-event-active-display" style="display: none;">
-                    <h3>Active Major Event:</h3>
-                    <p id="active-major-event-title"></p>
-                    <p id="active-major-event-description"></p>
-                    <div id="active-major-event-choices"></div>
-                </div>
-
-                <div id="advisor-section">
-                    <h3>Advisors:</h3>
-                    <div id="advisor-buttons">
-                        <button class="advisor-button" data-advisor="cardinal">Cardinal (Ready)</button>
-                        <button class="advisor-button" data-advisor="lord">Lord (Ready)</button>
-                        <button class="advisor-button" data-advisor="alchemist">Alchemist (Ready)</button>
-                    </div>
-                </div>
-
-                <div id="deck-visualization">
-                    <h3>Decks:</h3>
-                    <div class="deck-info">Main Deck: <span id="main-deck-count">0</span> cards</div>
-                    <div class="deck-info">Discard Pile: <span id="discard-pile-count">0</span> cards</div>
-                    <div class="deck-info">Major Event Hand: <span id="major-event-hand-count">0</span> active</div>
-                </div>
             </div>
-        </div>
-    </div>
-
-    <div id="main-menu-modal" class="modal">
-        <div class="modal-content">
-            <h2>Main Menu</h2>
-            <button id="modal-new-game-btn">New Game</button>
-            <button id="modal-continue-game-btn">Continue (Load Last Save)</button>
-            <button id="modal-achievements-btn">View Achievements</button>
-            <button id="modal-options-btn">Options (Coming Soon)</button>
-            <button id="modal-exit-btn">Exit</button>
-        </div>
-    </div>
-
-    <div id="game-over-modal" class="modal">
-        <div class="modal-content">
-            <h2 id="game-over-title">Game Over!</h2>
-            <p id="game-over-reason"></p>
-            <button id="restart-game-btn">Play Again</button>
-        </div>
-    </div>
-
-    <div id="achievements-modal" class="modal">
-        <div class="modal-content">
-            <h2>Achievements</h2>
-            <ul id="achievements-modal-list">
-                </ul>
-            <button class="close-modal-btn">Close</button>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
+    </header>
 </body>
 </html>
