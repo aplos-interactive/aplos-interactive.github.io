@@ -1,29 +1,44 @@
 /* Basic Reset & Body Styling (Optional but recommended) */
 body {
     margin: 0;
-    font-family: Arial, sans-serif; /* A common, readable font */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A font similar to the example */
+    background-color: #f8f8f8; /* Light background for the body */
 }
 
 /* Header Styling */
 header {
-    background-color: #333; /* Dark background for the header */
-    color: #fff; /* White text color */
-    padding: 15px 0; /* Vertical padding, no horizontal padding */
-    text-align: center; /* Center the logo text if it's the only item */
+    background-color: #222; /* Darker background, similar to the example */
+    padding: 20px 0; /* More vertical padding */
+    text-align: center; /* Ensures content inside is centered */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow at the bottom of the header */
 }
 
 .container {
-    max-width: 1200px; /* Maximum width of the content inside the header */
-    margin: 0 auto; /* Center the container on the page */
-    /* We no longer need display: flex, justify-content, or align-items
-       because there's only one child element left (the logo) */
-    padding: 0 20px; /* Add some padding on the sides for smaller screens */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
 /* Logo Styling */
 .logo a {
-    color: #fff; /* White color for the logo text */
-    text-decoration: none; /* Remove underline from the link */
-    font-size: 24px; /* Larger font size for the logo */
-    font-weight: bold; /* Make the logo text bold */
+    display: inline-block; /* Helps with centering the image */
+    color: #eee; /* Light gray text for the logo if it were text */
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Subtle text shadow */
+    /* Removed old font-size, font-weight as it's an image now */
+}
+
+.logo img {
+    max-width: 180px; /* Adjusted max-width for the logo */
+    height: auto;
+    display: block;
+    margin: 0 auto; /* Centers the image */
+    filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.4)); /* Adds a shadow to the image itself */
+}
+
+/* Optional: Add some content below the header to see the header clearly */
+.content-section {
+    padding: 40px 20px;
+    text-align: center;
+    font-size: 1.2em;
+    color: #555;
 }
