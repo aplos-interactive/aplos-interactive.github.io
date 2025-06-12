@@ -9,8 +9,9 @@ body {
 header {
     background-color: #222; /* Darker background, similar to the example */
     padding: 20px 0; /* More vertical padding */
-    text-align: center; /* Ensures content inside is centered */
+    text-align: left; /* Ensures content inside is on the left */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow at the bottom of the header */
+    color: #FFFFFF
 }
 
 .container {
@@ -40,5 +41,5 @@ header {
     padding: 40px 20px;
     text-align: center;
     font-size: 1.2em;
-    color: #555;
+    color: #FFFFFFF;
 }
