@@ -1,1 +1,29 @@
+/* Basic Reset & Body Styling (Optional but recommended) */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif; /* A common, readable font */
+}
 
+/* Header Styling */
+header {
+    background-color: #333; /* Dark background for the header */
+    color: #fff; /* White text color */
+    padding: 15px 0; /* Vertical padding, no horizontal padding */
+    text-align: center; /* Center the logo text if it's the only item */
+}
+
+.container {
+    max-width: 1200px; /* Maximum width of the content inside the header */
+    margin: 0 auto; /* Center the container on the page */
+    /* We no longer need display: flex, justify-content, or align-items
+       because there's only one child element left (the logo) */
+    padding: 0 20px; /* Add some padding on the sides for smaller screens */
+}
+
+/* Logo Styling */
+.logo a {
+    color: #fff; /* White color for the logo text */
+    text-decoration: none; /* Remove underline from the link */
+    font-size: 24px; /* Larger font size for the logo */
+    font-weight: bold; /* Make the logo text bold */
+}
