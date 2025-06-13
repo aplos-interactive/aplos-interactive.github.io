@@ -4,7 +4,7 @@ body {
     line-height: 1.6; /* Improves readability by spacing lines of text */
     margin: 0; /* Removes default margin around the body */
     padding: 0; /* Removes default padding */
-    background-color: #36454F; /* Charcoal background color */
+    background-color: (0,0,0); /* Black background color */
     color: #fff; /* White text color */
 }
 
