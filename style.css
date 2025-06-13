@@ -115,8 +115,17 @@ ul li {
 }
 
 .project-item h3 {
-    color: #00bcd4; /* Teal color for project titles */
-    margin-top: 0; /* Remove default top margin */
+    color: #00bcd4; 
+    border-bottom: 2px solid #00bcd4;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent; 
+    display: inline-block; 
+    border-bottom: 2px solid #555; 
 }
 
 .project-item a {
