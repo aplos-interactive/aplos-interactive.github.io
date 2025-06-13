@@ -1,47 +1,80 @@
-/* Basic Reset & Body Styling (Optional but recommended) */
+/* Basic styling for the entire page */
 body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* A font similar to the example */
-    background-color: #f8f8f8; /* Light background for the body */
+    font-family: Arial, sans-serif; /* Sets a common, readable font */
+    line-height: 1.6; /* Improves readability by spacing lines of text */
+    margin: 0; /* Removes default margin around the body */
+    padding: 0; /* Removes default padding */
+    background-color: #f4f4f4; /* Light gray background color */
+    color: #333; /* Dark gray text color */
 }
 
-/* Header Styling */
+/* Header styling */
 header {
-    background-color: #222; /* Darker background, similar to the example */
-    padding: 20px 0; /* More vertical padding */
-    text-align: left; /* Ensures content inside is on the left */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow at the bottom of the header */
-    color: #FFFFFF
+    background-color: #333; /* Dark background for the header */
+    color: #fff; /* White text color for header */
+    padding: 1rem 0; /* Padding above and below the header content */
+    text-align: center; /* Centers the text within the header */
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+header h1 {
+    margin: 0; /* Removes default margin from the heading */
+    font-size: 2.5rem; /* Larger font size for the main name */
 }
 
-/* Logo Styling */
-.logo a {
-    display: inline-block; /* Helps with centering the image */
-    color: #eee; /* Light gray text for the logo if it were text */
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); /* Subtle text shadow */
-    /* Removed old font-size, font-weight as it's an image now */
+header p {
+    font-size: 1.2rem; /* Slightly larger font for the tagline */
+    margin-top: 0.5rem; /* Space between name and tagline */
 }
 
-.logo img {
-    max-width: 180px; /* Adjusted max-width for the logo */
-    height: auto;
-    display: block;
-    margin: 0 auto; /* Centers the image */
-    filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.4)); /* Adds a shadow to the image itself */
-    width: 100px; /* Sets the width to 200 pixels */
-    height: 100px; /* Sets the height to 150 pixels */
+/* Main content area styling */
+main {
+    padding: 20px; /* Padding around the main content */
+    max-width: 960px; /* Sets a maximum width for the content for better readability on large screens */
+    margin: 20px auto; /* Centers the main content block and adds space around it */
+    background-color: #fff; /* White background for the content sections */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for a "card" effect */
+    border-radius: 8px; /* Slightly rounded corners */
 }
 
-/* Optional: Add some content below the header to see the header clearly */
-.content-section {
-    padding: 40px 20px;
-    text-align: center;
-    font-size: 1.2em;
-    color: #FFFFFFF;
+/* Section styling */
+section {
+    margin-bottom: 20px; /* Space between different sections */
+    padding: 20px; /* Padding inside each section */
+    border-bottom: 1px solid #eee; /* Light gray line at the bottom of each section */
+}
+
+section:last-child {
+    border-bottom: none; /* Removes the border from the last section */
+}
+
+section h2 {
+    color: #007bff; /* Blue color for section headings */
+    border-bottom: 2px solid #007bff; /* Blue underline for section headings */
+    padding-bottom: 5px; /* Space between heading text and underline */
+    margin-bottom: 15px; /* Space below the heading */
+}
+
+/* List styling (for interests) */
+ul {
+    list-style: none; /* Removes default bullet points */
+    padding: 0; /* Removes default padding from the list */
+}
+
+ul li {
+    background-color: #e9ecef; /* Light gray background for list items */
+    margin-bottom: 8px; /* Space between list items */
+    padding: 10px 15px; /* Padding inside list items */
+    border-radius: 5px; /* Rounded corners for list items */
+    display: inline-block; /* Allows list items to sit next to each other if space permits */
+    margin-right: 10px; /* Space between inline list items */
+}
+
+/* Footer styling */
+footer {
+    text-align: center; /* Centers text in the footer */
+    padding: 1rem 0; /* Padding above and below */
+    background-color: #333; /* Dark background */
+    color: #fff; /* White text */
+    font-size: 0.9rem; /* Smaller font size */
+    margin-top: 20px; /* Space above the footer */
 }
