@@ -129,7 +129,6 @@ ul li {
 }
 
 .project-item a {
-    background: linear-gradient(to right, fff7ad, ffa9f9);
     color: #00bcd4;
     text-decoration: none;
     margin-right: 15px; /* Space between links */
