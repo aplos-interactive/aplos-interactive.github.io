@@ -81,7 +81,7 @@ section h2 {
     padding-bottom: 5px;
     margin-bottom: 15px;
 
-    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    background: linear-gradient(to right, fff7ad, ffa9f9);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent; 
@@ -120,7 +120,7 @@ ul li {
     padding-bottom: 5px;
     margin-bottom: 15px;
 
-    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    background: linear-gradient(to right, fff7ad, ffa9f9);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent; 
@@ -129,7 +129,7 @@ ul li {
 }
 
 .project-item a {
-    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    background: linear-gradient(to right, fff7ad, ffa9f9);
     color: #00bcd4;
     text-decoration: none;
     margin-right: 15px; /* Space between links */
