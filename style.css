@@ -4,7 +4,7 @@ body {
     line-height: 1.6; /* Improves readability by spacing lines of text */
     margin: 0; /* Removes default margin around the body */
     padding: 0; /* Removes default padding */
-    background-color: #f4f4f4; /* Light gray background color */
+    background-color: ##000000; /* Light gray background color */
     color: #333; /* Dark gray text color */
 }
 
@@ -32,7 +32,7 @@ main {
     padding: 20px; /* Padding around the main content */
     max-width: 1910px; /* Sets a maximum width for the content for better readability on large screens */
     margin: 20px auto; /* Centers the main content block and adds space around it */
-    background-color: #fff; /* White background for the content sections */
+    background-color: #333; /* White background for the content sections */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for a "card" effect */
     border-radius: 8px; /* Slightly rounded corners */
 }
@@ -49,8 +49,8 @@ section:last-child {
 }
 
 section h2 {
-    color: #007bff; /* Blue color for section headings */
-    border-bottom: 2px solid #007bff; /* Blue underline for section headings */
+    color: #FFFFFF; /* Blue color for section headings */
+    border-bottom: 2px solid #FFFFFF; /* Blue underline for section headings */
     padding-bottom: 5px; /* Space between heading text and underline */
     margin-bottom: 15px; /* Space below the heading */
 }
@@ -80,7 +80,7 @@ footer {
     margin-top: 20px; /* Space above the footer */
 }
 
-image {
+header .logo {
     max-width: 80px; /* **Made smaller: Adjust this value to your desired smaller size** */
     height: 80px;
     margin-top: 0; /* No need for top margin with flexbox alignment */
