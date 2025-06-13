@@ -76,13 +76,20 @@ section:last-child {
 }
 
 section h2 {
-    color: #00bcd4; /* A teal accent color for section headings */
-    border-bottom: 2px solid #00bcd4; /* Teal underline for section headings */
-    padding-bottom: 5px; /* Space between heading text and underline */
-    margin-bottom: 15px; /* Space below the heading */
+    color: #00bcd4; 
+    border-bottom: 2px solid #00bcd4;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent; 
+    display: inline-block; 
+    border-bottom: 2px solid #555; 
 }
 
-/* List styling (for interests and contact info) */
+
 ul {
     list-style: none; /* Removes default bullet points */
     padding: 0; /* Removes default padding from the list */
