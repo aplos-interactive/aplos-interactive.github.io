@@ -29,7 +29,7 @@ header p {
 /* Main content area styling */
 main {
     padding: 20px; /* Padding around the main content */
-    max-width: 960px; /* Sets a maximum width for the content for better readability on large screens */
+    max-width: 1910px; /* Sets a maximum width for the content for better readability on large screens */
     margin: 20px auto; /* Centers the main content block and adds space around it */
     background-color: #fff; /* White background for the content sections */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Adds a subtle shadow for a "card" effect */
