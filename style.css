@@ -5,7 +5,7 @@ body {
     margin: 0; /* Removes default margin around the body */
     padding: 0; /* Removes default padding */
     background-color: #36454F; /* Charcoal background color */
-    color: #333; /* Dark gray text color */
+    color: #fff; /* White text color */
 }
 
 /* Header styling */
