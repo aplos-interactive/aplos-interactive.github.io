@@ -129,7 +129,8 @@ ul li {
 }
 
 .project-item a {
-    color: #00bcd4; /* Teal color for project links */
+    background: linear-gradient(to right, #ff7e5f, #feb47b);
+    color: #00bcd4;
     text-decoration: none;
     margin-right: 15px; /* Space between links */
 }
