@@ -81,7 +81,7 @@ section h2 {
     padding-bottom: 5px;
     margin-bottom: 15px;
 
-    background: linear-gradient(to right, fff7ad, ffa9f9);
+    background: linear-gradient(to right, #fff7ad, #ffa9f9);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent; 
@@ -120,7 +120,7 @@ ul li {
     padding-bottom: 5px;
     margin-bottom: 15px;
 
-    background: linear-gradient(to right, fff7ad, ffa9f9);
+    background: linear-gradient(to right, #fff7ad, #ffa9f9);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent; 
