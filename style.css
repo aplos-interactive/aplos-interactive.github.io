@@ -57,11 +57,11 @@ nav a:hover {
 /* Main content area styling */
 main {
     padding: 20px; /* Padding around the main content */
-    max-width: 960px; /* Sets a maximum width for the content for better readability on large screens */
+    max-width: 1920px; /* Sets a maximum width for the content for better readability on large screens */
     margin: 20px auto; /* Centers the main content block and adds space around it */
     background-color: #333; /* Dark gray background for content sections */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Adds a subtle shadow for a "card" effect */
-    border-radius: 8px; /* Slightly rounded corners */
+    border-radius: 1px; /* Slightly rounded corners */
 }
 
 /* Section styling */
