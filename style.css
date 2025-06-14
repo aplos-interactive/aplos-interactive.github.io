@@ -1,4 +1,9 @@
 /* Basic styling for the entire page */
+html {
+    font-size: 100%; /* Default browser font size (usually 16px). This acts as the 1rem base. */
+    /* You could increase this to, e.g., 18px if you want a generally larger base for all rem units */
+}
+
 body {
     font-family: Arial, sans-serif; /* Sets a common, readable font */
     line-height: 1.6; /* Improves readability by spacing lines of text */
@@ -8,6 +13,7 @@ body {
     color: #f4f4f4; /* Light text color for contrast */
     overflow-x: hidden; /* Prevents horizontal scrollbar if elements accidentally overflow */
     scroll-behavior: smooth; /* Makes scrolling to sections smooth */
+    font-size: 1.2rem;
 }
 
 /* Header styling */
