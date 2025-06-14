@@ -138,6 +138,10 @@ ul li {
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     max-width: 960px;
+    display: flex;
+    flex-direction: column; /* Stack children (image, h3, p, a) vertically */
+    align-items: center; /* Horizontally center children within the project item */
+    text-align: center; /* Center text within the project item */
 }
 
 .project-item h3 {
