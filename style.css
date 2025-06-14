@@ -130,42 +130,64 @@ ul li {
     margin-right: 10px; /* Space between inline list items */
 }
 
-/* Project Item Styling */
+/* Projects Container - NEW RULE */
+.projects-container {
+    display: flex; /* Makes project items arrange side-by-side */
+    flex-wrap: wrap; /* Allows items to wrap to the next line if space runs out */
+    justify-content: center; /* Centers project items horizontally in the container */
+    gap: 30px; /* Adds space between project items (both horizontally and vertically) */
+    width: 100%; /* Ensures the container takes full available width within the section */
+    max-width: 1000px; /* Optional: Limit the overall width of the project grid for better readability */
+    margin-top: 30px; /* Space between the intro text and the project grid */
+}
+
+
+/* Project Item Styling - ADJUSTMENTS */
 .project-item {
-    background-color: #444; /* Darker gray for project cards */
+    background-color: #444;
     padding: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 0; /* Remove bottom margin here as 'gap' on container handles spacing */
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    max-width: 960px;
+    /* width: 80%; - REMOVE this fixed width */
+    /* max-width: 600px; - REMOVE this max-width */
+
+    /* NEW: Set flex-basis for flexible width for side-by-side */
+    flex: 1 1 calc(50% - 30px); /* Allows two items per row with gap. Adjust 50% for different columns */
+    min-width: 300px; /* Ensure items don't get too small on smaller screens */
+
+    /* Keep these for internal centering */
     display: flex;
-    flex-direction: column; /* Stack children (image, h3, p, a) vertically */
-    align-items: center; /* Horizontally center children within the project item */
-    text-align: center; /* Center text within the project item */
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
 }
 
-.project-item h3 {
-    color: #00bcd4; 
-    border-bottom: 2px solid #00bcd4;
-    padding-bottom: 5px;
-    margin-bottom: 15px;
-
-    background: linear-gradient(to right, #fff7ad, #ffa9f9);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent; 
-    display: inline-block; 
-    border-bottom: 2px solid #555; 
-
-    font-size: 2.8rem; /* Make project titles larger, but not as massive as main section titles */
-    margin-bottom: 20px;
+/* Ensure the image and other elements inside project-item still have correct margins */
+.project-item .project-image {
+    max-width: 90%;
+    height: auto;
+    margin: 0 auto 20px auto; /* Still center image and add space below */
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
+/* Add or ensure this rule for project links to keep them in a row */
 .project-item a {
     color: #00bcd4;
     text-decoration: none;
     margin-right: 15px; /* Space between links */
+    display: inline-block; /* Helps with spacing if on different lines */
+    margin-top: 10px; /* Space above links */
 }
+
+/* Also, if you have a lot of content in your 'p' tag, and flex-basis pushes it,
+   you might want to ensure 'p' grows if needed */
+.project-item p {
+    flex-grow: 1; /* Allows paragraph to take up available vertical space if project items have varying heights */
+    margin-bottom: 15px;
+}
+
 
 .project-item a:hover {
     text-decoration: underline;
