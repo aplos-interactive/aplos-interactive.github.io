@@ -6,6 +6,8 @@ body {
     padding: 0; /* Removes default padding */
     background-color: #1a1a1a; /* Dark background for the main body (near black) */
     color: #f4f4f4; /* Light text color for contrast */
+    overflow-x: hidden; /* Prevents horizontal scrollbar if elements accidentally overflow */
+    scroll-behavior: smooth; /* Makes scrolling to sections smooth */
 }
 
 /* Header styling */
@@ -66,13 +68,21 @@ main {
 
 /* Section styling */
 section {
-    margin-bottom: 20px; /* Space between different sections */
-    padding: 20px; /* Padding inside each section */
-    border-bottom: 1px solid #555; /* Darker border for sections */
+    min-height: 100vh; /* Make each section at least 100% of the viewport height */
+    width: 100vw; /* Make each section 100% of the viewport width */
+    padding: 20px; /* Keep your internal padding */
+    display: flex; /* Use flexbox to center content easily */
+    flex-direction: column; /* Stack content vertically */
+    justify-content: center; /* Vertically center content */
+    align-items: center; /* Horizontally center content */
+    text-align: center; /* Center text within the section */
+    box-sizing: border-box; /* Include padding in the width/height calculation */
+    border-bottom: 1px solid #555; /* Keep border for separation */
+    scroll-snap-align: start; /* Optional: Helps "snap" to sections when scrolling */
 }
 
 section:last-child {
-    border-bottom: none; /* Removes the border from the last section */
+     border-bottom: none;
 }
 
 section h2 {
@@ -184,4 +194,10 @@ footer {
     color: #fff; /* White text */
     font-size: 0.9rem; /* Smaller font size */
     margin-top: 20px; /* Space above the footer */
+}
+
+html, body {
+    height: 100%; /* Ensures html and body are at least 100% of the viewport */
+    margin: 0;
+    padding: 0;
 }
