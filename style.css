@@ -21,6 +21,12 @@ header {
     justify-content: flex-start; /* Aligns items to the start (left) by default */
     gap: 20px; /* Adds space between the H1 and the image, and other flex items */
     flex-wrap: wrap; /* Allows items to wrap to the next line on smaller screens */
+    position: fixed; /* Keep header visible on scroll */
+    width: 100%; /* Make header full width */
+    top: 0; /* Position at the top */
+    left: 0;
+    z-index: 1000; /* Ensure header is above other content */
+    box-sizing: border-box; /* Include padding in width calculation */
 }
 
 header h1 {
@@ -97,6 +103,9 @@ section h2 {
     color: transparent; 
     display: inline-block; 
     border-bottom: 2px solid #555; 
+
+    font-size: 5rem; /* Make section headers massive! Adjust as needed. */
+    margin-bottom: 30px; /* Add more space below massive headers */
 }
 
 
@@ -136,6 +145,9 @@ ul li {
     color: transparent; 
     display: inline-block; 
     border-bottom: 2px solid #555; 
+
+    font-size: 2.8rem; /* Make project titles larger, but not as massive as main section titles */
+    margin-bottom: 20px;
 }
 
 .project-item a {
