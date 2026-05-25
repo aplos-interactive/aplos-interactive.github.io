@@ -278,7 +278,16 @@ header{
   <div class="modal" id="modal"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+// 🚨 CHANGE THESE VALUES TO REFLECT YOUR PROJECT SETTINGS FROM SUPABASE
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
+
+// Initialize Supabase Client Connection
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const START_H=7.75,END_H=24,TOTAL_MINS=(END_H-START_H)*60;
 const LS_KEY='weekly-schedule-v1';
@@ -308,7 +317,7 @@ function fmtTime(t){const a=t+START_H*60,hr=Math.floor(a/60)%24,m=a%60,s=hr<12?'
 function toHM(t){const a=t+START_H*60;return{h:Math.floor(a/60),m:a%60}}
 function fromHM(h,m){return toMins(h,m)}
 
-// ── localStorage ──
+// ── localStorage & Supabase Sync ──
 function loadSchedule(){
   try{
     const raw=localStorage.getItem(LS_KEY);
@@ -324,11 +333,19 @@ function saveSchedule(){
   badge.classList.remove('saved');
   txt.textContent='Saving…';
   clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{
+  saveTimer=setTimeout(async ()=>{
     try{
       localStorage.setItem(LS_KEY,JSON.stringify(schedule));
+      
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (user) {
+        await supabaseClient
+          .from('schedules')
+          .upsert({ id: user.id, schedule_data: schedule, updated_at: new Date() });
+      }
+      
       badge.classList.add('saved');
-      txt.textContent='Saved';
+      txt.textContent=user ? 'Saved to Cloud' : 'Saved';
     }catch(e){
       txt.textContent='Save failed';
     }
@@ -340,6 +357,7 @@ function clearStorage(){
   localStorage.removeItem(LS_KEY);
   schedule=JSON.parse(JSON.stringify(DEFAULT_SCHEDULE));
   render();
+  saveSchedule();
   toast('Schedule reset');
 }
 
@@ -350,6 +368,66 @@ function toast(msg){
 }
 
 let schedule=loadSchedule();
+
+// ── account sync controls ──
+async function handleAccountAction() {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+  if (user) {
+    if (confirm('Sign out of your account? Your local data will remain.')) {
+      await supabaseClient.auth.signOut();
+    }
+  } else {
+    const email = prompt("Enter your account Email:");
+    if (!email) return;
+    const password = prompt("Enter your Password:");
+    if (!password) return;
+
+    const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
+    
+    if (signInError) {
+      if (signInError.message.includes("Invalid login credentials")) {
+        const { error: signUpError } = await supabaseClient.auth.signUp({ email, password });
+        if (signUpError) {
+          alert("Authentication failed: " + signUpError.message);
+        } else {
+          toast("Account created successfully!");
+        }
+      } else {
+        alert("Authentication failed: " + signInError.message);
+      }
+    }
+  }
+}
+
+// Global Auth Watcher Configuration
+supabaseClient.auth.onAuthStateChange(async (event, session) => {
+  const badge = document.getElementById('save-badge');
+  if (session && session.user) {
+    badge.title = `Logged in as ${session.user.email}. Click to Logout.`;
+    badge.style.cursor = 'pointer';
+    
+    try {
+      const { data, error } = await supabaseClient
+        .from('schedules')
+        .select('schedule_data')
+        .eq('id', session.user.id)
+        .maybeSingle();
+        
+      if (data && data.schedule_data) {
+        schedule = data.schedule_data;
+        localStorage.setItem(LS_KEY, JSON.stringify(schedule));
+        render();
+        toast("Loaded cloud schedule!");
+      } else {
+        saveSchedule();
+      }
+    } catch(e) { console.error("Cloud sync mismatch", e); }
+  } else {
+    badge.title = "Click to Link Account / Login to Sync Devices";
+    badge.style.cursor = 'pointer';
+    document.getElementById('save-text').textContent = 'Offline Mode (Click to Sync)';
+  }
+});
 
 // ── render ──
 function render(){renderHeader();renderBody();renderLegend()}
@@ -492,7 +570,7 @@ function handleOverlay(e){if(e.target===document.getElementById('overlay'))close
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 
 render();
-// mark as saved on load
+document.getElementById('save-badge').addEventListener('click', handleAccountAction);
 document.getElementById('save-badge').classList.add('saved');
 </script>
 </body>
