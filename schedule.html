@@ -280,7 +280,7 @@ header{
 
 <script>
 const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-const START_H=7.75,END_H=22,TOTAL_MINS=(END_H-START_H)*60;
+const START_H=7.75,END_H=24,TOTAL_MINS=(END_H-START_H)*60;
 const LS_KEY='weekly-schedule-v1';
 const PX_PER_MIN=1.8;
 function colPx(){return Math.round(TOTAL_MINS*PX_PER_MIN)}
@@ -304,7 +304,7 @@ const DEFAULT_SCHEDULE=[
 ];
 
 function toMins(h,m){return(h-START_H)*60+m}
-function fmtTime(t){const a=t+START_H*60,h=Math.floor(a/60),m=a%60,s=h<12?'AM':'PM',hh=h===0?12:h>12?h-12:h;return m===0?`${hh} ${s}`:`${hh}:${String(m).padStart(2,'0')} ${s}`}
+function fmtTime(t){const a=t+START_H*60,hr=Math.floor(a/60)%24,m=a%60,s=hr<12?'AM':'PM',hh=hr===0?12:hr>12?hr-12:hr;return m===0?`${hh} ${s}`:`${hh}:${String(m).padStart(2,'0')} ${s}`}
 function toHM(t){const a=t+START_H*60;return{h:Math.floor(a/60),m:a%60}}
 function fromHM(h,m){return toMins(h,m)}
 
@@ -371,7 +371,7 @@ function renderBody(){
     if(pct<0||pct>1)continue;
     const t=document.createElement('div');t.className='tick';
     t.style.top=(pct*colPx())+'px';
-    const s=h<12?'AM':'PM',hh=h>12?h-12:h;
+    const hr2=h%24,s=hr2<12?'AM':'PM',hh=hr2===0?12:hr2>12?hr2-12:hr2;
     t.textContent=`${hh}${s}`;
     tc.appendChild(t);
   }
