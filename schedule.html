@@ -186,11 +186,11 @@ header{
 }
 .toast.show{opacity:1;transform:none}
 
-/* modal */
+/* modal & overlay styling */
 .overlay{
   display:none;position:fixed;inset:0;
-  background:rgba(0,0,0,.25);
-  backdrop-filter:blur(3px);
+  background:rgba(0,0,0,.45);
+  backdrop-filter:blur(4px);
   z-index:1000;align-items:center;justify-content:center;
 }
 .overlay.open{display:flex}
@@ -200,27 +200,27 @@ header{
   border-radius:var(--rl);
   border:1px solid var(--line2);
   padding:1.5rem;width:340px;
-  box-shadow:0 12px 40px rgba(0,0,0,.4);
+  box-shadow:0 12px 40px rgba(0,0,0,.5);
   animation:pop .15s ease;
 }
 @keyframes pop{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
 
 .modal-title{
   font-family:'Instrument Serif',serif;
-  font-size:20px;margin-bottom:1.25rem;
+  font-size:22px;margin-bottom:1.25rem;
   background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
 }
 
-.field{margin-bottom:13px}
+.field{margin-bottom:14px}
 .field label{
   display:block;font-size:10.5px;font-weight:500;
   letter-spacing:.06em;text-transform:uppercase;
-  color:var(--ink3);margin-bottom:4px;
+  color:var(--ink3);margin-bottom:5px;
 }
 .field input,.field select{
-  width:100%;height:34px;
+  width:100%;height:36px;
   border-radius:var(--r);border:1px solid var(--line2);
-  padding:0 9px;font-family:'Geist',sans-serif;font-size:13px;
+  padding:0 10px;font-family:'Geist',sans-serif;font-size:13px;
   background:var(--paper3);color:var(--ink);outline:none;
   transition:border-color .12s;
 }
@@ -244,6 +244,15 @@ header{
 .btn-del:hover{background:rgba(255,80,80,.18)}
 .btn-save{background:var(--grad);background:linear-gradient(135deg,#f7e87a,#ff8fd4);color:#0e0b0f;border:none;font-weight:600}
 .btn-save:hover{opacity:.85}
+
+/* Custom Auth Form Additions */
+.auth-subtitle{
+  font-size:11px;
+  color:var(--ink3);
+  margin-top:-10px;
+  margin-bottom:1.25rem;
+  line-height:1.4;
+}
 </style>
 </head>
 <body>
@@ -274,6 +283,7 @@ header{
 <div class="legend" id="legend"></div>
 
 <div class="toast" id="toast"></div>
+
 <div class="overlay" id="overlay" onclick="handleOverlay(event)">
   <div class="modal" id="modal"></div>
 </div>
@@ -281,7 +291,7 @@ header{
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-// 🚨 CHANGE THESE VALUES TO REFLECT YOUR PROJECT SETTINGS FROM SUPABASE
+// ── Supabase Configuration Credentials ──
 const SUPABASE_URL = "https://nqjiaxewhzxjutpakmip.supabase.co";
 const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xamlheGV3aHp4anV0cGFrbWlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjcwMDAsImV4cCI6MjA5NTMwMzAwMH0.bpue8QRiml3YLKvVubDV4C2rKOM5dL5S1-aGclBnjRM";
 
@@ -369,7 +379,7 @@ function toast(msg){
 
 let schedule=loadSchedule();
 
-// ── account sync controls ──
+// ── Custom In-App Modal Login Interface ──
 async function handleAccountAction() {
   const { data: { user } } = await supabaseClient.auth.getUser();
   if (user) {
@@ -377,44 +387,84 @@ async function handleAccountAction() {
     if (confirm(`Sign out of account "${cleanUsername}"? Your local data will remain.`)) {
       await supabaseClient.auth.signOut();
     }
-  } else {
-    const username = prompt("Create or Enter your Username (letters/numbers only):");
-    if (!username) return;
-    const password = prompt("Enter your Password:");
-    if (!password) return;
+    return;
+  }
 
-    const internalEmail = `${username.trim().toLowerCase()}@local.app`;
-
-    // 1. Try logging them in first
-    const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ 
-      email: internalEmail, 
-      password: password 
-    });
+  // Open custom interactive authentication layout inside the existing overlay container
+  document.getElementById('modal').innerHTML = `
+    <div class="modal-title">Account Sync</div>
+    <div class="auth-subtitle">Enter a unique username and password. If it doesn't exist, we'll create it for you instantly!</div>
     
-    if (signInError) {
-      // 2. If username doesn't exist yet, instantly sign them up on the spot
-      if (signInError.message.includes("Invalid login credentials") || signInError.message.includes("User not found")) {
-        const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({ 
-          email: internalEmail, 
-          password: password 
-        });
-        
-        if (signUpError) {
-          alert("Authentication failed: " + signUpError.message);
-        } else {
-          toast("Account created successfully!");
-          // 🚨 FIX: Give the database 1 second to register the new user before pushing data
-          setTimeout(() => {
-            saveSchedule();
-          }, 1000);
-        }
+    <div class="field">
+      <label>Username</label>
+      <input id="auth-user" type="text" placeholder="e.g. aadit" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input id="auth-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    
+    <div class="mactions">
+      <button class="btn" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-save" id="auth-submit-btn" onclick="submitAuthForm()">Sync Now</button>
+    </div>
+  `;
+  document.getElementById('overlay').classList.add('open');
+  setTimeout(() => document.getElementById('auth-user').focus(), 50);
+}
+
+async function submitAuthForm() {
+  const userField = document.getElementById('auth-user');
+  const passField = document.getElementById('auth-pass');
+  const submitBtn = document.getElementById('auth-submit-btn');
+
+  const username = userField.value.trim();
+  const password = passField.value;
+
+  if (!username || !password) {
+    toast("Please enter both fields");
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Connecting…";
+
+  const internalEmail = `${username.toLowerCase()}@local.app`;
+
+  // 1. Try logging in
+  const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ 
+    email: internalEmail, 
+    password: password 
+  });
+  
+  if (signInError) {
+    // 2. Account doesn't exist yet, sign up instantly
+    if (signInError.message.includes("Invalid login credentials") || signInError.message.includes("User not found")) {
+      const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({ 
+        email: internalEmail, 
+        password: password 
+      });
+      
+      if (signUpError) {
+        alert("Authentication failed: " + signUpError.message);
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Sync Now";
       } else {
-        alert("Authentication failed: " + signInError.message);
+        toast("Account created successfully!");
+        closeModal();
+        setTimeout(() => { saveSchedule(); }, 1000);
       }
+    } else {
+      alert("Authentication failed: " + signInError.message);
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Sync Now";
     }
+  } else {
+    toast("Welcome back!");
+    closeModal();
   }
 }
-  
+
 // Global Auth Watcher Configuration
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   const badge = document.getElementById('save-badge');
