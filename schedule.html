@@ -9,14 +9,17 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-  --ink:#18181b;
-  --ink2:#52525b;
-  --ink3:#a1a1aa;
-  --paper:#fafaf9;
-  --paper2:#f4f4f5;
-  --paper3:#e4e4e7;
-  --line:rgba(0,0,0,.07);
-  --line2:rgba(0,0,0,.13);
+  --ink:#fdf0f8;
+  --ink2:#c9a8c0;
+  --ink3:#8a6a82;
+  --paper:#0e0b0f;
+  --paper2:#13101a;
+  --paper3:#1e1828;
+  --line:rgba(255,200,230,.07);
+  --line2:rgba(255,200,230,.14);
+  --pink:#ff8fd4;
+  --yellow:#f7e87a;
+  --grad:linear-gradient(135deg,#f7e87a,#ffb3e0,#c9a0ff);
   --r:6px;
   --rl:10px;
 }
@@ -49,11 +52,10 @@ header{
   font-size:32px;
   letter-spacing:-.5px;
   line-height:1;
-  color:var(--ink);
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
 }
 .wordmark em{
   font-style:italic;
-  color:var(--ink2);
 }
 .sub{
   font-size:11px;
@@ -74,7 +76,7 @@ header{
   background:var(--paper2);
   transition:color .3s, border-color .3s;
 }
-.autosave-badge.saved{color:#16a34a;border-color:#bbf7d0}
+.autosave-badge.saved{color:var(--pink);border-color:rgba(255,143,212,.3)}
 .autosave-badge .dot{
   width:6px;height:6px;border-radius:50%;
   background:currentColor;flex-shrink:0;
@@ -88,21 +90,21 @@ header{
   font-family:'Geist',sans-serif;font-size:12px;font-weight:500;
   border-radius:var(--r);
   border:1px solid var(--line2);
-  background:white;color:var(--ink);
+  background:var(--paper3);color:var(--ink);
   cursor:pointer;white-space:nowrap;
   transition:background .1s,border-color .1s;
 }
-.btn:hover{background:var(--paper2);border-color:var(--line2)}
+.btn:hover{background:var(--paper2);border-color:var(--pink)}
 .btn:active{transform:scale(.98)}
 .btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.btn-ghost{background:transparent;border-color:transparent;color:var(--ink2)}
-.btn-ghost:hover{background:var(--paper2);border-color:var(--line2);color:var(--ink)}
+.btn-ghost{background:transparent;border-color:transparent;color:var(--ink3)}
+.btn-ghost:hover{background:var(--paper2);border-color:var(--line2);color:var(--pink)}
 
 /* ── grid ── */
 .schedule-wrap{
   max-width:1300px;
   margin:0 auto;
-  background:white;
+  background:var(--paper3);
   border:1px solid var(--line2);
   border-radius:var(--rl);
   overflow:hidden;
@@ -121,7 +123,7 @@ header{
   border-right:1px solid var(--line);
 }
 .ghc:last-child{border-right:none}
-.ghc.active{color:var(--ink)}
+.ghc.active{color:var(--ink);background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
 
 .grid-body{display:grid;grid-template-columns:48px repeat(7,1fr)}
 
@@ -143,7 +145,7 @@ header{
   position:relative;cursor:crosshair;
 }
 .day-col:last-child{border-right:none}
-.day-col:hover{background:rgba(0,0,0,.01)}
+.day-col:hover{background:rgba(255,143,212,.02)}
 
 .hl{position:absolute;left:0;right:0;border-top:1px solid var(--line);pointer-events:none}
 .hlh{position:absolute;left:0;right:0;border-top:1px dashed var(--line);pointer-events:none;opacity:.5}
@@ -157,7 +159,7 @@ header{
   border:1px solid rgba(0,0,0,.06);
   transition:filter .12s,box-shadow .12s;
 }
-.block:hover{filter:brightness(.93);box-shadow:0 2px 8px rgba(0,0,0,.08);z-index:2}
+.block:hover{filter:brightness(.88);box-shadow:0 2px 12px rgba(255,143,212,.15);z-index:2}
 .bt{
   font-family:'Geist Mono',monospace;font-size:8.5px;
   color:rgba(0,0,0,.38);line-height:1;margin-bottom:2px;
@@ -175,7 +177,7 @@ header{
 /* toast */
 .toast{
   position:fixed;bottom:1.5rem;right:1.5rem;
-  background:var(--ink);color:white;
+  background:linear-gradient(135deg,#f7e87a,#ff8fd4);color:#0e0b0f;
   font-size:12px;padding:8px 14px;
   border-radius:var(--r);
   opacity:0;transform:translateY(6px);
@@ -194,11 +196,11 @@ header{
 .overlay.open{display:flex}
 
 .modal{
-  background:white;
+  background:var(--paper2);
   border-radius:var(--rl);
   border:1px solid var(--line2);
   padding:1.5rem;width:340px;
-  box-shadow:0 12px 40px rgba(0,0,0,.14);
+  box-shadow:0 12px 40px rgba(0,0,0,.4);
   animation:pop .15s ease;
 }
 @keyframes pop{from{transform:scale(.95);opacity:0}to{transform:scale(1);opacity:1}}
@@ -206,6 +208,7 @@ header{
 .modal-title{
   font-family:'Instrument Serif',serif;
   font-size:20px;margin-bottom:1.25rem;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
 }
 
 .field{margin-bottom:13px}
@@ -218,10 +221,10 @@ header{
   width:100%;height:34px;
   border-radius:var(--r);border:1px solid var(--line2);
   padding:0 9px;font-family:'Geist',sans-serif;font-size:13px;
-  background:white;color:var(--ink);outline:none;
+  background:var(--paper3);color:var(--ink);outline:none;
   transition:border-color .12s;
 }
-.field input:focus,.field select:focus{border-color:var(--ink)}
+.field input:focus,.field select:focus{border-color:var(--pink)}
 .trow{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 
 .cgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
@@ -232,15 +235,15 @@ header{
   transition:border-color .1s,transform .1s;
 }
 .cswatch:hover{transform:scale(1.08)}
-.cswatch.sel{border-color:var(--ink)}
+.cswatch.sel{border-color:var(--pink)}
 .cname{font-size:7.5px;color:var(--ink3);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:36px}
 
 .mactions{display:flex;gap:6px;margin-top:1.25rem}
 .mactions .btn{flex:1;justify-content:center}
-.btn-del{background:#fff5f5;color:#b91c1c;border-color:#fecaca}
-.btn-del:hover{background:#fee2e2}
-.btn-save{background:var(--ink);color:white;border-color:var(--ink)}
-.btn-save:hover{background:#333}
+.btn-del{background:rgba(255,80,80,.1);color:#ff6b6b;border-color:rgba(255,80,80,.2)}
+.btn-del:hover{background:rgba(255,80,80,.18)}
+.btn-save{background:var(--grad);background:linear-gradient(135deg,#f7e87a,#ff8fd4);color:#0e0b0f;border:none;font-weight:600}
+.btn-save:hover{opacity:.85}
 </style>
 </head>
 <body>
@@ -277,8 +280,10 @@ header{
 
 <script>
 const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-const START_H=7.75,END_H=22,TOTAL_MINS=(END_H-START_H)*60,COL_PX=660;
+const START_H=7.75,END_H=22,TOTAL_MINS=(END_H-START_H)*60;
 const LS_KEY='weekly-schedule-v1';
+const PX_PER_MIN=1.8;
+function colPx(){return Math.round(TOTAL_MINS*PX_PER_MIN)}
 
 const COLORS={
   'School':'#C8E6C9','Soccer':'#FFD180','Tutoring':'#F8BBD0',
@@ -360,12 +365,12 @@ function renderBody(){
   el.innerHTML='';
 
   const tc=document.createElement('div');
-  tc.className='time-col';tc.style.height=COL_PX+'px';
+  tc.className='time-col';tc.style.height=colPx()+'px';
   for(let h=Math.ceil(START_H);h<=END_H;h++){
     const pct=toMins(h,0)/TOTAL_MINS;
     if(pct<0||pct>1)continue;
     const t=document.createElement('div');t.className='tick';
-    t.style.top=(pct*COL_PX)+'px';
+    t.style.top=(pct*colPx())+'px';
     const s=h<12?'AM':'PM',hh=h>12?h-12:h;
     t.textContent=`${hh}${s}`;
     tc.appendChild(t);
@@ -374,26 +379,26 @@ function renderBody(){
 
   schedule.forEach((day,di)=>{
     const col=document.createElement('div');
-    col.className='day-col';col.style.height=COL_PX+'px';
+    col.className='day-col';col.style.height=colPx()+'px';
 
     for(let h=Math.ceil(START_H);h<=END_H;h++){
       const pct=toMins(h,0)/TOTAL_MINS;
       if(pct<0||pct>1)continue;
-      const l=document.createElement('div');l.className='hl';l.style.top=(pct*COL_PX)+'px';col.appendChild(l);
+      const l=document.createElement('div');l.className='hl';l.style.top=(pct*colPx())+'px';col.appendChild(l);
       const hp=toMins(h,30)/TOTAL_MINS;
-      if(hp>=0&&hp<=1){const lh=document.createElement('div');lh.className='hlh';lh.style.top=(hp*COL_PX)+'px';col.appendChild(lh)}
+      if(hp>=0&&hp<=1){const lh=document.createElement('div');lh.className='hlh';lh.style.top=(hp*colPx())+'px';col.appendChild(lh)}
     }
 
     col.addEventListener('click',e=>{
       if(e.target!==col)return;
       const r=col.getBoundingClientRect();
-      const mins=Math.round(((e.clientY-r.top)/COL_PX)*TOTAL_MINS/15)*15;
+      const mins=Math.round(((e.clientY-r.top)/colPx())*TOTAL_MINS/15)*15;
       openModal(di,null,mins);
     });
 
     day.forEach((b,bi)=>{
-      const top=(b.start/TOTAL_MINS)*COL_PX;
-      const h=((b.end-b.start)/TOTAL_MINS)*COL_PX;
+      const top=(b.start/TOTAL_MINS)*colPx();
+      const h=((b.end-b.start)/TOTAL_MINS)*colPx();
       const el2=document.createElement('div');
       el2.className='block';
       el2.style.cssText=`top:${top}px;height:${Math.max(h,18)}px;background:${COLORS[b.color]||'#E0E0E0'}`;
