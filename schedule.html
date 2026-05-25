@@ -383,24 +383,30 @@ async function handleAccountAction() {
     const password = prompt("Enter your Password:");
     if (!password) return;
 
-    // Convert standard username text string into custom internal mask domain
     const internalEmail = `${username.trim().toLowerCase()}@local.app`;
 
+    // 1. Try logging them in first
     const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ 
       email: internalEmail, 
       password: password 
     });
     
     if (signInError) {
-      if (signInError.message.includes("Invalid login credentials")) {
-        const { error: signUpError } = await supabaseClient.auth.signUp({ 
+      // 2. If username doesn't exist yet, instantly sign them up on the spot
+      if (signInError.message.includes("Invalid login credentials") || signInError.message.includes("User not found")) {
+        const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({ 
           email: internalEmail, 
           password: password 
         });
+        
         if (signUpError) {
           alert("Authentication failed: " + signUpError.message);
         } else {
           toast("Account created successfully!");
+          // 🚨 FIX: Give the database 1 second to register the new user before pushing data
+          setTimeout(() => {
+            saveSchedule();
+          }, 1000);
         }
       } else {
         alert("Authentication failed: " + signInError.message);
@@ -408,7 +414,7 @@ async function handleAccountAction() {
     }
   }
 }
-
+  
 // Global Auth Watcher Configuration
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   const badge = document.getElementById('save-badge');
