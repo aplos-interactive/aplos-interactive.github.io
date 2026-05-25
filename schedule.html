@@ -282,8 +282,8 @@ header{
 
 <script>
 // 🚨 CHANGE THESE VALUES TO REFLECT YOUR PROJECT SETTINGS FROM SUPABASE
-const SUPABASE_URL = "nqjiaxewhzxjutpakmip";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5xamlheGV3aHp4anV0cGFrbWlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk3MjcwMDAsImV4cCI6MjA5NTMwMzAwMH0.bpue8QRiml3YLKvVubDV4C2rKOM5dL5S1-aGclBnjRM";
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_KEY";
 
 // Initialize Supabase Client Connection
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -373,20 +373,30 @@ let schedule=loadSchedule();
 async function handleAccountAction() {
   const { data: { user } } = await supabaseClient.auth.getUser();
   if (user) {
-    if (confirm('Sign out of your account? Your local data will remain.')) {
+    const cleanUsername = user.email.split('@')[0];
+    if (confirm(`Sign out of account "${cleanUsername}"? Your local data will remain.`)) {
       await supabaseClient.auth.signOut();
     }
   } else {
-    const email = prompt("Enter your account Email:");
-    if (!email) return;
+    const username = prompt("Create or Enter your Username (letters/numbers only):");
+    if (!username) return;
     const password = prompt("Enter your Password:");
     if (!password) return;
 
-    const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ email, password });
+    // Convert standard username text string into custom internal mask domain
+    const internalEmail = `${username.trim().toLowerCase()}@local.app`;
+
+    const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ 
+      email: internalEmail, 
+      password: password 
+    });
     
     if (signInError) {
       if (signInError.message.includes("Invalid login credentials")) {
-        const { error: signUpError } = await supabaseClient.auth.signUp({ email, password });
+        const { error: signUpError } = await supabaseClient.auth.signUp({ 
+          email: internalEmail, 
+          password: password 
+        });
         if (signUpError) {
           alert("Authentication failed: " + signUpError.message);
         } else {
@@ -403,7 +413,8 @@ async function handleAccountAction() {
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   const badge = document.getElementById('save-badge');
   if (session && session.user) {
-    badge.title = `Logged in as ${session.user.email}. Click to Logout.`;
+    const cleanUsername = session.user.email.split('@')[0];
+    badge.title = `Logged in as "${cleanUsername}". Click to Logout.`;
     badge.style.cursor = 'pointer';
     
     try {
@@ -423,7 +434,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
       }
     } catch(e) { console.error("Cloud sync mismatch", e); }
   } else {
-    badge.title = "Click to Link Account / Login to Sync Devices";
+    badge.title = "Click to Create Account / Login to Sync Devices";
     badge.style.cursor = 'pointer';
     document.getElementById('save-text').textContent = 'Offline Mode (Click to Sync)';
   }
