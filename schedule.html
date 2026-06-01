@@ -401,30 +401,31 @@ let schedule=loadSchedule();
 async function handleAccountAction() {
   const { data: { user } } = await supabaseClient.auth.getUser();
   
-  if (user) {
-    const cleanUsername = user.email.split('@')[0];
+// Locate this section inside your handleAccountAction() function:
+if (user) {
+  const cleanUsername = user.email.split('@')[0];
+  
+  // Updated template with fixed Close button
+  document.getElementById('modal').innerHTML = `
+    <div class="modal-title">Account Profile</div>
     
-    // Sleek user profile/logout view inside the custom modal
-    document.getElementById('modal').innerHTML = `
-      <div class="modal-title">Account Profile</div>
-      
-      <div class="user-badge-display">
-        <div class="username-headline">@${cleanUsername}</div>
-        <div class="status-subtext">Connected & Syncing to Cloud</div>
-      </div>
-      
-      <div class="auth-subtitle" style="text-align: center; margin-bottom: 1.5rem;">
-        Your modifications are securely locked into your Supabase account. Logging out keeps your modifications intact in this browser.
-      </div>
-      
-      <div class="mactions">
-        <button class="btn" onclick="closeModal()">Close</button>
-        <button class="btn btn-del" onclick="processSignOut()">Sign Out</button>
-      </div>
-    `;
-    document.getElementById('overlay').classList.add('open');
-    return;
-  }
+    <div class="user-badge-display">
+      <div class="username-headline">@${cleanUsername}</div>
+      <div class="status-subtext">Connected & Syncing to Cloud</div>
+    </div>
+    
+    <div class="auth-subtitle" style="text-align: center; margin-bottom: 1.5rem;">
+      Your modifications are securely locked into your Supabase account. Logging out keeps your modifications intact in this browser.
+    </div>
+    
+    <div class="mactions">
+      <button class="btn" type="button" onclick="closeModal()">Close</button>
+      <button class="btn btn-del" type="button" onclick="processSignOut()">Sign Out</button>
+    </div>
+  `;
+  document.getElementById('overlay').classList.add('open');
+  return;
+}
 
   // Open custom interactive authentication layout inside the existing overlay container
   document.getElementById('modal').innerHTML = `
