@@ -316,6 +316,9 @@ const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Initialize Supabase Client Connection
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// Track the authenticated user tracking variable locally
+let currentAuthUser = null;
+
 const DAYS=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
 const START_H=7.75,END_H=24,TOTAL_MINS=(END_H-START_H)*60;
 const LS_KEY='weekly-schedule-v1';
@@ -365,15 +368,14 @@ function saveSchedule(){
     try{
       localStorage.setItem(LS_KEY,JSON.stringify(schedule));
       
-      const { data: { user } } = await supabaseClient.auth.getUser();
-      if (user) {
+      if (currentAuthUser) {
         await supabaseClient
           .from('schedules')
-          .upsert({ id: user.id, schedule_data: schedule, updated_at: new Date() });
+          .upsert({ id: currentAuthUser.id, schedule_data: schedule, updated_at: new Date() });
       }
       
       badge.classList.add('saved');
-      txt.textContent=user ? 'Saved to Cloud' : 'Saved';
+      txt.textContent=currentAuthUser ? 'Saved to Cloud' : 'Saved';
     }catch(e){
       txt.textContent='Save failed';
     }
@@ -398,36 +400,32 @@ function toast(msg){
 let schedule=loadSchedule();
 
 // ── Custom In-App Modal Login Interface ──
-async function handleAccountAction() {
-  const { data: { user } } = await supabaseClient.auth.getUser();
-  
-// Locate this section inside your handleAccountAction() function:
-if (user) {
-  const cleanUsername = user.email.split('@')[0];
-  
-  // Updated template with fixed Close button
-  document.getElementById('modal').innerHTML = `
-    <div class="modal-title">Account Profile</div>
+function handleAccountAction() {
+  // Read instantaneously from the local user cache variable to bypass network delays
+  if (currentAuthUser) {
+    const cleanUsername = currentAuthUser.email.split('@')[0];
     
-    <div class="user-badge-display">
-      <div class="username-headline">@${cleanUsername}</div>
-      <div class="status-subtext">Connected & Syncing to Cloud</div>
-    </div>
-    
-    <div class="auth-subtitle" style="text-align: center; margin-bottom: 1.5rem;">
-      Your modifications are securely locked into your Supabase account. Logging out keeps your modifications intact in this browser.
-    </div>
-    
-    <div class="mactions">
-      <button class="btn" type="button" onclick="closeModal()">Close</button>
-      <button class="btn btn-del" type="button" onclick="processSignOut()">Sign Out</button>
-    </div>
-  `;
-  document.getElementById('overlay').classList.add('open');
-  return;
-}
+    document.getElementById('modal').innerHTML = `
+      <div class="modal-title">Account Profile</div>
+      
+      <div class="user-badge-display">
+        <div class="username-headline">@${cleanUsername}</div>
+        <div class="status-subtext">Connected & Syncing to Cloud</div>
+      </div>
+      
+      <div class="auth-subtitle" style="text-align: center; margin-bottom: 1.5rem;">
+        Your modifications are securely locked into your Supabase account. Logging out keeps your modifications intact in this browser.
+      </div>
+      
+      <div class="mactions">
+        <button class="btn" type="button" onclick="closeModal()">Close</button>
+        <button class="btn btn-del" type="button" onclick="processSignOut()">Sign Out</button>
+      </div>
+    `;
+    document.getElementById('overlay').classList.add('open');
+    return;
+  }
 
-  // Open custom interactive authentication layout inside the existing overlay container
   document.getElementById('modal').innerHTML = `
     <div class="modal-title">Account Sync</div>
     <div class="auth-subtitle">Enter a unique username and password. If it doesn't exist, we'll create it for you instantly!</div>
@@ -442,18 +440,25 @@ if (user) {
     </div>
     
     <div class="mactions">
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-save" id="auth-submit-btn" onclick="submitAuthForm()">Sync Now</button>
+      <button class="btn" type="button" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-save" type="button" id="auth-submit-btn" onclick="submitAuthForm()">Sync Now</button>
     </div>
   `;
   document.getElementById('overlay').classList.add('open');
-  setTimeout(() => document.getElementById('auth-user').focus(), 50);
+  setTimeout(() => {
+    const uField = document.getElementById('auth-user');
+    if (uField) uField.focus();
+  }, 50);
 }
 
 async function processSignOut() {
   closeModal();
-  await supabaseClient.auth.signOut();
-  toast("Signed out successfully");
+  try {
+    await supabaseClient.auth.signOut();
+    toast("Signed out successfully");
+  } catch(e) {
+    console.error("Logout issue:", e);
+  }
 }
 
 async function submitAuthForm() {
@@ -474,14 +479,12 @@ async function submitAuthForm() {
 
   const internalEmail = `${username.toLowerCase()}@local.app`;
 
-  // 1. Try logging in
   const { data: signInData, error: signInError } = await supabaseClient.auth.signInWithPassword({ 
     email: internalEmail, 
     password: password 
   });
   
   if (signInError) {
-    // 2. Account doesn't exist yet, sign up instantly
     if (signInError.message.includes("Invalid login credentials") || signInError.message.includes("User not found")) {
       const { data: signUpData, error: signUpError } = await supabaseClient.auth.signUp({ 
         email: internalEmail, 
@@ -511,7 +514,9 @@ async function submitAuthForm() {
 // Global Auth Watcher Configuration
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   const badge = document.getElementById('save-badge');
+  
   if (session && session.user) {
+    currentAuthUser = session.user; // Locally cache user layout mapping state instantly
     const cleanUsername = session.user.email.split('@')[0];
     badge.title = `Logged in as "${cleanUsername}". Click to view Profile / Logout.`;
     badge.style.cursor = 'pointer';
@@ -533,6 +538,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
       }
     } catch(e) { console.error("Cloud sync mismatch", e); }
   } else {
+    currentAuthUser = null; // Un-cache state cleanly
     badge.title = "Click to Create Account / Login to Sync Devices";
     badge.style.cursor = 'pointer';
     document.getElementById('save-text').textContent = 'Offline Mode (Click to Sync)';
@@ -620,7 +626,7 @@ function openModal(di,bi,ds){
       <label>Name</label>
       <input id="ml" value="${b.label}" placeholder="e.g. Soccer practice">
     </div>
-    <div class="field trow">
+    <div class="field trow =">
       <div><label>Start</label><input id="ms" type="time" value="${p(sh.h)}:${p(sh.m)}"></div>
       <div><label>End</label><input id="me" type="time" value="${p(eh.h)}:${p(eh.m)}"></div>
     </div>
@@ -638,9 +644,9 @@ function openModal(di,bi,ds){
       </div>
     </div>
     <div class="mactions">
-      ${!isNew?`<button class="btn btn-del" onclick="delBlock()">Delete</button>`:''}
-      <button class="btn" onclick="closeModal()">Cancel</button>
-      <button class="btn btn-save" onclick="saveBlock()">Save</button>
+      ${!isNew?`<button class="btn btn-del" type="button" onclick="delBlock()">Delete</button>`:''}
+      <button class="btn" type="button" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-save" type="button" onclick="saveBlock()">Save</button>
     </div>`;
   document.getElementById('overlay').classList.add('open');
   setTimeout(()=>document.getElementById('ml').focus(),50);
