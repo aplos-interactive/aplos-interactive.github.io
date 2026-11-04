@@ -1,356 +1,194 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Aplos Interactive</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<meta name="description" content="Tools and mods for games, by Aplos Interactive.">
+<link rel="icon" href="images/logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
+/* ===== COLOURS (from your logo) ===== */
 :root{
-  --bg:#0e0b0f;
-  --bg2:#13101a;
-  --bg3:#181320;
-  --surface:#1e1828;
-  --border:rgba(255,200,230,.07);
-  --border2:rgba(255,200,230,.14);
-  --text:#fdf0f8;
-  --muted:#b89ab0;
-  --faint:#5a445a;
-  --pink:#ff8fd4;
-  --yellow:#f7e87a;
-  --grad:linear-gradient(135deg,#f7e87a 0%,#ffb3e0 50%,#c9a0ff 100%);
-  --grad2:linear-gradient(135deg,#ff8fd4,#f7e87a);
-  --r:8px;
-  --rl:12px;
+  --bg:#0b0a0b;
+  --ink:#f4f1f2;
+  --muted:#9a9496;
+  --line:#242022;
+  --yellow:#ffebb8;
+  --peach:#ffd0d3;
+  --pink:#ffb4ed;
+  --grad:linear-gradient(90deg,var(--yellow),var(--peach) 50%,var(--pink));
+  --display:"Bricolage Grotesque","Arial Black",system-ui,sans-serif;
+  --body:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1.0625rem/1.65 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1080px;margin:0 auto;padding:0 28px}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--pink);outline-offset:4px;border-radius:4px}
 
-html{scroll-behavior:smooth;scroll-snap-type:y mandatory}
-body{
-  font-family:'DM Mono',monospace;
-  background:var(--bg);
-  color:var(--text);
-  overflow-x:hidden;
-  cursor:none;
-}
+/* header */
+header{position:sticky;top:0;z-index:5;background:linear-gradient(var(--bg) 60%,transparent)}
+header .wrap{display:flex;align-items:center;justify-content:space-between;height:72px}
+.brand{display:flex;align-items:center;gap:12px;font:800 1.15rem var(--display);text-decoration:none;letter-spacing:-.01em}
+.brand img{width:30px;height:30px;border-radius:50%}
+nav a{margin-left:28px;color:var(--muted);text-decoration:none;font-size:.95rem;transition:color .15s}
+nav a:hover{color:var(--ink)}
 
-/* cursor */
-.cursor{position:fixed;width:10px;height:10px;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .15s,width .2s,height .2s;background:var(--pink)}
-.cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(255,143,212,.3);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .08s}
-
-/* nav */
-nav{
-  position:fixed;top:0;left:0;right:0;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:1.25rem 2.5rem;z-index:100;
-  background:linear-gradient(to bottom,rgba(14,11,15,.97),transparent);
-}
-.nav-logo{
-  font-family:'Syne',sans-serif;font-size:18px;font-weight:800;
-  text-decoration:none;display:flex;align-items:center;gap:10px;
-  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.nav-logo img{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid rgba(255,143,212,.25)}
-.pulse{width:7px;height:7px;border-radius:50%;background:var(--pink);display:inline-block;animation:pulse 2s infinite;flex-shrink:0}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
-
-.nav-links{display:flex;gap:2rem}
-.nav-links a{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
-.nav-links a:hover{color:var(--pink)}
+/* hero */
+.hero{display:grid;grid-template-columns:1.25fr 1fr;gap:48px;align-items:center;padding:64px 0 120px}
+h1{font:800 clamp(3rem,7.4vw,6.2rem)/.98 var(--display);letter-spacing:-.04em;margin:0 0 28px}
+.hero p{color:var(--muted);font-size:1.2rem;max-width:30em;margin:0 0 36px}
+.btn{display:inline-block;padding:13px 24px;border-radius:999px;font-weight:500;font-size:.98rem;text-decoration:none;border:1px solid #3a3436;margin:0 10px 10px 0;transition:border-color .15s,background .15s}
+.btn:hover{border-color:var(--pink)}
+.btn.main{background:var(--grad);border-color:transparent;color:#17120f;font-weight:600}
+.btn.main:hover{filter:brightness(1.07)}
+.orb{position:relative;justify-self:center;width:min(100%,380px);aspect-ratio:1;border-radius:50%;background:var(--grad)}
+.orb::before{content:"";position:absolute;inset:-14%;border-radius:50%;background:var(--grad);filter:blur(70px);opacity:.38;z-index:-1}
+.orb img{width:100%;height:100%;border-radius:50%;display:block}
 
 /* sections */
-section{
-  min-height:100vh;width:100%;
-  display:flex;flex-direction:column;justify-content:center;align-items:center;
-  padding:8rem 2.5rem 4rem;
-  scroll-snap-align:start;position:relative;
+section{padding:96px 0;border-top:1px solid var(--line)}
+h2{font:800 clamp(2rem,4vw,2.8rem)/1.05 var(--display);letter-spacing:-.03em;margin:0 0 48px}
+
+/* interests */
+.interests{display:grid;grid-template-columns:repeat(3,1fr);gap:40px 32px;margin:0;padding:0;list-style:none}
+.interests li{border-top:1px solid var(--line);padding-top:16px}
+.interests b{display:block;font:800 1.25rem var(--display);letter-spacing:-.01em;margin-bottom:4px}
+.interests span{color:var(--muted);font-size:.98rem}
+
+/* projects */
+.rows{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.row{display:grid;grid-template-columns:1.1fr 1.4fr 170px;gap:12px 32px;align-items:start;padding:32px 12px;margin:0 -12px;border-bottom:1px solid var(--line);border-radius:4px;transition:background .2s}
+.row:hover{background:#121012}
+.row h3{margin:0;font:800 clamp(1.5rem,3vw,2.1rem)/1.1 var(--display);letter-spacing:-.03em;transition:color .2s}
+.row:hover h3{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.row p{margin:4px 0 0;color:var(--muted);max-width:34em}
+.meta{display:flex;flex-direction:column;gap:10px;align-items:flex-start;font-size:.95rem;padding-top:6px}
+.status{display:flex;align-items:center;gap:8px;color:var(--muted)}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--grad)}
+.planned .dot{background:none;border:1.5px solid var(--muted)}
+.meta a{color:var(--ink);text-decoration:underline;text-decoration-color:#4a4245;text-underline-offset:4px;transition:text-decoration-color .15s}
+.meta a:hover{text-decoration-color:var(--pink)}
+.planned h3{color:#cfc9cb}
+
+/* contact */
+.mail{display:inline-block;font:800 clamp(1.6rem,5.2vw,3.6rem)/1.1 var(--display);letter-spacing:-.035em;text-decoration:none;overflow-wrap:anywhere;margin-bottom:28px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.mail:hover{text-decoration:underline;text-decoration-color:var(--pink);text-underline-offset:8px;text-decoration-thickness:3px}
+.elsewhere{display:flex;flex-wrap:wrap;gap:12px 36px;color:var(--muted)}
+.elsewhere a{color:var(--ink);text-decoration:underline;text-decoration-color:#4a4245;text-underline-offset:4px}
+.elsewhere a:hover{text-decoration-color:var(--pink)}
+
+footer{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--muted);font-size:.9rem}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr;padding:32px 0 80px;gap:56px}
+  .orb{order:-1;width:190px;justify-self:start}
+  .interests{grid-template-columns:1fr 1fr}
+  .row{grid-template-columns:1fr;padding:28px 12px}
+  .meta{flex-direction:row;flex-wrap:wrap;gap:6px 24px;padding-top:4px}
+  section{padding:72px 0}
+  nav a{margin-left:18px}
 }
-
-/* HERO */
-#about{align-items:flex-start;padding-left:10vw;padding-right:10vw;overflow:hidden}
-
-.hero-eyebrow{
-  font-size:11px;letter-spacing:.18em;text-transform:uppercase;
-  color:var(--pink);margin-bottom:1.5rem;
-  display:flex;align-items:center;gap:10px;
-  animation:fadeup .6s ease both;
-}
-.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--pink)}
-
-.hero-name{
-  font-family:'Syne',sans-serif;
-  font-size:clamp(3.5rem,8vw,7rem);
-  font-weight:800;line-height:.95;letter-spacing:-3px;
-  margin-bottom:1rem;
-  animation:fadeup .6s .1s ease both;
-  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.hero-name span{
-  background:none;-webkit-background-clip:unset;background-clip:unset;
-  color:transparent;-webkit-text-stroke:1px rgba(253,240,248,.15);
-}
-
-.hero-desc{
-  max-width:480px;font-size:13px;line-height:1.8;
-  color:var(--muted);margin-bottom:2.5rem;
-  animation:fadeup .6s .2s ease both;
-}
-
-.hero-links{display:flex;gap:12px;flex-wrap:wrap;animation:fadeup .6s .3s ease both}
-
-.pill{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:99px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:500;text-decoration:none;transition:all .2s}
-.pill-outline{border:1px solid var(--border2);color:var(--muted)}
-.pill-outline:hover{border-color:var(--pink);color:var(--pink)}
-.pill-solid{background:var(--grad2);color:#0e0b0f;border:none}
-.pill-solid:hover{opacity:.85;transform:scale(1.02)}
-
-.hero-bg-text{
-  position:absolute;right:-2vw;bottom:-4vh;
-  font-family:'Syne',sans-serif;font-size:clamp(8rem,22vw,22rem);font-weight:800;
-  color:transparent;-webkit-text-stroke:1px rgba(255,143,212,.04);
-  line-height:1;pointer-events:none;user-select:none;letter-spacing:-8px;
-}
-
-@keyframes fadeup{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
-
-.scroll-hint{
-  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
-  display:flex;flex-direction:column;align-items:center;gap:8px;
-  font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);
-  animation:bob 2s ease-in-out infinite;
-}
-.scroll-hint::after{content:'';width:1px;height:40px;background:linear-gradient(to bottom,var(--faint),transparent)}
-@keyframes bob{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(6px)}}
-
-/* INTERESTS */
-#interests{background:var(--bg2)}
-
-.section-label{
-  font-size:10px;letter-spacing:.2em;text-transform:uppercase;
-  color:var(--faint);margin-bottom:3rem;
-  display:flex;align-items:center;gap:12px;
-}
-.section-label::after{content:'';flex:1;max-width:60px;height:1px;background:var(--faint)}
-
-.interests-grid{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:1px;width:100%;max-width:800px;
-  border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;
-}
-.interest-card{
-  padding:2.5rem 2rem;background:var(--surface);
-  transition:background .2s;position:relative;overflow:hidden;
-}
-.interest-card::before{content:'';position:absolute;inset:0;background:var(--grad);opacity:0;transition:opacity .3s}
-.interest-card:hover::before{opacity:.04}
-.interest-card:hover .ic-num{color:var(--pink)}
-.ic-num{font-size:10px;letter-spacing:.1em;color:var(--faint);margin-bottom:.75rem;transition:color .2s}
-.ic-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin-bottom:.5rem}
-.ic-sub{font-size:11px;color:var(--muted);line-height:1.6}
-
-/* PROJECTS */
-#projects{background:var(--bg3)}
-
-.projects-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-  gap:1px;width:100%;max-width:1100px;
-  border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;
-  margin-top:1rem;
-}
-.project-card{
-  background:var(--surface);padding:2.5rem;
-  display:flex;flex-direction:column;gap:1rem;
-  transition:background .2s;position:relative;overflow:hidden;
-}
-.project-card::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:2px;
-  background:var(--grad);transform:scaleX(0);transform-origin:left;transition:transform .3s ease;
-}
-.project-card:hover::after{transform:scaleX(1)}
-.project-card:hover{background:#231d30}
-
-.pc-tag{font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--pink)}
-.pc-name{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1.1;letter-spacing:-.5px;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-.pc-desc{font-size:12px;color:var(--muted);line-height:1.75;flex:1}
-.pc-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:.5rem}
-.pc-link{
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:10px;letter-spacing:.1em;text-transform:uppercase;
-  color:var(--muted);text-decoration:none;
-  padding:6px 12px;border-radius:4px;border:1px solid var(--border2);transition:all .2s;
-}
-.pc-link:hover{color:var(--pink);border-color:var(--pink)}
-.pc-link svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.pc-index{position:absolute;top:2rem;right:2rem;font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:rgba(255,143,212,.04);line-height:1;pointer-events:none;letter-spacing:-3px}
-
-/* CONTACT */
-#contact{background:var(--bg2)}
-.contact-inner{max-width:640px;width:100%;text-align:left}
-.contact-heading{
-  font-family:'Syne',sans-serif;
-  font-size:clamp(2.5rem,5vw,4.5rem);font-weight:800;letter-spacing:-2px;line-height:1;
-  margin-bottom:2rem;
-  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
-}
-.contact-list{list-style:none;display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
-.contact-list li{display:block;background:var(--surface);border-bottom:1px solid var(--border)}
-.contact-list li:last-child{border-bottom:none}
-.contact-list a{display:flex;align-items:center;justify-content:space-between;padding:1.25rem 1.5rem;color:var(--muted);text-decoration:none;font-size:13px;transition:all .2s;gap:1rem}
-.contact-list a:hover{background:#231d30;color:var(--pink)}
-.contact-list a:hover .cl-arrow{transform:translate(3px,-3px)}
-.cl-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);min-width:60px}
-.cl-val{flex:1}
-.cl-arrow{transition:transform .2s;font-size:14px;color:var(--faint)}
-
-footer{
-  padding:2rem 2.5rem;border-top:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;
-}
-footer p{font-size:10px;letter-spacing:.1em;color:var(--faint);text-transform:uppercase}
-.footer-dot{width:6px;height:6px;border-radius:50%;background:var(--pink);opacity:.4}
-
-/* reveal */
-.reveal{opacity:0;transform:translateY(30px);transition:opacity .7s ease,transform .7s ease}
-.reveal.visible{opacity:1;transform:none}
-.reveal-delay-1{transition-delay:.1s}
-.reveal-delay-2{transition-delay:.2s}
-.reveal-delay-3{transition-delay:.3s}
+@media (max-width:480px){.interests{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
 </style>
 </head>
 <body>
-
-<div class="cursor" id="cur"></div>
-<div class="cursor-ring" id="curRing"></div>
-
-<nav>
-  <a class="nav-logo" href="#about">
-    <img src="images/logo.png" alt="Aplos logo" onerror="this.style.display='none'">
-    <span>Aplos</span>
-    <span class="pulse"></span>
-  </a>
-  <div class="nav-links">
-    <a href="#about">About</a>
-    <a href="#interests">Interests</a>
-    <a href="#projects">Projects</a>
-    <a href="#contact">Contact</a>
+<header>
+  <div class="wrap">
+    <a class="brand" href="#top"><img src="images/logo.png" alt="" onerror="this.style.display='none'">Aplos</a>
+    <nav aria-label="Main">
+      <a href="#interests">Interests</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </nav>
   </div>
-</nav>
+</header>
 
-<section id="about">
-  <div class="hero-eyebrow">Aplos Interactive</div>
-  <h1 class="hero-name">Building<br><span>things</span><br>that matter.</h1>
-  <p class="hero-desc">Programmer, problem-solver, and soccer player. Passionate about logic, math, and STEM — building stuff that's actually useful.</p>
-  <div class="hero-links">
-    <a class="pill pill-solid" href="#projects">See my work</a>
-    <a class="pill pill-outline" href="#contact">Get in touch</a>
-    <a class="pill pill-outline" href="https://github.com/aplos-interactive" target="_blank">GitHub</a>
-  </div>
-  <div class="hero-bg-text">APLOS</div>
-  <div class="scroll-hint">Scroll</div>
-</section>
-
-<section id="interests">
-  <div class="section-label reveal">What I'm into</div>
-  <div class="interests-grid">
-    <div class="interest-card reveal reveal-delay-1">
-      <div class="ic-num">01</div>
-      <div class="ic-name">Soccer</div>
-      <div class="ic-sub">Playing, watching, living the game</div>
-    </div>
-    <div class="interest-card reveal reveal-delay-2">
-      <div class="ic-num">02</div>
-      <div class="ic-name">Programming</div>
-      <div class="ic-sub">Logic, systems, making things work</div>
-    </div>
-    <div class="interest-card reveal reveal-delay-3">
-      <div class="ic-num">03</div>
-      <div class="ic-name">Math & STEM</div>
-      <div class="ic-sub">Complex problems, elegant solutions</div>
-    </div>
-    <div class="interest-card reveal reveal-delay-1">
-      <div class="ic-num">04</div>
-      <div class="ic-name">Open Source</div>
-      <div class="ic-sub">Contributing whatever I can</div>
-    </div>
-    <div class="interest-card reveal reveal-delay-2">
-      <div class="ic-num">05</div>
-      <div class="ic-name">Game Modding</div>
-      <div class="ic-sub">Digging into how games work</div>
-    </div>
-    <div class="interest-card reveal reveal-delay-3">
-      <div class="ic-num">06</div>
-      <div class="ic-name">Problem Solving</div>
-      <div class="ic-sub">If it's hard, I want to figure it out</div>
+<main id="top">
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <h1>Tools and mods for the games I love.</h1>
+        <p>I’m a programmer who likes taking games apart to see how they work, then building something useful out of what I find.</p>
+        <a class="btn main" href="#projects">See projects</a>
+        <a class="btn" href="#contact">Get in touch</a>
+      </div>
+      <div class="orb"><img src="images/logo.png" alt="Aplos Interactive logo" onerror="this.style.display='none'"></div>
     </div>
   </div>
-</section>
 
-<section id="projects">
-  <div class="section-label reveal">Projects</div>
-  <div class="projects-grid">
+  <section id="interests">
+    <div class="wrap">
+      <h2>What I’m into</h2>
+      <ul class="interests">
+        <li><b>Programming</b><span>Logic, systems, making things work</span></li>
+        <li><b>Math &amp; STEM</b><span>Complex problems, elegant solutions</span></li>
+        <li><b>Open source</b><span>Contributing whatever I can</span></li>
+        <li><b>Game modding</b><span>Digging into how games work</span></li>
+        <li><b>Problem solving</b><span>If it’s hard, I want to figure it out</span></li>
+      </ul>
+    </div>
+  </section>
 
-    <div class="project-card reveal">
-      <div class="pc-index">01</div>
-      <div class="pc-tag">Tool &mdash; Productivity</div>
-      <div class="pc-name">Schedule<br>Maker</div>
-      <div class="pc-desc">An interactive weekly schedule builder. Add, edit, and remove colour-coded time blocks across any day. Auto-saves in the browser so your schedule is always there when you come back.</div>
-      <div class="pc-links">
-        <a class="pc-link" href="schedule.html" target="_blank">
-          <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          Open App
-        </a>
-        <a class="pc-link" href="https://github.com/aplos-interactive/aplos-interactive.github.io/blob/main/schedule.html" target="_blank">
-          <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-          Source
-        </a>
+  <section id="projects">
+    <div class="wrap">
+      <h2>Projects</h2>
+      <ul class="rows">
+        <li class="row">
+          <h3>Retro Hacks</h3>
+          <p>A Tampermonkey script that makes hacking Retro Bowl on the web easier.</p>
+          <div class="meta">
+            <span class="status"><i class="dot"></i>Available now</span>
+            <a href="https://github.com/aplos-interactive/Retro-Hacks/tree/main">GitHub</a>
+          </div>
+        </li>
+        <li class="row">
+          <h3>Schedule Maker</h3>
+          <p>A weekly schedule builder with colour-coded time blocks on any day. It saves in your browser, so your schedule is still there next time.</p>
+          <div class="meta">
+            <span class="status"><i class="dot"></i>Available now</span>
+            <a href="https://aplos-interactive.github.io/schedule.html">Open app</a>
+            <a href="https://github.com/aplos-interactive/aplos-interactive.github.io/blob/main/schedule.html">Source</a>
+          </div>
+        </li>
+        <li class="row planned">
+          <h3>Browser Terminal</h3>
+          <p>A terminal that runs in your browser, a sandbox to play around in. Think CraftOS.</p>
+          <div class="meta"><span class="status"><i class="dot"></i>Planned</span></div>
+        </li>
+        <li class="row planned">
+          <h3>Eaglercraft N100 Mod</h3>
+          <p>An Eaglercraft mod that heavily optimizes the game for Intel Celeron N100 computers.</p>
+          <div class="meta"><span class="status"><i class="dot"></i>Planned</span></div>
+        </li>
+        <li class="row planned">
+          <h3>Anonymous Terminal Chat</h3>
+          <p>A fully anonymous, two-way chat built right into a PowerShell terminal.</p>
+          <div class="meta"><span class="status"><i class="dot"></i>Planned</span></div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="contact">
+    <div class="wrap">
+      <h2>Get in touch</h2>
+      <a class="mail" href="mailto:aaditmaddi4@proton.me">aaditmaddi4@proton.me</a>
+      <div class="elsewhere">
+        <span>Discord: <a href="https://discord.gg/uqD7HryVrH">@aplos_int</a></span>
+        <span>GitHub: <a href="https://github.com/aplos-interactive">aplos-interactive</a></span>
       </div>
     </div>
-
-    <div class="project-card reveal reveal-delay-1">
-      <div class="pc-index">02</div>
-      <div class="pc-tag">Game Tool &mdash; Retro Bowl</div>
-      <div class="pc-name">Retro<br>Hacks</div>
-      <div class="pc-desc">A cracker for the game Retro Bowl. Digs into the game's internals to unlock and modify things that normally aren't accessible. Built for fun and to see how far you can push it.</div>
-      <div class="pc-links">
-        <a class="pc-link" href="https://github.com/aplos-interactive/Retro-Hacks/tree/main" target="_blank">
-          <svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
-          GitHub
-        </a>
-      </div>
-    </div>
-
-  </div>
-</section>
-
-<section id="contact">
-  <div class="contact-inner">
-    <div class="section-label reveal">Get in touch</div>
-    <h2 class="contact-heading reveal">Let's<br>talk.</h2>
-    <ul class="contact-list reveal">
-      <li><a href="mailto:aaditmaddi6@gmail.com"><span class="cl-label">Email</span><span class="cl-val">aaditmaddi6@gmail.com</span><span class="cl-arrow">↗</span></a></li>
-      <li><a href="https://discord.gg/uqD7HryVrH" target="_blank"><span class="cl-label">Discord</span><span class="cl-val">@aplos_int</span><span class="cl-arrow">↗</span></a></li>
-      <li><a href="https://github.com/aplos-interactive" target="_blank"><span class="cl-label">GitHub</span><span class="cl-val">aplos-interactive</span><span class="cl-arrow">↗</span></a></li>
-    </ul>
-  </div>
-</section>
+  </section>
+</main>
 
 <footer>
-  <p>&copy; 2025 Aplos Interactive. All rights reserved.</p>
-  <div class="footer-dot"></div>
+  <div class="wrap">© 2026 Aplos Interactive. All rights reserved.</div>
 </footer>
-
-<script>
-const cur=document.getElementById('cur'),ring=document.getElementById('curRing');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
-(function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing)})();
-document.querySelectorAll('a,button,.interest-card,.project-card').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{cur.style.transform='translate(-50%,-50%) scale(2.5)';cur.style.background='var(--yellow)'});
-  el.addEventListener('mouseleave',()=>{cur.style.transform='translate(-50%,-50%) scale(1)';cur.style.background='var(--pink)'});
-});
-const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.15});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-</script>
 </body>
 </html>
